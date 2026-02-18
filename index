@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Deep Hook Fishing</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{
+  --acc:#f0c040;--acc2:#40c0e0;--grn:#40e080;--red:#e04040;--org:#e08040;
+  --deep:#050f1a;--border:rgba(40,100,160,0.5);
+  --font:'Oswald',sans-serif;--mono:'Share Tech Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-family:var(--font);color:#cce8ff;overscroll-behavior:none;position:fixed;top:0;left:0;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;}
+
+/* ── TITLE ── */
+#S0{background:linear-gradient(180deg,#020810,#0a2035 50%,#0d1a08);align-items:center;justify-content:center;gap:16px;}
+.ttl{font-size:52px;font-weight:700;letter-spacing:6px;color:var(--acc);text-shadow:0 0 30px rgba(240,192,64,.8),0 0 60px rgba(240,192,64,.4);text-align:center;}
+.tsub{font-family:var(--mono);color:var(--acc2);font-size:12px;letter-spacing:4px;opacity:.8;text-align:center;}
+.tfish{font-size:34px;letter-spacing:4px;text-align:center;}
+.btnP{background:linear-gradient(135deg,#1a5a9a,#0d3060);border:2px solid var(--acc);border-radius:12px;color:var(--acc);font-family:var(--font);font-size:20px;font-weight:600;letter-spacing:4px;padding:14px 48px;cursor:pointer;text-transform:uppercase;touch-action:manipulation;}
+.btnP:active{transform:scale(.97);}
+.tinfo{font-family:var(--mono);font-size:10px;color:rgba(100,180,255,.4);text-align:center;line-height:1.9;}
+
+/* ── VIBRATION PERMISSION POPUP ── */
+#vibModal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;display:none;align-items:center;justify-content:center;}
+#vibModal.show{display:flex;}
+.vibBox{background:linear-gradient(160deg,#0a1a30,#051020);border:2px solid var(--acc2);border-radius:18px;padding:28px 24px;max-width:300px;width:90%;text-align:center;}
+.vibBox h2{color:var(--acc);font-size:22px;letter-spacing:2px;margin-bottom:10px;}
+.vibBox p{font-family:var(--mono);font-size:11px;color:#a0c8e0;line-height:1.7;margin-bottom:18px;}
+.vibBtns{display:flex;gap:10px;justify-content:center;}
+.vibBtnY{background:var(--grn);color:#000;border:none;border-radius:10px;padding:12px 22px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;}
+.vibBtnN{background:rgba(255,255,255,.08);color:#cce8ff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:12px 22px;font-family:var(--font);font-size:15px;cursor:pointer;touch-action:manipulation;}
+.vib-toggle-row{display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:7px 12px;margin-top:10px;}
+.vib-toggle-lbl{font-family:var(--mono);font-size:10px;color:var(--acc2);}
+.toggle{width:40px;height:22px;background:#333;border-radius:11px;position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0;}
+.toggle.on{background:var(--grn);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;}
+.toggle.on::after{left:21px;}
+
+/* ── FISHING SCREEN ── */
+#S1{background:var(--deep);}
+#CV{width:100%;flex-shrink:0;display:block;touch-action:none;}
+
+/* HUD */
+.hud{display:flex;justify-content:space-between;align-items:center;padding:3px 10px;background:rgba(0,0,0,.88);border-bottom:1px solid var(--border);flex-shrink:0;}
+.hs{display:flex;flex-direction:column;align-items:center;}
+.hl{font-family:var(--mono);font-size:8px;color:rgba(100,180,255,.55);letter-spacing:1px;}
+.hv{font-size:16px;font-weight:600;line-height:1.1;}
+.timebox{background:rgba(0,0,0,.6);border:1px solid var(--border);border-radius:7px;padding:3px 12px;font-size:20px;font-weight:700;font-family:var(--mono);letter-spacing:2px;}
+
+/* Tilt indicator */
+.tilt-bar-wrap{position:absolute;top:6px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:6px;z-index:20;background:rgba(0,0,0,.75);border:1px solid var(--acc2);border-radius:20px;padding:3px 10px;}
+.tilt-bar-wrap.show{display:flex;}
+.tilt-lbl{font-family:var(--mono);font-size:9px;color:var(--acc2);}
+.tilt-track{width:70px;height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;}
+.tilt-fill{height:100%;border-radius:4px;background:var(--acc);transition:width .1s;}
+
+/* VIBRATION TOGGLE IN HUD */
+.vib-hud{display:flex;align-items:center;gap:4px;cursor:pointer;}
+.vib-hud-lbl{font-family:var(--mono);font-size:8px;color:rgba(100,180,255,.55);}
+
+/* CONTROLS ROW */
+.crow{flex:1;display:flex;align-items:stretch;gap:8px;padding:5px 10px 10px;min-height:0;overflow:hidden;}
+
+/* ── CAST COLUMN — swipe up to launch ── */
+.castcol{display:flex;flex-direction:column;align-items:center;gap:3px;width:52px;flex-shrink:0;touch-action:none;}
+.clbl{font-family:var(--mono);font-size:9px;color:var(--acc2);letter-spacing:1px;text-transform:uppercase;text-align:center;}
+.cast-track-wrap{flex:1;position:relative;display:flex;justify-content:center;align-items:center;min-height:0;width:100%;}
+.cast-track{width:100%;height:100%;background:rgba(255,255,255,.05);border-radius:10px;position:relative;border:1px solid rgba(64,192,224,.2);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:6px;gap:4px;overflow:hidden;}
+/* Swipe arrow hints */
+.swipe-arrow{color:rgba(64,192,224,.3);font-size:18px;animation:arrowPulse 1.2s ease-in-out infinite;line-height:1;}
+.swipe-arrow:nth-child(2){animation-delay:.2s;}
+.swipe-arrow:nth-child(3){animation-delay:.4s;}
+@keyframes arrowPulse{0%,100%{opacity:.2;transform:translateY(4px);}50%{opacity:.8;transform:translateY(-2px);}}
+.swipe-ball{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#60b0f0,#1a5a9a);border:2px solid var(--acc2);box-shadow:0 0 12px rgba(64,192,224,.5);display:flex;align-items:center;justify-content:center;font-size:16px;transition:transform .1s;}
+.swipe-ball.charging{background:radial-gradient(circle at 38% 35%,var(--acc),#805000);border-color:var(--acc);box-shadow:0 0 16px rgba(240,192,64,.7);}
+.cast-pct{font-family:var(--mono);font-size:9px;color:var(--acc);text-align:center;background:rgba(0,0,0,.5);border-radius:4px;padding:1px 4px;}
+/* Power fill overlay */
+.cast-power-fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(64,192,224,.15),rgba(64,192,224,.03));border-radius:10px;transition:height .05s;pointer-events:none;}
+
+/* CENTER */
+.ccol{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}
+
+/* Buddy */
+.buddy{background:rgba(0,15,35,.95);border:1px solid var(--border);border-radius:10px;padding:6px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.bav{font-size:24px;flex-shrink:0;}
+.binn{flex:1;min-width:0;}
+.bnm{font-family:var(--mono);font-size:8px;color:rgba(100,180,255,.45);}
+.bmsg{font-size:12px;font-weight:600;color:#cce8ff;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bmsg.cmd{color:var(--acc);font-size:13px;}
+
+/* Fish fight panel */
+.fishpan{background:rgba(0,10,25,.98);border-radius:10px;padding:7px 10px;display:none;flex-shrink:0;}
+.fishpan.show{display:block;}
+.fnrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.fn{font-size:13px;font-weight:600;}
+.ftb{font-family:var(--mono);font-size:8px;padding:2px 5px;border-radius:4px;font-weight:700;}
+.br{margin-bottom:3px;}
+.bl{font-family:var(--mono);font-size:8px;color:rgba(100,180,255,.45);margin-bottom:1px;}
+.btr{background:rgba(255,255,255,.07);border-radius:4px;height:8px;overflow:hidden;}
+.bf{height:100%;border-radius:4px;transition:width .12s;}
+
+/* ── CAST AIMER PANEL ── */
+#castAimer{display:none;flex-direction:column;align-items:center;gap:8px;background:rgba(0,12,30,.98);border:1px solid var(--acc2);border-radius:12px;padding:10px 8px;flex-shrink:0;}
+#castAimer.show{display:flex;}
+.aimer-top-row{display:flex;justify-content:space-between;align-items:center;width:100%;}
+.aimer-label{font-family:var(--mono);font-size:10px;color:var(--acc2);letter-spacing:1px;}
+.miss-dots{display:flex;gap:5px;}
+.miss-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);transition:background .15s;}
+.miss-dot.used{background:var(--red);border-color:var(--red);}
+.aimer-track{width:100%;height:28px;background:rgba(255,255,255,.06);border-radius:14px;position:relative;overflow:hidden;border:1px solid rgba(64,192,224,.25);}
+.aimer-zone{position:absolute;top:0;height:100%;background:rgba(64,224,128,.22);border-left:2px solid var(--grn);border-right:2px solid var(--grn);}
+.aimer-cursor{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc),0 0 20px rgba(240,192,64,.4);pointer-events:none;}
+.aimer-power-bar{width:100%;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.aimer-power-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--acc2),var(--acc));transition:width .05s;}
+.aimer-hint{font-family:var(--mono);font-size:9px;color:rgba(100,180,255,.5);text-align:center;}
+.tap-cast-btn{padding:8px 20px;background:linear-gradient(135deg,#1a5a9a,#0d3060);border:2px solid var(--acc);border-radius:8px;color:var(--acc);font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;touch-action:manipulation;width:100%;}
+.tap-cast-btn:active{transform:scale(.97);}
+
+/* Cast idle panel */
+.cpan{flex:1;display:flex;flex-direction:column;gap:6px;min-height:0;align-items:center;justify-content:center;}
+.cpan-hint{font-family:var(--mono);font-size:10px;color:rgba(100,180,255,.5);text-align:center;line-height:1.7;}
+.swipe-demo{font-size:28px;animation:swipeDemoAnim 1.5s ease-in-out infinite;}
+@keyframes swipeDemoAnim{0%{transform:translateY(8px);opacity:.4;}50%{transform:translateY(-8px);opacity:1;}100%{transform:translateY(8px);opacity:.4;}}
+
+.waitmsg{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(0,20,50,.7);border-radius:10px;padding:10px;color:var(--acc2);font-size:12px;flex:1;}
+
+.catchfl{display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,40,20,.97);border-radius:12px;padding:10px;gap:3px;flex:1;}
+.catchfl.show{display:flex;animation:cpulse .4s ease;}
+.ctit{font-size:20px;font-weight:700;color:var(--grn);letter-spacing:2px;}
+.cfish{font-size:15px;font-weight:600;}
+.cearn{font-size:13px;font-family:var(--mono);color:var(--acc);}
+
+/* REEL */
+.rcol{display:flex;flex-direction:column;align-items:center;gap:4px;width:88px;flex-shrink:0;}
+#RW{width:82px;height:82px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#3a3a50,#12121e);border:3px solid #2a4a6a;cursor:grab;position:relative;touch-action:none;transition:border-color .3s,box-shadow .3s;overflow:hidden;}
+#RW.active{border-color:var(--acc);box-shadow:0 0 18px rgba(240,192,64,.5);}
+#RW.release{border-color:var(--acc2);box-shadow:0 0 12px rgba(64,192,224,.4);}
+.spk{position:absolute;top:50%;left:50%;width:2px;height:34px;background:linear-gradient(to bottom,#6080b0,#2a3a5a);border-radius:1px;transform-origin:top center;transform:translateX(-50%);}
+.rhub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#e0c060,#906010);border:2px solid #c0a040;}
+.rlbl{font-family:var(--mono);font-size:8px;color:var(--acc2);text-align:center;line-height:1.4;text-transform:uppercase;}
+.gmini{font-family:var(--mono);font-size:8px;color:rgba(100,180,255,.45);text-align:center;background:rgba(0,10,25,.8);border-radius:5px;padding:2px 4px;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.letout-indicator{position:absolute;bottom:6px;right:4px;font-family:var(--mono);font-size:9px;color:var(--acc2);background:rgba(0,30,60,.8);border:1px solid var(--acc2);border-radius:6px;padding:2px 6px;display:none;}
+.letout-indicator.show{display:block;}
+
+/* ── SHOP ── */
+#S2{background:linear-gradient(160deg,#1a0a03,#2d1505 50%,#120803);}
+.shead{background:rgba(0,0,0,.7);border-bottom:2px solid #6a3a10;padding:9px 14px 5px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.stit{font-size:20px;font-weight:700;color:var(--acc);letter-spacing:3px;}
+.ssub{font-family:var(--mono);font-size:9px;color:rgba(200,160,80,.7);margin-top:1px;}
+.mbadge{background:rgba(0,0,0,.6);border:2px solid #a08020;border-radius:10px;padding:5px 12px;font-size:17px;font-weight:700;color:#f0e040;}
+.ssum{background:rgba(0,30,0,.5);border-bottom:1px solid #2a5a2a;padding:4px 14px;display:flex;gap:10px;align-items:center;font-size:10px;flex-shrink:0;overflow-x:auto;}
+.slbl{color:rgba(100,220,100,.6);font-family:var(--mono);white-space:nowrap;}
+.stabs{display:flex;flex-shrink:0;border-bottom:1px solid #6a3a10;}
+.stab{flex:1;padding:8px 2px;background:transparent;border:none;border-bottom:2px solid transparent;font-family:var(--font);font-size:10px;font-weight:600;letter-spacing:1px;color:rgba(200,160,80,.45);cursor:pointer;text-transform:uppercase;touch-action:manipulation;}
+.stab.active{border-bottom-color:var(--acc);color:var(--acc);background:rgba(180,100,20,.2);}
+.sscroll{flex:1;overflow-y:auto;padding:7px 12px;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+.sitem{display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.5);border:1px solid #3a2a10;border-radius:10px;padding:8px 10px;margin-bottom:6px;}
+.sitem.oa{background:rgba(60,40,0,.7);border-color:var(--acc);}
+.sitem.oi{border-color:#3a3a2a;opacity:.75;}
+.ilft{flex:1;min-width:0;}
+.inm{font-size:13px;font-weight:600;color:#f0e0a0;display:flex;align-items:center;gap:6px;margin-bottom:2px;flex-wrap:wrap;}
+.beq{background:var(--acc);color:#1a0a00;border-radius:3px;padding:1px 4px;font-size:8px;font-weight:700;}
+.bow{background:#3a5a3a;color:#80c880;border-radius:3px;padding:1px 4px;font-size:8px;}
+.idsc{font-family:var(--mono);color:rgba(180,140,80,.65);font-size:8px;margin-bottom:3px;}
+.istat{font-family:var(--mono);font-size:8px;padding:2px 5px;border-radius:3px;display:inline-block;}
+.bbuy{background:linear-gradient(135deg,#3a7a18,#224a0c);border:1px solid #70c030;border-radius:8px;padding:7px 11px;color:#b0f060;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;touch-action:manipulation;}
+.bbuy:disabled{background:rgba(30,30,30,.8);border-color:#3a3a2a;color:#5a5a4a;cursor:not-allowed;}
+.sfoot{padding:9px 14px;border-top:2px solid #6a3a10;flex-shrink:0;}
+.btnFA{width:100%;background:linear-gradient(135deg,#5a3a10,#3a2005);border:2px solid var(--acc);border-radius:12px;color:var(--acc);font-family:var(--font);font-size:15px;font-weight:600;letter-spacing:2px;padding:12px;cursor:pointer;text-transform:uppercase;touch-action:manipulation;}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:7px 0;}
+.scard{background:rgba(0,10,25,.8);border:1px solid var(--border);border-radius:10px;padding:9px;text-align:center;}
+.scv{font-size:20px;font-weight:700;}
+.scl{font-family:var(--mono);font-size:8px;color:rgba(100,180,255,.45);margin-top:2px;}
+.lrow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-family:var(--mono);font-size:10px;}
+.lrow .dr{color:var(--red);} .lrow .cr{color:var(--grn);}
+
+@keyframes cpulse{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+@keyframes fslide{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.fslide{animation:fslide .22s ease;}
+.sscroll::-webkit-scrollbar{width:3px;}
+.sscroll::-webkit-scrollbar-thumb{background:#3a2a10;border-radius:2px;}
+
+/* Score flash */
+.score-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;font-weight:700;pointer-events:none;z-index:500;animation:scoreFloat 1.2s ease-out forwards;}
+@keyframes scoreFloat{0%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(-50%,-120%)}}
+</style>
+</head>
+<body>
+
+<!-- VIBRATION PERMISSION MODAL -->
+<div id="vibModal" class="vibModal">
+  <div class="vibBox">
+    <h2>📳 VIBRATION</h2>
+    <p>Deep Hook uses vibration to make fishing feel real — feel every bite, fight and catch!</p>
+    <div class="vibBtns">
+      <button class="vibBtnY" id="vibYes">✓ ENABLE</button>
+      <button class="vibBtnN" id="vibNo">SKIP</button>
+    </div>
+    <div class="vib-toggle-row" style="margin-top:14px;">
+      <span class="vib-toggle-lbl">📳 VIBRATION</span>
+      <button class="toggle on" id="vibToggleModal"></button>
+    </div>
+  </div>
+</div>
+
+<!-- TITLE -->
+<div id="S0" class="screen active">
+  <div class="tfish">🎣 🐟 🎣</div>
+  <div class="ttl">DEEP HOOK</div>
+  <div class="tsub">FISHING TOURNAMENT</div>
+  <button class="btnP" id="startBtn">CAST OFF</button>
+  <div class="tinfo">
+    SWIPE UP LEFT BAR TO POWER CAST<br>
+    TAP AIMER IN THE GREEN ZONE<br>
+    SPIN WHEEL TO REEL · TILT TO PULL
+  </div>
+</div>
+
+<!-- FISHING -->
+<div id="S1" class="screen" style="position:relative;">
+  <canvas id="CV"></canvas>
+
+  <div class="tilt-bar-wrap" id="tiltHUD">
+    <span class="tilt-lbl">📱TILT</span>
+    <div class="tilt-track"><div class="tilt-fill" id="tiltFill" style="width:0%"></div></div>
+    <span class="tilt-lbl" id="tiltVal">0°</span>
+  </div>
+
+  <div class="hud">
+    <div class="hs"><span class="hl">LEVEL</span><span class="hv" id="hLvl" style="color:var(--acc)">1</span></div>
+    <div class="hs"><span class="hl">SCORE</span><span class="hv" id="hScr" style="color:var(--acc2)">0</span></div>
+    <div class="timebox" id="hTim">60</div>
+    <div class="hs"><span class="hl">CASH</span><span class="hv" id="hMon" style="color:var(--grn)">$0</span></div>
+    <div class="vib-hud" id="vibHudToggle">
+      <span class="vib-hud-lbl" id="vibHudLbl">📳</span>
+      <button class="toggle on" id="vibToggleHud" style="width:32px;height:18px;"></button>
+    </div>
+  </div>
+
+  <div class="crow">
+    <!-- LEFT: Swipe-up cast column -->
+    <div class="castcol" id="castCol">
+      <span class="clbl" id="castColLbl">SWIPE<br>UP</span>
+      <div class="cast-track-wrap">
+        <div class="cast-track" id="castTrack">
+          <div class="cast-power-fill" id="castPowerFill" style="height:0%"></div>
+          <span class="swipe-arrow">▲</span>
+          <span class="swipe-arrow">▲</span>
+          <span class="swipe-arrow">▲</span>
+          <div class="swipe-ball" id="swipeBall">🎣</div>
+        </div>
+      </div>
+      <div class="cast-pct" id="castPct">—</div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="ccol">
+      <div class="buddy">
+        <div class="bav">🎣</div>
+        <div class="binn">
+          <div class="bnm">BUDDY SAYS</div>
+          <div class="bmsg" id="bmsg">Swipe UP the left bar to cast!</div>
+        </div>
+      </div>
+
+      <!-- Fish fight panel -->
+      <div class="fishpan" id="fishpan">
+        <div class="fnrow">
+          <span class="fn" id="fishN">—</span>
+          <span class="ftb" id="fishTB">T1</span>
+        </div>
+        <div class="br"><div class="bl">PROGRESS</div>
+          <div class="btr"><div class="bf" id="progBar" style="width:0%;background:linear-gradient(90deg,#2a6ae8,var(--acc2))"></div></div>
+        </div>
+        <div class="br"><div class="bl">LINE TENSION</div>
+          <div class="btr"><div class="bf" id="tenBar" style="width:30%;background:#40e080"></div></div>
+        </div>
+        <div class="br" style="margin-bottom:0"><div class="bl">FISH STAMINA</div>
+          <div class="btr"><div class="bf" id="stamBar" style="width:100%;background:var(--org)"></div></div>
+        </div>
+        <div style="margin-top:4px;font-family:var(--mono);font-size:9px;color:var(--acc2);display:none;" id="tiltHint">📱 Tilt toward you = PULL!</div>
+      </div>
+
+      <!-- Aimer panel -->
+      <div id="castAimer">
+        <div class="aimer-top-row">
+          <span class="aimer-label">🎯 STOP IN ZONE!</span>
+          <div class="miss-dots">
+            <div class="miss-dot" id="md0"></div>
+            <div class="miss-dot" id="md1"></div>
+            <div class="miss-dot" id="md2"></div>
+          </div>
+        </div>
+        <div class="aimer-track" id="aimerTrack">
+          <div class="aimer-zone" id="aimerZone"></div>
+          <div class="aimer-cursor" id="aimerCursor" style="left:0%"></div>
+        </div>
+        <div class="aimer-power-bar">
+          <div class="aimer-power-fill" id="aimerPowerFill" style="width:65%"></div>
+        </div>
+        <div class="aimer-hint" id="aimerHint">Tap anywhere to stop!</div>
+        <button class="tap-cast-btn" id="tapCastBtn">⬛ TAP TO STOP</button>
+      </div>
+
+      <!-- Cast idle panel -->
+      <div class="cpan" id="cpan">
+        <div class="swipe-demo">👆</div>
+        <div class="cpan-hint">Swipe UP the left bar<br>to power your cast!</div>
+      </div>
+
+      <div class="waitmsg" id="waitmsg" style="display:none">🌊 Waiting for a bite...</div>
+
+      <div class="catchfl" id="catchfl">
+        <div class="ctit">🎉 FISH ON!</div>
+        <div class="cfish" id="cflFish"></div>
+        <div class="cearn" id="cflEarn"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Reel -->
+    <div class="rcol" style="position:relative;">
+      <span class="clbl">REEL</span>
+      <div id="RW">
+        <div class="spk" id="k0"></div><div class="spk" id="k1"></div>
+        <div class="spk" id="k2"></div><div class="spk" id="k3"></div>
+        <div class="spk" id="k4"></div><div class="spk" id="k5"></div>
+        <div class="rhub"></div>
+      </div>
+      <div class="rlbl" id="rlbl">DRAG<br>TO REEL</div>
+      <div class="gmini" id="gmini">Cane Pole</div>
+      <div class="letout-indicator" id="letout">LINE OUT ↓</div>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div id="S2" class="screen">
+  <div class="shead">
+    <div><div class="stit">🏪 TACKLE SHOP</div><div class="ssub" id="shSub">Level 1 Angler</div></div>
+    <div class="mbadge" id="shMon">$0</div>
+  </div>
+  <div class="ssum">
+    <span class="slbl">SESSION:</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#a0c870" id="sScr">0 pts</span>
+    <span class="slbl">CAUGHT:</span>
+    <span style="font-family:var(--mono);font-size:10px;color:#a0c870" id="sCat">0 fish</span>
+  </div>
+  <div class="stabs">
+    <button class="stab active" data-tab="rods">🎣 Rods</button>
+    <button class="stab" data-tab="reels">⚙️ Reels</button>
+    <button class="stab" data-tab="lines">〰 Lines</button>
+    <button class="stab" data-tab="lures">🪝 Lures</button>
+    <button class="stab" data-tab="bait">🪱 Bait</button>
+    <button class="stab" data-tab="stats">📊 Stats</button>
+  </div>
+  <div class="sscroll" id="shCont"></div>
+  <div class="sfoot">
+    <button class="btnFA" id="goFishBtn">🎣 GO FISH — LEVEL UP!</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════ */
+const RODS=[
+  {name:'Cane Pole',        price:0,  tier:0,catchB:0, desc:'Starter rod.',                       stat:'Tier reach: 1'},
+  {name:'Fiberglass Rod',   price:40, tier:1,catchB:5, desc:'Good for ponds & streams.',          stat:'Tier reach: 2'},
+  {name:'Graphite Rod',     price:120,tier:2,catchB:12,desc:'Feels every nibble.',                stat:'Tier reach: 3'},
+  {name:'Carbon Pro',       price:320,tier:3,catchB:20,desc:'Tournament proven.',                 stat:'Tier reach: 4'},
+  {name:'Legend Rod',       price:900,tier:4,catchB:30,desc:'Pinnacle of rod tech.',              stat:'Tier reach: 5'},
+];
+const REELS=[
+  {name:'Spincast Reel', price:0,  reelB:0, desc:'Beginner.',      stat:'Speed: 1.0x'},
+  {name:'Spinning Reel', price:35, reelB:12,desc:'Smooth drag.',   stat:'Speed: 1.3x'},
+  {name:'Baitcaster',    price:100,reelB:25,desc:'Precise.',       stat:'Speed: 1.6x'},
+  {name:'Low-Profile BC',price:260,reelB:38,desc:'Silky smooth.',  stat:'Speed: 2.0x'},
+  {name:'MagForce Reel', price:700,reelB:55,desc:'Lightning.',     stat:'Speed: 2.6x'},
+];
+const LINES=[
+  {name:'Mono 6lb',         price:0,  brk:90, lkB:0,desc:'Stretchy.',         stat:'Breaks @ 90%'},
+  {name:'Mono 12lb',        price:18, brk:93, lkB:3,desc:'Stronger.',         stat:'Breaks @ 93%'},
+  {name:'Fluorocarbon 15lb',price:55, brk:96, lkB:8,desc:'Invisible.',        stat:'Breaks @ 96%'},
+  {name:'Braid 30lb',       price:140,brk:98, lkB:5,desc:'Zero stretch.',     stat:'Breaks @ 98%'},
+  {name:'Titanium 80lb',    price:380,brk:101,lkB:2,desc:'Unbreakable.',      stat:'Unbreakable'},
+];
+const LURES=[
+  {name:'Earthworm',    price:0,  lureB:0, tBias:0,desc:'Works everywhere.',stat:'Appeal: +0%'},
+  {name:'Spinner Bait', price:22, lureB:10,tBias:0,desc:'Flash & vibration.',stat:'Appeal: +10%'},
+  {name:'Crankbait',    price:60, lureB:20,tBias:1,desc:'Injured baitfish.', stat:'Appeal: +20%'},
+  {name:'Swimjig',      price:150,lureB:32,tBias:2,desc:'Deep water.',       stat:'Appeal: +32%'},
+  {name:'Mega Popper',  price:400,lureB:45,tBias:3,desc:'Surface explosion.',stat:'Appeal: +45%'},
+];
+const BAITS=[
+  {name:'Night Crawlers x5',price:8, lkB:8, ch:5,desc:'Juicy worms.',    stat:'+8% Luck'},
+  {name:'Corn Kernels x8',  price:12,lkB:12,ch:8,desc:'Carp love these.',stat:'+12% Luck'},
+  {name:'Live Shrimp x5',   price:25,lkB:22,ch:5,desc:'Saltwater star.', stat:'+22% Luck'},
+  {name:'Live Minnows x3',  price:40,lkB:35,ch:3,desc:'Predator bait.',  stat:'+35% Luck'},
+  {name:'Trophy Chum x1',   price:80,lkB:55,ch:1,desc:'Legend magnet.',  stat:'+55% Luck'},
+];
+const FTIERS={
+  1:{name:'Common',   col:'#7ecba1',pts:10},
+  2:{name:'Uncommon', col:'#5cb8e4',pts:25},
+  3:{name:'Rare',     col:'#9b79d9',pts:60},
+  4:{name:'Epic',     col:'#e8a84a',pts:150},
+  5:{name:'Legendary',col:'#e85252',pts:400},
+};
+const FISH=[
+  {t:1,name:'Bluegill',       e:'🐟',v:5,  w:'0.3–1lb',   ai:'passive'},
+  {t:1,name:'Yellow Perch',   e:'🐠',v:7,  w:'0.5–2lb',   ai:'passive'},
+  {t:1,name:'Sunfish',        e:'🐡',v:5,  w:'0.3–0.8lb', ai:'passive'},
+  {t:1,name:'Crappie',        e:'🐟',v:9,  w:'0.5–2lb',   ai:'passive'},
+  {t:1,name:'Bullhead',       e:'🐱',v:8,  w:'0.5–1.5lb', ai:'passive'},
+  {t:2,name:'Smallmouth Bass',e:'🐟',v:22, w:'2–4lb',     ai:'steady'},
+  {t:2,name:'Walleye',        e:'🐠',v:28, w:'3–6lb',     ai:'steady'},
+  {t:2,name:'Rainbow Trout',  e:'🐡',v:25, w:'2–5lb',     ai:'erratic'},
+  {t:2,name:'Common Carp',    e:'🐟',v:20, w:'5–10lb',    ai:'steady'},
+  {t:2,name:'Channel Catfish',e:'🐱',v:22, w:'3–7lb',     ai:'steady'},
+  {t:3,name:'Largemouth Bass',e:'🐟',v:55, w:'5–10lb',    ai:'aggressive'},
+  {t:3,name:'Atlantic Salmon',e:'🐠',v:65, w:'8–15lb',    ai:'runner'},
+  {t:3,name:'Northern Pike',  e:'🐟',v:58, w:'8–20lb',    ai:'strike'},
+  {t:3,name:'Muskellunge',    e:'🐡',v:70, w:'10–25lb',   ai:'deep_dive'},
+  {t:4,name:'Striped Bass',   e:'🐟',v:110,w:'20–40lb',   ai:'aggressive'},
+  {t:4,name:'White Sturgeon', e:'🐠',v:130,w:'40–100lb',  ai:'slow_heavy'},
+  {t:4,name:'Giant Trevally', e:'🐟',v:140,w:'40–100lb',  ai:'runner'},
+  {t:5,name:'Blue Marlin',    e:'🐟',v:320,w:'200–600lb', ai:'legendary'},
+  {t:5,name:'Bluefin Tuna',   e:'🐠',v:300,w:'200–400lb', ai:'legendary'},
+  {t:5,name:'Great White',    e:'🦈',v:420,w:'300–2000lb',ai:'legendary'},
+];
+const BUD={
+  swipe:   ['Swipe UP the left bar!','Pull that arm back and LAUNCH!','Power up and swipe UP!'],
+  aim:     ['Stop the dot in the GREEN!','Tap when it\'s in the zone!','Nail the green window!'],
+  miss:    ['Just outside! Try again.','Almost! More misses and it\'s gone.','One more miss...'],
+  castFail:['Lost it! Reel in and try again.','Fish spooked! New cast.','Missed the zone too many times!'],
+  cast:    ['Nice cast!','Perfect landing!','Right on the money!'],
+  nibble:  ['Something\'s biting!','Wait for it...','I see movement!'],
+  strike:  ['STRIKE! REEL IT IN!','FISH ON! SPIN THAT WHEEL!','GOT ONE! REEL REEL REEL!'],
+  reel:    ['Keep reeling!','Steady now...','Almost there — keep going!'],
+  tooFast: ['Whoa! Slow down!','Too fast — ease up!','Easy does it!'],
+  letOut:  ['Let some line out!','Release the wheel!','Give it slack!'],
+  lost:    ['Aw... it got away.','That one slipped off.','Next one\'s yours!'],
+  caught:  ['YES! Beautiful!','WOOO! Keeper!','Nailed it!'],
+  idle:    ['Swipe UP to cast!','Water looks good today!','Let\'s get a big one!'],
+};
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let G={};
+let tiltBaseline=null;
+let VIB_ON=true; // vibration toggle
+
+function initG(){
+  if(G.fInt){clearInterval(G.fInt);G.fInt=null;}
+  if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
+  if(G.bTO){clearTimeout(G.bTO);G.bTO=null;}
+  if(G.hTO){clearTimeout(G.hTO);G.hTO=null;}
+  if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
+  if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
+  G={
+    lv:1,sc:0,mn:0,tf:0,sf:0,ss:0,st:60,
+    ri:0,rli:0,li:0,lui:0,bc:0,lk:0,
+    ledger:[],clog:[],
+    ph:'idle',
+    fish:null,prog:0,ten:30,stam:100,
+    cmd:null,cmdTimer:0,cmdInt:6000,
+    bx:0,by:0,rip:[],nib:false,canim:false,
+    wAng:0,wDrag:null,rdelta:0,
+    castPct:65,
+    tiltAngle:0,tiltPull:0,
+    wheelDown:false,
+    fInt:null,tInt:null,aid:null,
+    bTO:null,hTO:null,
+    stab:'rods',
+    // aimer
+    aimerRAF:null,
+    aimerPos:0,
+    aimerDir:1,
+    aimerSpeed:0.022, // always fast
+    aimerActive:false,
+    aimerZoneL:0,
+    aimerZoneR:0,
+    misses:0,
+    // swipe cast
+    swipeStartY:null,
+    swipeStartX:null,
+    swipeActive:false,
+  };
+}
+
+/* ═══════════════════════════════════════════════
+   CANVAS
+═══════════════════════════════════════════════ */
+const CV=document.getElementById('CV');
+const CX=CV.getContext('2d');
+let DPR=Math.min(window.devicePixelRatio||1,2);
+function resizeCV(){
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  const w=window.innerWidth,h=Math.round(window.innerHeight*0.42);
+  CV.width=w*DPR;CV.height=h*DPR;
+  CV.style.width=w+'px';CV.style.height=h+'px';
+  CX.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener('resize',resizeCV);
+resizeCV();
+
+/* ═══════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════ */
+function rnd(a,b){return a+Math.random()*(b-a);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function cl(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+function lr(a,b,t){return a+(b-a)*t;}
+
+function vib(p){
+  if(!VIB_ON)return;
+  try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}
+}
+
+function buddy(cat,isCmd){
+  const arr=BUD[cat]||BUD.idle;
+  const msg=pick(arr);
+  const el=document.getElementById('bmsg');
+  el.textContent=msg;
+  el.className='bmsg'+(isCmd?' cmd':'');
+}
+
+function updHUD(){
+  document.getElementById('hLvl').textContent=G.lv;
+  document.getElementById('hScr').textContent=G.sc;
+  document.getElementById('hMon').textContent='$'+G.mn;
+  const t=G.st;
+  const el=document.getElementById('hTim');
+  el.textContent=t<10?'0'+t:t;
+  el.style.color=t<=10?'var(--red)':'var(--acc2)';
+}
+
+function showScr(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showPan(id){
+  ['cpan','waitmsg','fishpan','castAimer','catchfl'].forEach(p=>{
+    const el=document.getElementById(p);
+    if(!el)return;
+    if(p==='fishpan'){el.classList.remove('show');return;}
+    if(p==='catchfl'){el.classList.remove('show');el.style.display='none';return;}
+    if(p==='castAimer'){el.classList.remove('show');el.style.display='none';return;}
+    el.style.display='none';
+  });
+  if(!id)return;
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(id==='fishpan')el.classList.add('show');
+  else if(id==='catchfl'){el.style.display='flex';el.classList.add('show');}
+  else if(id==='castAimer'){el.style.display='flex';el.classList.add('show');}
+  else el.style.display='flex';
+}
+
+function scoreFlash(txt,col){
+  const el=document.createElement('div');
+  el.className='score-flash';
+  el.style.color=col||'var(--acc)';
+  el.textContent=txt;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1200);
+}
+
+function updVibUI(){
+  const on=VIB_ON;
+  document.getElementById('vibToggleHud').className='toggle'+(on?' on':'');
+  document.getElementById('vibToggleModal').className='toggle'+(on?' on':'');
+  document.getElementById('vibHudLbl').textContent=on?'📳':'🔕';
+}
+
+/* ═══════════════════════════════════════════════
+   VIBRATION PERMISSION
+═══════════════════════════════════════════════ */
+function showVibModal(){
+  document.getElementById('vibModal').classList.add('show');
+}
+function hideVibModal(){
+  document.getElementById('vibModal').classList.remove('show');
+}
+
+document.getElementById('vibYes').addEventListener('click',()=>{
+  VIB_ON=true;updVibUI();
+  vib([50,30,50]); // test buzz
+  hideVibModal();
+});
+document.getElementById('vibNo').addEventListener('click',()=>{
+  VIB_ON=false;updVibUI();
+  hideVibModal();
+});
+document.getElementById('vibToggleModal').addEventListener('click',function(){
+  VIB_ON=!VIB_ON;updVibUI();
+});
+document.getElementById('vibToggleHud').addEventListener('click',function(){
+  VIB_ON=!VIB_ON;updVibUI();
+  if(VIB_ON)vib([40]);
+});
+
+/* ═══════════════════════════════════════════════
+   GYROSCOPE
+═══════════════════════════════════════════════ */
+function initGyro(){
+  if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
+    DeviceMotionEvent.requestPermission().then(s=>{if(s==='granted')listenGyro();}).catch(()=>{});
+  } else {listenGyro();}
+}
+function listenGyro(){
+  window.addEventListener('deviceorientation',e=>{
+    if(e.beta===null)return;
+    const b=e.beta;
+    if(tiltBaseline===null)tiltBaseline=b;
+    const delta=b-tiltBaseline;
+    G.tiltAngle=cl(delta,0,60);
+    G.tiltPull=cl(G.tiltAngle/60,0,1);
+    const tiltEl=document.getElementById('tiltHUD');
+    if(G.ph==='reeling'){
+      tiltEl.classList.add('show');
+      document.getElementById('tiltFill').style.width=Math.round(G.tiltPull*100)+'%';
+      document.getElementById('tiltVal').textContent=Math.round(G.tiltAngle)+'°';
+    } else {
+      tiltEl.classList.remove('show');
+    }
+  },true);
+}
+
+/* ═══════════════════════════════════════════════
+   SWIPE-UP CAST — on the left cast column
+═══════════════════════════════════════════════ */
+const castTrack=document.getElementById('castTrack');
+const castCol=document.getElementById('castCol');
+
+castCol.addEventListener('touchstart',e=>{
+  if(G.ph!=='idle')return;
+  e.preventDefault();
+  const t=e.touches[0];
+  G.swipeStartY=t.clientY;
+  G.swipeStartX=t.clientX;
+  G.swipeActive=true;
+  G.castPct=0;
+  document.getElementById('swipeBall').className='swipe-ball';
+},{passive:false});
+
+castCol.addEventListener('touchmove',e=>{
+  if(!G.swipeActive||G.ph!=='idle')return;
+  e.preventDefault();
+  const t=e.touches[0];
+  const dy=G.swipeStartY-t.clientY; // positive = upward swipe
+  const pct=cl(Math.round((dy/120)*100),0,100);
+  G.castPct=pct;
+  document.getElementById('castPowerFill').style.height=pct+'%';
+  document.getElementById('castPct').textContent=pct+'%';
+  document.getElementById('swipeBall').className='swipe-ball'+(pct>30?' charging':'');
+},{passive:false});
+
+castCol.addEventListener('touchend',e=>{
+  if(!G.swipeActive||G.ph!=='idle')return;
+  e.preventDefault();
+  G.swipeActive=false;
+  const pct=G.castPct;
+  // Reset visual
+  document.getElementById('castPowerFill').style.height='0%';
+  document.getElementById('swipeBall').className='swipe-ball';
+  document.getElementById('castPct').textContent='—';
+  if(pct>=15){
+    // Launch the aimer
+    launchAimer(pct);
+  } else {
+    buddy('swipe',false);
+  }
+},{passive:false});
+
+// Desktop mouse fallback
+let mouseSwipeY=null;
+castCol.addEventListener('mousedown',e=>{
+  if(G.ph!=='idle')return;
+  mouseSwipeY=e.clientY;G.swipeActive=true;G.castPct=0;
+});
+document.addEventListener('mousemove',e=>{
+  if(!G.swipeActive||G.ph!=='idle')return;
+  const dy=mouseSwipeY-e.clientY;
+  const pct=cl(Math.round((dy/120)*100),0,100);
+  G.castPct=pct;
+  document.getElementById('castPowerFill').style.height=pct+'%';
+  document.getElementById('castPct').textContent=pct+'%';
+});
+document.addEventListener('mouseup',e=>{
+  if(!G.swipeActive||G.ph!=='idle')return;
+  G.swipeActive=false;mouseSwipeY=null;
+  const pct=G.castPct;
+  document.getElementById('castPowerFill').style.height='0%';
+  document.getElementById('castPct').textContent='—';
+  if(pct>=15)launchAimer(pct);
+  else buddy('swipe',false);
+});
+
+/* ═══════════════════════════════════════════════
+   CAST AIMER — always fast, zone shrinks per level
+═══════════════════════════════════════════════ */
+function launchAimer(power){
+  if(G.ph!=='idle')return;
+  G.ph='aiming';
+  G.misses=0;
+  updateMissDots();
+
+  // Zone size: big on Lv1, shrinks each level (min 10%)
+  const zoneSize=cl(0.42-(G.lv-1)*0.06,0.10,0.42);
+  const zoneL=rnd(0.04,0.96-zoneSize);
+  G.aimerZoneL=zoneL;
+  G.aimerZoneR=zoneL+zoneSize;
+  G.aimerPos=0;
+  G.aimerDir=1;
+  G.aimerSpeed=0.022; // always fast, same speed
+  G.aimerActive=true;
+
+  document.getElementById('aimerZone').style.left=(zoneL*100)+'%';
+  document.getElementById('aimerZone').style.width=((G.aimerZoneR-zoneL)*100)+'%';
+  document.getElementById('aimerPowerFill').style.width=power+'%';
+
+  showPan('castAimer');
+  buddy('aim',false);
+  vib([20]);
+
+  function tick(){
+    if(!G.aimerActive)return;
+    G.aimerPos+=G.aimerSpeed*G.aimerDir;
+    if(G.aimerPos>=1){G.aimerPos=1;G.aimerDir=-1;}
+    if(G.aimerPos<=0){G.aimerPos=0;G.aimerDir=1;}
+    document.getElementById('aimerCursor').style.left=(G.aimerPos*100)+'%';
+    G.aimerRAF=requestAnimationFrame(tick);
+  }
+  if(G.aimerRAF)cancelAnimationFrame(G.aimerRAF);
+  G.aimerRAF=requestAnimationFrame(tick);
+}
+
+function stopAimer(){
+  G.aimerActive=false;
+  if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
+}
+
+function onTapCast(){
+  if(G.ph!=='aiming')return;
+  const pos=G.aimerPos;
+  const inZone=pos>=G.aimerZoneL&&pos<=G.aimerZoneR;
+
+  if(inZone){
+    stopAimer();
+    vib([30,20,60]);
+    // Perfect = center of zone
+    const center=(G.aimerZoneL+G.aimerZoneR)/2;
+    const dist=Math.abs(pos-center)/((G.aimerZoneR-G.aimerZoneL)/2);
+    if(dist<0.25){
+      scoreFlash('+PERFECT CAST!',`var(--grn)`);
+      G.sc+=5;
+    } else {
+      scoreFlash('GOOD CAST!','var(--acc2)');
+    }
+    updHUD();
+    doCast(G.castPct,pos);
+  } else {
+    // Miss
+    G.misses++;
+    updateMissDots();
+    vib([60]);
+    // Deduct points on miss — can go negative
+    G.sc=Math.max(-999,G.sc-10);
+    updHUD();
+    scoreFlash('-10 MISSED!','var(--red)');
+
+    if(G.misses>=3){
+      // Cast fails
+      stopAimer();
+      G.ph='idle';
+      showPan('cpan');
+      buddy('castFail',true);
+      vib([100,40,100]);
+    } else {
+      buddy('miss',true);
+      // Speed up slightly after miss
+      G.aimerSpeed=cl(G.aimerSpeed+0.004,0.022,0.045);
+    }
+  }
+}
+
+function updateMissDots(){
+  for(let i=0;i<3;i++){
+    const d=document.getElementById('md'+i);
+    if(d)d.className='miss-dot'+(i<G.misses?' used':'');
+  }
+}
+
+function doCast(power,aimPos){
+  G.ph='casting';
+  const W=CV.width/DPR;
+  G.bx=W*0.22+aimPos*(W*0.65);
+  G.by=(CV.height/DPR)*0.52+4;
+  if(G.bc>0){G.bc--;if(G.bc===0)G.lk=0;}
+
+  showPan(null);
+  buddy('cast',false);
+
+  setTimeout(()=>{
+    G.ph='bobbing';
+    G.rip.push({x:G.bx,y:G.by,b:Date.now(),s:0.7+power/200});
+    showPan('waitmsg');
+
+    const rod=RODS[G.ri],lure=LURES[G.lui];
+    const bon=(rod.tier*8+lure.lureB+G.lk)/100;
+    const delay=lr(7000,2000,bon);
+    G.bTO=setTimeout(()=>{
+      if(G.ph!=='bobbing')return;
+      G.ph='nibble';G.nib=true;
+      buddy('nibble',false);
+      vib([60,40,60,40,60]); // 3 pulse bite vibration
+      G.hTO=setTimeout(()=>{
+        if(G.ph!=='nibble')return;
+        G.nib=false;
+        const fish=pickFish();
+        G.fish=fish;
+        // Round 1: tension starts very low
+        G.prog=0;
+        G.ten=G.lv===1?5:20;
+        G.stam=100;
+        G.ph='hooked';
+        buddy('strike',true);
+        vib([80,40,120,40,80]); // strong strike buzz
+        updFishPan();showPan('fishpan');
+        document.getElementById('tiltHint').style.display='block';
+        startFight();
+      },1000+Math.random()*1500);
+    },delay*(0.7+Math.random()*0.6));
+  },600);
+}
+
+/* ═══════════════════════════════════════════════
+   FISH SELECTION
+═══════════════════════════════════════════════ */
+function pickFish(){
+  const rod=RODS[G.ri],lure=LURES[G.lui];
+  const tb=rod.tier+lure.tBias;
+  let w=[72,20,6,1.5,0.5];
+  for(let i=0;i<tb&&i<4;i++){
+    w[0]=Math.max(8,w[0]-10);w[i+1]=(w[i+1]||0)+8;
+    if(i+2<5)w[i+2]=(w[i+2]||0)+2;
+  }
+  const lf=G.lk/100;
+  w[0]=Math.max(5,w[0]-lf*18);w[3]=Math.min(22,w[3]+lf*7);w[4]=Math.min(18,w[4]+lf*11);
+  const tot=w.reduce((a,b)=>a+b,0);
+  let r=Math.random()*tot,tier=5;
+  for(let i=0;i<5;i++){r-=w[i];if(r<=0){tier=i+1;break;}}
+  return Object.assign({},pick(FISH.filter(f=>f.t===tier)));
+}
+
+/* ═══════════════════════════════════════════════
+   DRAWING — improved fisherman & pier
+═══════════════════════════════════════════════ */
+function draw(){
+  const W=CV.width/DPR,H=CV.height/DPR;
+  CX.clearRect(0,0,W,H);
+  const WY=H*0.52,T=Date.now()/1000;
+
+  // Sky
+  const sk=CX.createLinearGradient(0,0,0,WY);
+  sk.addColorStop(0,'#020810');sk.addColorStop(.5,'#0d2240');sk.addColorStop(1,'#1a4060');
+  CX.fillStyle=sk;CX.fillRect(0,0,W,WY);
+
+  // Stars — seeded, no random per frame
+  for(let i=0;i<35;i++){
+    const sx=(i*139+17)%W,sy=(i*89+11)%(WY*.85);
+    CX.globalAlpha=0.3+0.4*Math.abs(Math.sin(T*.3+i*.7));
+    CX.fillStyle='#fff';
+    CX.beginPath();CX.arc(sx,sy,i%4===0?1.5:1,0,6.28);CX.fill();
+  }
+  CX.globalAlpha=1;
+
+  // Moon
+  const MX=W*.82,MY=H*.09;
+  CX.fillStyle='#ffe890';CX.shadowColor='#ffe890';CX.shadowBlur=22;
+  CX.beginPath();CX.arc(MX,MY,17,0,6.28);CX.fill();CX.shadowBlur=0;
+  const mg=CX.createRadialGradient(MX,MY,17,MX,MY,50);
+  mg.addColorStop(0,'rgba(255,232,144,.12)');mg.addColorStop(1,'transparent');
+  CX.fillStyle=mg;CX.beginPath();CX.arc(MX,MY,50,0,6.28);CX.fill();
+
+  // Water
+  const wg=CX.createLinearGradient(0,WY,0,H);
+  wg.addColorStop(0,'#0d2d4a');wg.addColorStop(.4,'#081828');wg.addColorStop(1,'#030810');
+  CX.fillStyle=wg;CX.fillRect(0,WY,W,H-WY);
+  CX.strokeStyle='rgba(60,160,240,.06)';CX.lineWidth=1;
+  for(let i=0;i<5;i++){
+    const wy=WY+14+i*18+Math.sin(T+i*1.3)*2.5;
+    CX.beginPath();CX.moveTo(0,wy);CX.lineTo(W,wy);CX.stroke();
+  }
+  // Moon reflection
+  const mref=CX.createLinearGradient(0,WY,0,H);
+  mref.addColorStop(0,'rgba(255,232,144,.09)');mref.addColorStop(1,'transparent');
+  CX.fillStyle=mref;CX.fillRect(MX-28,WY,56,H-WY);
+
+  // === PIER ===
+  CX.fillStyle='#3d2814';
+  CX.fillRect(0,WY-4,W*.3,9);
+  CX.strokeStyle='#2a1a0a';CX.lineWidth=1;
+  for(let x=8;x<W*.3;x+=11){
+    CX.beginPath();CX.moveTo(x,WY-4);CX.lineTo(x,WY+5);CX.stroke();
+  }
+  CX.fillStyle='#2a1608';
+  [W*.06,W*.13,W*.20,W*.28].forEach(px=>{CX.fillRect(px-3,WY+5,6,H-WY-5);});
+  CX.strokeStyle='rgba(255,200,100,.15)';CX.lineWidth=2;
+  CX.beginPath();CX.moveTo(0,WY-4);CX.lineTo(W*.3,WY-4);CX.stroke();
+  // Railing
+  CX.strokeStyle='#5a3a1a';CX.lineWidth=2;
+  CX.beginPath();CX.moveTo(W*.01,WY-12);CX.lineTo(W*.28,WY-12);CX.stroke();
+  [W*.04,W*.09,W*.14,W*.19,W*.24].forEach(rx=>{
+    CX.beginPath();CX.moveTo(rx,WY-12);CX.lineTo(rx,WY-4);CX.stroke();
+  });
+
+  // === FISHERMAN ===
+  const PX=W*.14,PY=WY-6;
+  const bob=Math.sin(T*.9)*1.2;
+
+  // Stool
+  CX.fillStyle='#3a2208';CX.fillRect(PX-8,PY+14+bob,16,8);
+  CX.strokeStyle='#5a3a10';CX.lineWidth=1;CX.strokeRect(PX-8,PY+14+bob,16,8);
+
+  // Legs
+  CX.strokeStyle='#1a0e04';CX.lineWidth=4;CX.lineCap='round';
+  CX.beginPath();CX.moveTo(PX-4,PY+14+bob);CX.lineTo(PX-6,PY+24+bob);CX.stroke();
+  CX.beginPath();CX.moveTo(PX+4,PY+14+bob);CX.lineTo(PX+6,PY+24+bob);CX.stroke();
+
+  // Body (jacket)
+  CX.fillStyle='#1a3a5a';
+  CX.beginPath();CX.ellipse(PX,PY+7+bob,8,11,0,0,6.28);CX.fill();
+  // Jacket highlight
+  CX.fillStyle='rgba(40,100,180,.25)';
+  CX.beginPath();CX.ellipse(PX-2,PY+4+bob,4,7,-.2,0,6.28);CX.fill();
+
+  // Left arm resting
+  CX.strokeStyle='#1a3a5a';CX.lineWidth=5;
+  CX.beginPath();CX.moveTo(PX-6,PY+6+bob);CX.lineTo(PX-10,PY+13+bob);CX.stroke();
+
+  // Right arm holding rod (animates with tilt)
+  const armSway=Math.sin(T*.5)*1.5;
+  CX.beginPath();CX.moveTo(PX+6,PY+4+bob);CX.lineTo(PX+14+armSway,PY-2+bob);CX.stroke();
+
+  // Head
+  CX.fillStyle='#c8956a';
+  CX.beginPath();CX.arc(PX,PY-3+bob,7,0,6.28);CX.fill();
+
+  // Hat
+  CX.fillStyle='#4a3010';
+  CX.beginPath();CX.ellipse(PX,PY-9+bob,9,3,0,0,6.28);CX.fill();
+  CX.fillRect(PX-5,PY-18+bob,10,10);
+  CX.fillStyle='#6a4818';
+  CX.beginPath();CX.ellipse(PX,PY-18+bob,5,2,0,0,6.28);CX.fill();
+  // Hat band
+  CX.fillStyle='#e08040';CX.fillRect(PX-5,PY-12+bob,10,2);
+  // Eyes
+  CX.fillStyle='rgba(0,0,0,.65)';
+  CX.beginPath();CX.arc(PX-2,PY-3+bob,1,0,6.28);CX.fill();
+  CX.beginPath();CX.arc(PX+2,PY-3+bob,1,0,6.28);CX.fill();
+
+  // Rod
+  const tilt=G.tiltPull;
+  const rodBX=PX+14+armSway,rodBY=PY-2+bob;
+  const rodTX=rodBX+22+tilt*6,rodTY=rodBY-30-tilt*16;
+  CX.strokeStyle='#8B6914';CX.lineWidth=3;CX.lineCap='round';
+  CX.beginPath();CX.moveTo(rodBX,rodBY);CX.lineTo(rodTX,rodTY);CX.stroke();
+  CX.strokeStyle='#c0a030';CX.lineWidth=1.5;
+  CX.beginPath();CX.arc(rodTX,rodTY,2,0,6.28);CX.stroke();
+  if(tilt>0.2){
+    CX.strokeStyle=`rgba(240,192,64,${tilt*.55})`;CX.lineWidth=5;
+    CX.beginPath();CX.moveTo(rodBX,rodBY);CX.lineTo(rodTX,rodTY);CX.stroke();
+  }
+
+  // Line & Bobber
+  const ph=G.ph;
+  if(ph!=='idle'&&ph!=='casting'&&ph!=='aiming'){
+    const BX=G.bx,BY=G.by;
+    const midX=(rodTX+BX)/2;
+    const sag=Math.max(2,(100-G.ten)*.15);
+    const midY=Math.min(WY-1,(rodTY+BY)/2+sag);
+    CX.strokeStyle=ph==='reeling'?'rgba(255,220,40,.9)':'rgba(180,210,255,.75)';
+    CX.lineWidth=1.5;CX.setLineDash(ph==='reeling'?[4,3]:[]);
+    CX.beginPath();CX.moveTo(rodTX,rodTY);CX.quadraticCurveTo(midX,midY,BX,BY-5);CX.stroke();
+    CX.setLineDash([]);
+    // Bobber
+    const bo=G.nib?Math.sin(T*13)*6:Math.sin(T*.85)*1.8;
+    CX.strokeStyle='#777';CX.lineWidth=1.5;
+    CX.beginPath();CX.moveTo(BX,BY-8+bo);CX.lineTo(BX,BY+1+bo);CX.stroke();
+    CX.fillStyle='#e84040';CX.beginPath();CX.arc(BX,BY-4+bo,6,Math.PI,0);CX.fill();
+    CX.fillStyle='#f2f2f2';CX.beginPath();CX.arc(BX,BY-4+bo,6,0,Math.PI);CX.fill();
+    CX.strokeStyle='rgba(0,0,0,.4)';CX.lineWidth=1;CX.beginPath();CX.arc(BX,BY-4+bo,6,0,6.28);CX.stroke();
+    CX.fillStyle='rgba(255,255,255,.5)';CX.beginPath();CX.arc(BX-2,BY-7+bo,2,0,6.28);CX.fill();
+  }
+
+  // Ripples
+  const now=Date.now();
+  G.rip=G.rip.filter(r=>now-r.b<2800);
+  for(const r of G.rip){
+    const age=(now-r.b)/1000;
+    for(let ring=1;ring<=3;ring++){
+      const alpha=Math.max(0,.45-age*.18)/ring;
+      const rr=(age*42+ring*14)*r.s;
+      CX.strokeStyle=`rgba(80,180,255,${alpha})`;CX.lineWidth=1.5;
+      CX.beginPath();CX.ellipse(r.x,r.y,rr,rr*.38,0,0,6.28);CX.stroke();
+    }
+  }
+
+  // Catch splash
+  if(G.canim){
+    for(let i=0;i<12;i++){
+      const a=(i/12)*6.28,d=24+Math.random()*20;
+      CX.globalAlpha=.5+Math.random()*.4;CX.fillStyle='rgba(80,180,255,.7)';
+      CX.beginPath();CX.arc(G.bx+Math.cos(a)*d,G.by+Math.sin(a)*d*.4,2.5,0,6.28);CX.fill();
+    }
+    CX.globalAlpha=1;
+  }
+
+  G.aid=requestAnimationFrame(draw);
+}
+
+/* ═══════════════════════════════════════════════
+   FIGHT — Level 1 is very easy
+═══════════════════════════════════════════════ */
+function updFishPan(){
+  const f=G.fish;if(!f)return;
+  const ti=FTIERS[f.t];
+  const fn=document.getElementById('fishN');
+  fn.textContent=f.e+' '+f.name;fn.style.color=ti.col;
+  const tb=document.getElementById('fishTB');
+  tb.textContent='T'+f.t+' '+ti.name.toUpperCase();
+  tb.style.background=ti.col+'20';tb.style.color=ti.col;tb.style.border='1px solid '+ti.col+'50';
+}
+
+function startFight(){
+  G.ph='reeling';
+  tiltBaseline=null;
+  document.getElementById('RW').classList.add('active');
+  const cmds=['reel','reel','reel','tooFast','letOut']; // weight toward helpful cmds
+  G.cmdInt=6000+Math.random()*4000;G.cmdTimer=0;
+  function issueCmd(){G.cmd=pick(cmds);buddy(G.cmd,true);G.cmdInt=5500+Math.random()*4000;G.cmdTimer=0;}
+  issueCmd();
+  let last=Date.now();
+  clearInterval(G.fInt);
+
+  // Difficulty multiplier — Level 1 is near zero fish resistance
+  // scales up each level: lv1=0.05, lv2=0.25, lv3=0.55, lv4=0.85, lv5+=1.2
+  const diffScale=[0.05,0.25,0.55,0.85,1.2,1.5];
+  const diff=diffScale[Math.min(G.lv-1,diffScale.length-1)];
+  // Line break threshold raised on low levels
+  const lineBreakThresh=G.lv<=2?99:LINES[G.li].brk;
+
+  G.fInt=setInterval(()=>{
+    if(G.ph!=='reeling'){clearInterval(G.fInt);G.fInt=null;return;}
+    const now=Date.now(),dt=(now-last)/1000;last=now;
+    G.cmdTimer+=dt*1000;
+    if(G.cmdTimer>=G.cmdInt)issueCmd();
+
+    const fish=G.fish,reel=REELS[G.rli];
+    const rd=G.rdelta,tp=G.tiltPull;
+    const Ts=now/1000;
+
+    // Fish force — scaled by difficulty AND stamina
+    let ff=0;
+    switch(fish.ai){
+      case 'passive':  ff=0.08;break;
+      case 'steady':   ff=0.4;break;
+      case 'erratic':  ff=0.3+Math.sin(Ts*3)*.5;break;
+      case 'aggressive':ff=0.7+Math.sin(Ts*5)*.4;break;
+      case 'runner':   ff=Math.random()<0.05?3:0.2;break;
+      case 'deep_dive':ff=0.5+(tp<.2?.8:0);break;
+      case 'slow_heavy':ff=0.7;break;
+      case 'strike':   ff=Math.random()<0.03?4:0.1;break;
+      case 'legendary':ff=0.9+Math.sin(Ts*2)*.9;break;
+    }
+    ff*=diff*(G.stam/100);
+
+    const wheelHeld=G.wheelDown;
+
+    // Let line out — release wheel drops tension fast (generous)
+    if(!wheelHeld&&G.ten>15){
+      G.ten=Math.max(0,G.ten-6*dt*60);
+      document.getElementById('letout').classList.add('show');
+    } else {
+      document.getElementById('letout').classList.remove('show');
+    }
+
+    // Reel speed multiplier
+    const rmult=1+reel.reelB/100;
+    const pr=rd*rmult;
+
+    // Progress from reeling + tilt
+    const tiltContrib=tp*1.5;
+    let progD=0;
+    if(wheelHeld&&rd>0){progD=pr*.5-ff*.08+tiltContrib*.2;}
+    else{progD=tiltContrib*.15-ff*.04;}
+
+    // Tension — much more forgiving on level 1-2
+    // tension only rises on VERY fast spinning
+    const tenRiseFactor=G.lv<=2?0.3:1.0;
+    let newTen=G.ten+(rd>0?rd*1.2*tenRiseFactor:-1.5)-ff*1.5+tp*(-2.5);
+    newTen=cl(newTen,0,100);G.ten=newTen;
+
+    // Vibrate in danger zone (tension > 75)
+    if(newTen>75&&Math.random()<.08)vib([25]);
+
+    // Break line only at extreme tension and above threshold
+    if(newTen>=lineBreakThresh){endFight(false);return;}
+
+    // Stamina
+    G.stam=Math.max(0,G.stam-dt*ff*.4);
+    G.prog=cl(G.prog+progD,0,100);
+    if(G.prog>=100){endFight(true);return;}
+
+    // Update bars
+    document.getElementById('progBar').style.width=G.prog+'%';
+    const tc=G.ten>82?'#e84040':G.ten>65?'#e08040':'#40e080';
+    document.getElementById('tenBar').style.width=G.ten+'%';
+    document.getElementById('tenBar').style.background=tc;
+    document.getElementById('stamBar').style.width=G.stam+'%';
+    G.rdelta=0;
+  },80);
+}
+
+function endFight(win){
+  clearInterval(G.fInt);G.fInt=null;
+  G.cmd=null;
+  document.getElementById('RW').classList.remove('active','release');
+  document.getElementById('letout').classList.remove('show');
+  document.getElementById('tiltHUD').classList.remove('show');
+  document.getElementById('tiltHint').style.display='none';
+  if(win)landFish(G.fish);
+  else{
+    buddy('lost',false);vib([200,60,100]);
+    G.canim=false;G.fish=null;G.ph='idle';
+    document.getElementById('fishpan').classList.remove('show');
+    showPan('cpan');
+  }
+}
+
+function landFish(fish){
+  G.canim=true;G.ph='caught';
+  buddy('caught',false);
+  vib([60,30,60,30,200,50,100]); // satisfying catch buzz pattern
+  const rod=RODS[G.ri];
+  const mult=1+rod.catchB/100;
+  const em=Math.round(fish.v*mult);
+  const ep=Math.round(FTIERS[fish.t].pts*mult);
+  G.mn+=em;G.sc+=ep;G.tf++;G.sf++;G.ss+=ep;
+  G.clog.unshift({fish,money:em,points:ep});
+  if(G.clog.length>12)G.clog.pop();
+  G.ledger.unshift({type:'earn',amount:em,desc:fish.name});
+  document.getElementById('cflFish').textContent=fish.e+' '+fish.name+' · '+fish.w;
+  document.getElementById('cflFish').style.color=FTIERS[fish.t].col;
+  document.getElementById('cflEarn').textContent='+$'+em+' | +'+ep+' pts';
+  document.getElementById('fishpan').classList.remove('show');
+  showPan('catchfl');
+  updHUD();
+  scoreFlash('+$'+em,'var(--grn)');
+  setTimeout(()=>{
+    G.canim=false;G.fish=null;G.ph='idle';
+    showPan('cpan');
+  },3000);
+}
+
+/* ═══════════════════════════════════════════════
+   REEL WHEEL
+═══════════════════════════════════════════════ */
+const RW=document.getElementById('RW');
+RW.addEventListener('touchstart',wStart,{passive:false});
+RW.addEventListener('mousedown',wStart);
+function wStart(e){
+  e.preventDefault();G.wheelDown=true;
+  RW.classList.add('active');RW.classList.remove('release');
+  const rect=RW.getBoundingClientRect();
+  const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+  const clx=e.touches?e.touches[0].clientX:e.clientX;
+  const cly=e.touches?e.touches[0].clientY:e.clientY;
+  G.wDrag={cx,cy,last:Math.atan2(cly-cy,clx-cx)*57.3};
+  document.addEventListener('touchmove',wMove,{passive:false});
+  document.addEventListener('touchend',wEnd,{passive:false});
+  document.addEventListener('mousemove',wMove);
+  document.addEventListener('mouseup',wEnd);
+}
+function wMove(e){
+  if(!G.wDrag)return;e.preventDefault();
+  const {cx,cy,last}=G.wDrag;
+  const clx=e.touches?e.touches[0].clientX:e.clientX;
+  const cly=e.touches?e.touches[0].clientY:e.clientY;
+  const na=Math.atan2(cly-cy,clx-cx)*57.3;
+  let d=na-last;
+  if(d>180)d-=360;if(d<-180)d+=360;
+  G.wDrag.last=na;G.wAng+=d;
+  for(let i=0;i<6;i++){
+    const el=document.getElementById('k'+i);
+    if(el)el.style.transform=`translateX(-50%) rotate(${i*60+G.wAng}deg)`;
+  }
+  if(G.ph==='reeling'&&d>0){G.rdelta+=d*.12;if(Math.abs(d)>2)vib([4]);}
+}
+function wEnd(e){
+  if(e&&e.cancelable)e.preventDefault();
+  G.wheelDown=false;G.wDrag=null;
+  if(G.ph==='reeling'){RW.classList.remove('active');RW.classList.add('release');setTimeout(()=>RW.classList.remove('release'),600);}
+  document.removeEventListener('touchmove',wMove);
+  document.removeEventListener('touchend',wEnd);
+  document.removeEventListener('mousemove',wMove);
+  document.removeEventListener('mouseup',wEnd);
+}
+
+/* ═══════════════════════════════════════════════
+   TIMER
+═══════════════════════════════════════════════ */
+function startTimer(){
+  clearInterval(G.tInt);
+  G.tInt=setInterval(()=>{
+    G.st--;updHUD();
+    if(G.st<=0){clearInterval(G.tInt);G.tInt=null;endSess();}
+  },1000);
+}
+function endSess(){
+  clearInterval(G.fInt);G.fInt=null;
+  clearTimeout(G.bTO);clearTimeout(G.hTO);
+  stopAimer();
+  G.ph='idle';G.fish=null;G.nib=false;G.canim=false;
+  document.getElementById('RW').classList.remove('active','release');
+  document.getElementById('tiltHUD').classList.remove('show');
+  setTimeout(()=>openShop(),700);
+}
+
+/* ═══════════════════════════════════════════════
+   SHOP
+═══════════════════════════════════════════════ */
+function openShop(){
+  document.getElementById('shSub').textContent='Level '+G.lv+' Angler · Score: '+G.sc;
+  document.getElementById('shMon').textContent='$'+G.mn;
+  document.getElementById('sScr').textContent=G.ss+' pts';
+  document.getElementById('sCat').textContent=G.sf+' fish';
+  shopTab(G.stab||'rods');showScr('S2');
+}
+function shopTab(tab){
+  G.stab=tab;
+  document.querySelectorAll('.stab').forEach(el=>el.classList.remove('active'));
+  const tabs=['rods','reels','lines','lures','bait','stats'];
+  document.querySelectorAll('.stab')[tabs.indexOf(tab)]?.classList.add('active');
+  renderShop(tab);
+}
+function renderShop(tab){
+  const el=document.getElementById('shCont');
+  el.innerHTML='';
+  if(tab==='rods')RODS.forEach((r,i)=>el.appendChild(mkItem({n:r.name,p:r.price,d:r.desc,s:r.stat,sc:'#40c0e0',em:'🎣',ow:i<=G.ri,ac:i===G.ri,rep:false,cb:G.mn>=r.price&&i>G.ri,fn:()=>buyG('rod',i)})));
+  else if(tab==='reels')REELS.forEach((r,i)=>el.appendChild(mkItem({n:r.name,p:r.price,d:r.desc,s:r.stat,sc:'#9b79d9',em:'⚙️',ow:i<=G.rli,ac:i===G.rli,rep:false,cb:G.mn>=r.price&&i>G.rli,fn:()=>buyG('reel',i)})));
+  else if(tab==='lines')LINES.forEach((r,i)=>el.appendChild(mkItem({n:r.name,p:r.price,d:r.desc,s:r.stat,sc:'#e8a84a',em:'〰️',ow:i<=G.li,ac:i===G.li,rep:false,cb:G.mn>=r.price&&i>G.li,fn:()=>buyG('line',i)})));
+  else if(tab==='lures')LURES.forEach((r,i)=>el.appendChild(mkItem({n:r.name,p:r.price,d:r.desc,s:r.stat,sc:'#7ecba1',em:'🪝',ow:i<=G.lui,ac:i===G.lui,rep:false,cb:G.mn>=r.price&&i>G.lui,fn:()=>buyG('lure',i)})));
+  else if(tab==='bait'){
+    const info=document.createElement('div');
+    info.style.cssText='background:rgba(0,0,0,.4);border-radius:8px;padding:7px 10px;margin-bottom:7px;font-family:var(--mono);font-size:10px;color:var(--grn);';
+    info.textContent='🍀 Luck: +'+Math.round(G.lk)+'% | Charges: '+G.bc;
+    el.appendChild(info);
+    BAITS.forEach(b=>el.appendChild(mkItem({n:b.name,p:b.price,d:b.desc,s:b.stat,sc:'#a0e870',em:'🪱',ow:false,ac:false,rep:true,cb:G.mn>=b.price,fn:()=>buyBait(b)})));
+  } else if(tab==='stats')renderStats(el);
+}
+function mkItem({n,p,d,s,sc,em,ow,ac,rep,cb,fn}){
+  const div=document.createElement('div');
+  div.className='sitem'+(ac?' oa':ow&&!rep?' oi':'');
+  const badge=ac?'<span class="beq">EQUIPPED</span>':ow&&!rep?'<span class="bow">OWNED</span>':'';
+  const btn=p===0&&!rep?'<span style="color:var(--grn);font-family:var(--mono);font-size:10px">FREE</span>'
+    :ow&&!rep?'<span style="color:#5a5a4a;font-family:var(--mono);font-size:10px">✓</span>'
+    :`<button class="bbuy"${cb?'':' disabled'}>$${p}</button>`;
+  div.innerHTML=`<div class="ilft"><div class="inm">${em} ${n} ${badge}</div><div class="idsc">${d}</div><span class="istat" style="background:${sc}15;color:${sc};border:1px solid ${sc}30">${s}</span></div><div style="margin-left:8px;flex-shrink:0">${btn}</div>`;
+  const b=div.querySelector('.bbuy');
+  if(b&&cb)b.addEventListener('click',fn);
+  return div;
+}
+function buyG(type,idx){
+  const mp={rod:RODS,reel:REELS,line:LINES,lure:LURES};
+  const pp={rod:'ri',reel:'rli',line:'li',lure:'lui'};
+  const item=mp[type][idx];
+  if(G.mn<item.price)return;
+  G.mn-=item.price;G[pp[type]]=idx;
+  G.ledger.unshift({type:'spend',amount:item.price,desc:item.name});
+  document.getElementById('shMon').textContent='$'+G.mn;
+  updHUD();document.getElementById('gmini').textContent=RODS[G.ri].name;
+  renderShop(G.stab);
+}
+function buyBait(bait){
+  if(G.mn<bait.price)return;
+  G.mn-=bait.price;G.bc+=bait.ch;G.lk=Math.min(G.lk+bait.lkB,100);
+  G.ledger.unshift({type:'spend',amount:bait.price,desc:bait.name});
+  document.getElementById('shMon').textContent='$'+G.mn;
+  updHUD();renderShop(G.stab);
+}
+function renderStats(el){
+  const g=document.createElement('div');g.className='sgrid';
+  g.innerHTML=`
+    <div class="scard"><div class="scv" style="color:var(--acc)">${G.sc}</div><div class="scl">TOTAL SCORE</div></div>
+    <div class="scard"><div class="scv" style="color:var(--grn)">${G.tf}</div><div class="scl">FISH CAUGHT</div></div>
+    <div class="scard"><div class="scv" style="color:var(--acc2)">$${G.mn}</div><div class="scl">CURRENT CASH</div></div>
+    <div class="scard"><div class="scv" style="color:var(--org)">${G.lv}</div><div class="scl">LEVEL</div></div>
+  `;
+  el.appendChild(g);
+  if(G.clog.length){
+    const cd=document.createElement('div');
+    cd.style.cssText='background:rgba(0,10,25,.8);border:1px solid var(--border);border-radius:10px;padding:9px 11px;margin-bottom:7px;';
+    cd.innerHTML='<div style="font-size:12px;font-weight:600;color:var(--acc2);margin-bottom:5px;letter-spacing:2px">🐟 RECENT CATCHES</div>';
+    G.clog.slice(0,8).forEach(e=>{
+      const ti=FTIERS[e.fish.t];
+      const r=document.createElement('div');r.className='lrow';
+      r.innerHTML=`<span style="color:${ti.col}">${e.fish.e} ${e.fish.name}</span><span class="cr">+$${e.money}</span>`;
+      cd.appendChild(r);
+    });
+    el.appendChild(cd);
+  }
+}
+function goFish(){
+  G.lv++;G.st=60;G.sf=0;G.ss=0;
+  G.ph='idle';G.fish=null;G.nib=false;G.canim=false;G.cmd=null;
+  G.prog=0;G.ten=30;G.stam=100;G.wheelDown=false;
+  if(G.fInt){clearInterval(G.fInt);G.fInt=null;}
+  stopAimer();
+  document.getElementById('RW').classList.remove('active','release');
+  document.getElementById('tiltHUD').classList.remove('show');
+  document.getElementById('tiltHint').style.display='none';
+  showPan('cpan');
+  buddy('idle',false);updHUD();
+  document.getElementById('gmini').textContent=RODS[G.ri].name;
+  showScr('S1');
+  if(!G.aid)draw();
+  startTimer();
+}
+
+/* ═══════════════════════════════════════════════
+   GAME START
+═══════════════════════════════════════════════ */
+function startGame(){
+  initG();updHUD();
+  buddy('idle',false);
+  showPan('cpan');
+  tiltBaseline=null;
+  initGyro();
+  showScr('S1');
+  if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
+  draw();
+  startTimer();
+}
+
+/* ═══════════════════════════════════════════════
+   EVENT WIRING
+═══════════════════════════════════════════════ */
+function wireTap(id,fn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();fn();},{passive:false});
+  el.addEventListener('click',fn);
+}
+
+wireTap('startBtn',()=>{showVibModal();});
+
+// After vibration modal, start game
+document.getElementById('vibYes').addEventListener('touchend',e=>{
+  e.preventDefault();VIB_ON=true;updVibUI();vib([50,30,50]);
+  hideVibModal();startGame();
+},{passive:false});
+
+document.getElementById('vibNo').addEventListener('touchend',e=>{
+  e.preventDefault();VIB_ON=false;updVibUI();
+  hideVibModal();startGame();
+},{passive:false});
+
+wireTap('tapCastBtn',onTapCast);
+wireTap('goFishBtn',goFish);
+
+// Tap anywhere on aimer panel also counts
+document.getElementById('castAimer').addEventListener('touchend',e=>{
+  if(e.target.id==='tapCastBtn')return;
+  e.preventDefault();e.stopPropagation();
+  onTapCast();
+},{passive:false});
+
+// Shop tabs
+document.querySelectorAll('.stab').forEach(el=>{
+  const tab=el.dataset.tab;
+  el.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();shopTab(tab);},{passive:false});
+  el.addEventListener('click',()=>shopTab(tab));
+});
+
+// Prevent page scroll but allow shop
+document.addEventListener('touchmove',e=>{
+  if(e.target.closest('.sscroll'))return;
+  e.preventDefault();
+},{passive:false});
+document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
+</script>
+</body>
+</html>
