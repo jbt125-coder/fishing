@@ -100,9 +100,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
   border-right:1px solid rgba(64,192,224,.18);
   border-top:1px solid rgba(64,192,224,.12);
   touch-action:none;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+  overscroll-behavior:none;
 }
 .clbl{font-family:var(--mono);font-size:8px;color:var(--acc2);letter-spacing:1px;text-transform:uppercase;text-align:center;line-height:1.2;flex-shrink:0;}
-.cast-track-wrap{flex:1;width:100%;position:relative;min-height:0;}
+.cast-track-wrap{flex:1;width:100%;position:relative;min-height:0;touch-action:none;overscroll-behavior:none;}
 
 /* Offset only the control row, not canvas */
 #S1{padding-left:0;}
@@ -2161,9 +2165,10 @@ document.querySelectorAll('.stab').forEach(el=>{
   el.addEventListener('click',()=>shopTab(tab));
 });
 
-// Prevent scroll but allow shop
+// Prevent scroll/bounce but allow cast bar and reel wheel to handle their own touches
 document.addEventListener('touchmove',e=>{
   if(e.target.closest('.sscroll')||e.target.closest('.obox')||e.target.closest('#trainScr'))return;
+  if(e.target.closest('.castcol')||e.target.closest('#RW'))return; // let these handle themselves
   e.preventDefault();
 },{passive:false});
 document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
