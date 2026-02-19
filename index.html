@@ -956,15 +956,15 @@ function initGyro(){
 const castColSlider=document.getElementById('castColSlider');
 let sliderCharging=false;
 let sliderStartY=null;
-let sliderMaxDY=0; // max downward pull distance
+let sliderPeakPct=0; // power locked at max downward pull
 
 castColSlider.addEventListener('touchstart',e=>{
-  if(G.ph!=='aimed'&&G.ph!=='aiming'||CAST_MODE!=='slider')return;
-  // Allow charging during aiming phase too
-  if(G.ph!=='aimed')return;
+  if(G.ph!=='aimed'||CAST_MODE!=='slider')return;
   e.preventDefault();
   sliderStartY=e.touches[0].clientY;
-  sliderCharging=true;sliderMaxDY=0;G.castPct=0;
+  sliderCharging=true;
+  sliderPeakPct=0;
+  G.castPct=0;
   document.getElementById('swipeBall').className='swipe-ball';
   document.getElementById('castPct').textContent='Pull ↓';
 },{passive:false});
@@ -973,56 +973,68 @@ castColSlider.addEventListener('touchmove',e=>{
   if(!sliderCharging||G.ph!=='aimed')return;
   e.preventDefault();
   const dy=e.touches[0].clientY-sliderStartY; // positive = pulled DOWN
-  sliderMaxDY=Math.max(sliderMaxDY,dy);
-  const pct=cl(Math.round((dy/120)*100),0,100);
-  G.castPct=pct;
-  document.getElementById('castPowerFill').style.height=pct+'%';
-  document.getElementById('castPct').textContent=pct>5?pct+'%':'Pull ↓';
-  document.getElementById('swipeBall').className='swipe-ball'+(pct>20?' charging':'');
+  if(dy>0){
+    const pct=cl(Math.round((dy/120)*100),0,100);
+    sliderPeakPct=Math.max(sliderPeakPct,pct); // lock peak power
+    G.castPct=pct;
+    document.getElementById('castPowerFill').style.height=pct+'%';
+    document.getElementById('castPct').textContent=pct>5?pct+'%':'Pull ↓';
+    document.getElementById('swipeBall').className='swipe-ball'+(pct>20?' charging':'');
+  } else if(sliderPeakPct>0){
+    // Going back up — show locked power, keep bar filled at peak
+    document.getElementById('castPct').textContent=sliderPeakPct+'% ↑';
+    document.getElementById('swipeBall').className='swipe-ball charging';
+  }
 },{passive:false});
 
 castColSlider.addEventListener('touchend',e=>{
   if(!sliderCharging)return;
   e.preventDefault();
   const endY=e.changedTouches[0].clientY;
-  const totalUp=sliderStartY-endY; // positive = moved UP
+  const releasedAboveStart=endY<=sliderStartY+10; // finger returned to/above start
+  const hadPull=sliderPeakPct>=5;
   sliderCharging=false;
   document.getElementById('castPowerFill').style.height='0%';
   document.getElementById('castPct').textContent='—';
   document.getElementById('swipeBall').className='swipe-ball';
-  // Must have pulled down at least 20px AND released upward past start
-  if(sliderMaxDY>=20&&totalUp>0&&G.castPct>=5){
-    executeCast(G.castPct,G.castAimPos);
+  if(hadPull&&releasedAboveStart&&G.ph==='aimed'){
+    executeCast(sliderPeakPct,G.castAimPos);
   } else if(G.ph==='aimed'){
-    document.getElementById('aimPowerLbl').textContent='Pull DOWN ↓ then release UP ↑';
+    document.getElementById('aimPowerLbl').textContent='Pull DOWN ↓ then flick UP ↑';
   }
 },{passive:false});
 
 // Desktop mouse fallback
-let mSliderStartY=null,mSliderCharging=false,mSliderMaxDY=0;
+let mSliderStartY=null,mSliderCharging=false,mSliderPeakPct=0;
 castColSlider.addEventListener('mousedown',e=>{
   if(G.ph!=='aimed'||CAST_MODE!=='slider')return;
-  mSliderStartY=e.clientY;mSliderCharging=true;mSliderMaxDY=0;G.castPct=0;
+  mSliderStartY=e.clientY;mSliderCharging=true;mSliderPeakPct=0;G.castPct=0;
 });
 document.addEventListener('mousemove',e=>{
   if(!mSliderCharging||G.ph!=='aimed')return;
   const dy=e.clientY-mSliderStartY;
-  mSliderMaxDY=Math.max(mSliderMaxDY,dy);
-  const pct=cl(Math.round((dy/120)*100),0,100);
-  G.castPct=pct;
-  document.getElementById('castPowerFill').style.height=pct+'%';
-  document.getElementById('castPct').textContent=pct>5?pct+'%':'Pull ↓';
-  document.getElementById('swipeBall').className='swipe-ball'+(pct>20?' charging':'');
+  if(dy>0){
+    const pct=cl(Math.round((dy/120)*100),0,100);
+    mSliderPeakPct=Math.max(mSliderPeakPct,pct);
+    G.castPct=pct;
+    document.getElementById('castPowerFill').style.height=pct+'%';
+    document.getElementById('castPct').textContent=pct>5?pct+'%':'Pull ↓';
+    document.getElementById('swipeBall').className='swipe-ball'+(pct>20?' charging':'');
+  } else if(mSliderPeakPct>0){
+    document.getElementById('castPct').textContent=mSliderPeakPct+'% ↑';
+    document.getElementById('swipeBall').className='swipe-ball charging';
+  }
 });
 document.addEventListener('mouseup',e=>{
   if(!mSliderCharging)return;
-  const totalUp=mSliderStartY-e.clientY;
+  const releasedAboveStart=e.clientY<=mSliderStartY+10;
+  const savedPeak=mSliderPeakPct;
   mSliderCharging=false;
   document.getElementById('castPowerFill').style.height='0%';
   document.getElementById('castPct').textContent='—';
   document.getElementById('swipeBall').className='swipe-ball';
-  if(mSliderMaxDY>=20&&totalUp>0&&G.ph==='aimed'&&G.castPct>=5)executeCast(G.castPct,G.castAimPos);
-  mSliderStartY=null;mSliderMaxDY=0;
+  if(savedPeak>=5&&releasedAboveStart&&G.ph==='aimed')executeCast(savedPeak,G.castAimPos);
+  mSliderStartY=null;mSliderPeakPct=0;
 });
 
 /* ═══════════════════════════════════════════
