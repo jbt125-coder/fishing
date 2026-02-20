@@ -167,7 +167,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .miss-dot.used{background:var(--red);border-color:var(--red);}
 .aimer-track{width:100%;height:26px;background:rgba(255,255,255,.06);border-radius:13px;position:relative;overflow:hidden;border:1px solid rgba(64,192,224,.2);}
 .aimer-zone{position:absolute;top:0;height:100%;background:rgba(64,224,128,.2);border-left:2px solid var(--grn);border-right:2px solid var(--grn);}
-.aimer-cursor{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc);pointer-events:none;}
+.aimer-sweet{position:absolute;top:0;height:100%;width:10%;background:rgba(255,50,50,.7);border:1px solid rgba(255,120,120,.9);pointer-events:none;z-index:2;}
+.aimer-sweet.pulse{box-shadow:0 0 14px 4px rgba(255,60,60,.9);animation:sweetPulse .3s ease-out;}
+@keyframes sweetPulse{0%{background:rgba(255,200,50,.9);}100%{background:rgba(255,50,50,.7);}}
+.aimer-cursor{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc);pointer-events:none;z-index:3;}
+.streak-badge{display:none;position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff2020,#ff8000);color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;letter-spacing:1px;white-space:nowrap;animation:sbPop .25s ease-out;}
+@keyframes sbPop{0%{transform:translateX(-50%) scale(0.4);opacity:0}70%{transform:translateX(-50%) scale(1.15);}100%{transform:translateX(-50%) scale(1);opacity:1;}}
 
 /* Aimer hint — instruction below the track */
 .aimer-hint{font-family:var(--mono);font-size:9px;color:var(--acc);text-align:center;padding:3px 0;letter-spacing:1px;font-weight:600;}
@@ -416,9 +421,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
             <div class="miss-dot" id="md2"></div>
           </div>
         </div>
-        <div class="aimer-track" id="aimerTrack">
-          <div class="aimer-zone" id="aimerZone"></div>
-          <div class="aimer-cursor" id="aimerCursor" style="left:0%"></div>
+        <div style="position:relative;">
+          <div class="streak-badge" id="streakBadge">🔥 x2</div>
+          <div class="aimer-track" id="aimerTrack">
+            <div class="aimer-zone" id="aimerZone"></div>
+            <div class="aimer-sweet" id="aimerSweet"></div>
+            <div class="aimer-cursor" id="aimerCursor" style="left:0%"></div>
+          </div>
         </div>
         <div class="aimer-hint" id="aimPowerLbl">Tap the green zone!</div>
       </div>
@@ -661,7 +670,12 @@ function seedStars(){
 }
 let VIB_ON = true;
 let CAST_MODE = 'slider';
-let SWING_CALIB = null; // calibration data: {avgPeak, threshold}
+let SWING_CALIB = null;
+
+// Perfect cast streak
+let perfectStreak = 0;   // consecutive sweet-spot hits
+let perfectMult = 1;     // current multiplier (1, 2, 4, 8...)
+let perfectCastActive = false; // this cast's fish gets the bonus
 
 /* ═══════════════════════════════════════════
    STATE
@@ -1091,11 +1105,30 @@ function launchAimer(){
   const zoneSize=cl(0.44-(G.lv-1)*0.05,0.10,0.44);
   const zoneL=rnd(0.04,0.96-zoneSize);
   G.aimerZoneL=zoneL;G.aimerZoneR=zoneL+zoneSize;
+  // Sweet spot: center 10% of the green zone
+  const zoneCenter=(zoneL+G.aimerZoneR)/2;
+  const sweetW=0.10;
+  G.aimerSweetL=zoneCenter-sweetW/2;
+  G.aimerSweetR=zoneCenter+sweetW/2;
   G.aimerPos=0;G.aimerDir=1;G.aimerActive=true;
+  perfectCastActive=false;
   document.getElementById('aimerZone').style.left=(zoneL*100)+'%';
   document.getElementById('aimerZone').style.width=((G.aimerZoneR-zoneL)*100)+'%';
+  // Sweet spot position
+  const sw=document.getElementById('aimerSweet');
+  sw.style.left=(G.aimerSweetL*100)+'%';
+  sw.style.width=(sweetW*100)+'%';
+  sw.classList.remove('pulse');
+  // Show streak badge if streak active
+  const badge=document.getElementById('streakBadge');
+  if(perfectStreak>0){
+    badge.textContent='🔥 x'+perfectMult+' streak!';
+    badge.style.display='block';
+  } else {
+    badge.style.display='none';
+  }
   document.getElementById('aimPowerLbl').textContent='—';
-  document.getElementById('aimer-lbl-txt').textContent='🎯 TAP GREEN ZONE!';
+  document.getElementById('aimer-lbl-txt').textContent='🎯 TAP GREEN  ●RED=PERFECT!';
   showPan('castAimer');buddy('aim',false);vib([15]);
   function tick(){
     if(!G.aimerActive)return;
@@ -1119,8 +1152,28 @@ function onTapScreen(){
       if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
       G.castAimPos=pos;
       G.ph='aimed';
-      vib([20,15,40]);
-      document.getElementById('aimer-lbl-txt').textContent='✅ AIM LOCKED!';
+
+      // ── SWEET SPOT CHECK ──
+      const inSweet=pos>=G.aimerSweetL&&pos<=G.aimerSweetR;
+      if(inSweet){
+        perfectStreak++;
+        perfectMult=Math.min(Math.pow(2,perfectStreak),16); // x2, x4, x8, x16 cap
+        perfectCastActive=true;
+        // Visual + audio feedback
+        const sw=document.getElementById('aimerSweet');
+        sw.classList.add('pulse');
+        vib([30,15,30,15,60]);rumbleCatch();
+        scoreFlash('🎯 PERFECT! x'+perfectMult,'#ff4040');
+        document.getElementById('aimer-lbl-txt').textContent='🔥 PERFECT CAST x'+perfectMult+'!';
+        document.getElementById('streakBadge').style.display='none';
+      } else {
+        // Hit green zone but not sweet spot — break streak
+        perfectStreak=0;perfectMult=1;perfectCastActive=false;
+        vib([20,15,40]);
+        document.getElementById('aimer-lbl-txt').textContent='✅ AIM LOCKED!';
+        document.getElementById('streakBadge').style.display='none';
+      }
+
       document.getElementById('aimPowerLbl').textContent=
         CAST_MODE==='swing'?'Casting...':'Pull bar DOWN ↓ then flick UP ↑';
       keepAimerShowing();
@@ -1131,6 +1184,9 @@ function onTapScreen(){
         buddy('swipe',false);
       }
     } else {
+      // Missed zone entirely — break streak
+      perfectStreak=0;perfectMult=1;perfectCastActive=false;
+      document.getElementById('streakBadge').style.display='none';
       G.misses++;updateMissDots();vib([50]);
       G.sc=Math.max(-999,G.sc-10);updHUD();
       scoreFlash('-10','var(--red)');
@@ -1160,6 +1216,9 @@ function executeCast(power,aimPos){
   G.bx=W*0.22+aimPos*(W*0.65);
   G.by=(CV.height/DPR)*0.52+4;
   if(G.bc>0){G.bc--;if(G.bc===0)G.lk=0;}
+  // Capture perfect cast state for this cast's fish
+  const isPerfect=perfectCastActive;
+  perfectCastActive=false; // consumed
   buddy('cast',false);vib([25,15,40]);rumbleCast();
   setTimeout(()=>{
     G.ph='bobbing';
@@ -1182,20 +1241,28 @@ function executeCast(power,aimPos){
         G.nib=false;
         let fish;
         if(triggerBoss){
-          // Pick boss for current boss cycle (every 5 levels)
           const bossIdx=Math.floor(G.lv/5)-1;
           fish=Object.assign({},BOSSES[cl(bossIdx,0,BOSSES.length-1)]);
-          fish.isBoss=true;
-          fish.t=5;
-          G.currentBoss=fish;
+          fish.isBoss=true;fish.t=5;G.currentBoss=fish;
+        } else if(isPerfect){
+          // Perfect cast: guaranteed Tier 3 or 4 fish (rare/epic)
+          const tier=Math.random()<0.5?3:4;
+          const pool=FISH.filter(f=>f.t===tier);
+          fish=Object.assign({},pick(pool));
+          fish.perfectMult=perfectMult; // carry multiplier into fight
         } else {
           fish=pickFish();
         }
         G.fish=fish;
         G.prog=0;
-        G.ten=G.lv===1?5:G.lv<=2?15:25;
+        G.ten=G.lv===1?8:G.lv<=2?18:G.lv<=4?30:38;
         G.stam=100;G.ph='hooked';
         const isB=fish.isBoss;
+        // Special flash for perfect cast bite
+        if(isPerfect&&!isB){
+          scoreFlash('🎯 RARE BITE! x'+perfectMult,'#ff4040');
+          rumble([{f:60,d:.1,g:.5},{f:90,d:.15,g:.7}]);
+        }
         buddy(isB?'bossStrike':'strike',true);
         vib(isB?[100,50,100,50,200,50,100]:[80,40,120]);
         isB?rumbleFishOn():rumbleFishOn();
@@ -1843,8 +1910,13 @@ function landFish(fish){
   vib(isBoss?[100,50,100,50,200,50,200,50,200]:[60,30,60,30,180]);
   isBoss?rumbleBoss():rumbleCatch();
   const rod=RODS[G.ri];const mult=1+rod.catchB/100;
-  const em=Math.round(fish.v*mult);
-  const ep=Math.round((isBoss?500:FTIERS[fish.t]?.pts||100)*mult);
+  const pm=fish.perfectMult||1; // perfect cast multiplier
+  const em=Math.round(fish.v*mult*pm);
+  const ep=Math.round((isBoss?500:FTIERS[fish.t]?.pts||100)*mult*pm);
+  if(pm>1){
+    scoreFlash('🎯 x'+pm+' PERFECT BONUS!','#ff4040');
+    rumble([{f:50,d:.08,g:.4},{f:80,d:.12,g:.6},{f:60,d:.2,g:.5}]);
+  }
   G.mn+=em;G.sc+=ep;G.tf++;G.sf++;G.ss+=ep;
   // +5 seconds bonus for catching a fish
   G.st=Math.min(G.st+5,isBoss?120:90);
@@ -1916,10 +1988,9 @@ function wEnd(e){
 function startTimer(){
   clearInterval(G.tInt);
   G.tInt=setInterval(()=>{
-    // Freeze last 10 seconds if fish is on the line
-    const fishOnLine=(G.ph==='reeling'||G.ph==='hooked');
-    if(G.st<=10&&fishOnLine){
-      // Flash timer orange to show it's frozen
+    // Freeze last 10 seconds if fish is on the line OR approaching the hook
+    const fishActive=(G.ph==='reeling'||G.ph==='hooked'||G.ph==='nibble'||G.ph==='bobbing'||G.ph==='casting');
+    if(G.st<=10&&fishActive){
       document.getElementById('hTim').style.color='var(--org)';
       return;
     }
@@ -2034,6 +2105,7 @@ function goFish(){
   G.lv++;G.st=60;G.sf=0;G.ss=0;
   G.ph='idle';G.fish=null;G.nib=false;G.canim=false;G.cmd=null;
   G.prog=0;G.ten=25;G.stam=100;G.wheelDown=false;
+  perfectStreak=0;perfectMult=1;perfectCastActive=false;
   if(G.fInt){clearInterval(G.fInt);G.fInt=null;}
   if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
   if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}G.aimerActive=false;
@@ -2149,10 +2221,13 @@ function endMoonFrenzy(){
 let bpStream=null;
 let bpCaptured=null;
 let bpFishData=null;
+let bpRAF=null;
+let bpAnimating=false;
 
 function openBossPhoto(fish,moneyEarned,pointsEarned){
   bpFishData={fish,moneyEarned,pointsEarned};
   bpCaptured=null;
+  bpAnimating=false;
   document.getElementById('bpName').textContent=fish.e+' '+fish.name;
   document.getElementById('bpSub').textContent='LEGENDARY CATCH · DEEP HOOK';
   document.getElementById('bpWeight').textContent=fish.w||'???';
@@ -2160,59 +2235,100 @@ function openBossPhoto(fish,moneyEarned,pointsEarned){
   document.getElementById('bpPoints').textContent='+'+pointsEarned+' pts';
   document.getElementById('bpSave').style.display='none';
   document.getElementById('bpShutter').style.display='flex';
-  document.getElementById('bpHint').style.display='block';
+  document.getElementById('bpHint').style.display='none'; // hide — canvas covers everything
   showScr('bossPhoto');
-  // Stop game RAF cleanly
+
+  // Stop game loops cleanly
   if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
   if(bpRAF){cancelAnimationFrame(bpRAF);bpRAF=null;}
+
+  // Size canvas to full screen at device pixel ratio
+  const cvs=document.getElementById('bpCanvas');
+  const dpr=window.devicePixelRatio||1;
+  const W=window.innerWidth,H=window.innerHeight;
+  cvs.width=W*dpr;cvs.height=H*dpr;
+  cvs.style.width=W+'px';cvs.style.height=H+'px';
+  cvs.style.zIndex='5'; // sits above video, below UI overlays
+
   const vid=document.getElementById('bpVid');
-  // Try camera — fall back gracefully, never crash
+
+  const startOverlay=()=>{
+    bpAnimating=true;
+    bpRAF=requestAnimationFrame(drawBossPhotoOverlay);
+  };
+
   const tryCamera=()=>{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-      drawFishOnlyMode();return;
+      startFishOnlyLoop();return;
     }
-    navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:1280}},audio:false})
-      .then(stream=>{
-        bpStream=stream;
-        vid.srcObject=stream;
-        vid.onloadedmetadata=()=>{
-          vid.play().catch(()=>{});
-          bpRAF=requestAnimationFrame(drawBossPhotoOverlay);
-        };
-      })
-      .catch(err=>{
-        console.warn('Camera unavailable:',err);
-        drawFishOnlyMode();
-      });
+    navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},
+      audio:false
+    }).then(stream=>{
+      bpStream=stream;
+      vid.srcObject=stream;
+      vid.muted=true;
+      // Use multiple events to ensure play() is called reliably
+      const onReady=()=>{
+        vid.removeEventListener('loadedmetadata',onReady);
+        vid.removeEventListener('canplay',onReady);
+        vid.play().then(startOverlay).catch(startOverlay);
+      };
+      vid.addEventListener('loadedmetadata',onReady);
+      vid.addEventListener('canplay',onReady);
+      // Fallback: if already ready
+      if(vid.readyState>=2)onReady();
+    }).catch(err=>{
+      console.warn('Camera denied or unavailable:',err.name,err.message);
+      startFishOnlyLoop();
+    });
   };
-  // Small delay to let screen transition finish before requesting camera
-  setTimeout(tryCamera,300);
+
+  setTimeout(tryCamera,250);
 }
 
-function drawFishOnlyMode(){
-  const cvs=document.getElementById('bpCanvas');
-  cvs.width=window.innerWidth;cvs.height=window.innerHeight;
-  const ctx=cvs.getContext('2d');
-  ctx.fillStyle='linear-gradient(180deg,#020810,#0a2035)';
-  // dark bg
-  const bg=ctx.createLinearGradient(0,0,0,cvs.height);
-  bg.addColorStop(0,'#020810');bg.addColorStop(1,'#0a2035');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,cvs.width,cvs.height);
-  drawFishOverlay(ctx,cvs.width,cvs.height,true);
+function startFishOnlyLoop(){
+  // No camera — draw animated fish on dark bg
+  bpAnimating=true;
+  bpRAF=requestAnimationFrame(drawBossPhotoOverlay);
 }
 
-let bpRAF=null;
 function drawBossPhotoOverlay(){
-  const scr=document.getElementById('bossPhoto');
-  if(!scr.classList.contains('active')){bpRAF=null;return;}
+  if(!bpAnimating||!document.getElementById('bossPhoto').classList.contains('active')){
+    bpRAF=null;return;
+  }
   const cvs=document.getElementById('bpCanvas');
-  // Size canvas once (not every frame)
-  if(cvs.width!==window.innerWidth||cvs.height!==window.innerHeight){
-    cvs.width=window.innerWidth;cvs.height=window.innerHeight;
+  const dpr=window.devicePixelRatio||1;
+  const W=window.innerWidth,H=window.innerHeight;
+  // Re-size only if screen dimensions changed (e.g. orientation)
+  if(cvs.width!==Math.round(W*dpr)||cvs.height!==Math.round(H*dpr)){
+    cvs.width=Math.round(W*dpr);cvs.height=Math.round(H*dpr);
+    cvs.style.width=W+'px';cvs.style.height=H+'px';
   }
   const ctx=cvs.getContext('2d');
   ctx.clearRect(0,0,cvs.width,cvs.height);
-  drawFishOverlay(ctx,cvs.width,cvs.height,false);
+  // Scale for DPR
+  ctx.save();ctx.scale(dpr,dpr);
+
+  // If no camera stream, draw dark ocean background
+  const vid=document.getElementById('bpVid');
+  const hasVideo=bpStream&&vid.readyState>=2&&!vid.paused;
+  if(!hasVideo){
+    const bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    // Subtle stars
+    for(let i=0;i<40;i++){
+      const sx=(i*137.5)%W,sy=(i*97.3)%H*0.5;
+      const twinkle=0.2+0.6*Math.abs(Math.sin(Date.now()/1000*0.5+i));
+      ctx.globalAlpha=twinkle;ctx.fillStyle='#fff';
+      ctx.beginPath();ctx.arc(sx,sy,0.8,0,6.28);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  drawFishOverlay(ctx,W,H,false);
+  ctx.restore();
   bpRAF=requestAnimationFrame(drawBossPhotoOverlay);
 }
 
@@ -2263,68 +2379,74 @@ function drawFishOverlay(ctx,W,H,staticMode){
 
 function takeBossPhoto(){
   const vid=document.getElementById('bpVid');
-  const cvs=document.getElementById('bpCanvas');
   const flash=document.getElementById('bpFlash');
   vib([30,20,60]);
-  // Flash
   flash.style.opacity='0.9';
-  setTimeout(()=>flash.style.opacity='0',150);
-  // Composite: video frame + overlay
+  setTimeout(()=>flash.style.opacity='0',200);
+
+  const W=window.innerWidth,H=window.innerHeight;
+  const dpr=Math.min(window.devicePixelRatio||1,2); // cap at 2x for file size
   const composite=document.createElement('canvas');
-  composite.width=window.innerWidth*2;
-  composite.height=window.innerHeight*2;
+  composite.width=W*dpr;composite.height=H*dpr;
   const ctx=composite.getContext('2d');
-  ctx.scale(2,2);
-  // Draw video frame mirrored
-  if(bpStream&&vid.readyState>=2){
-    ctx.save();ctx.scale(-1,1);ctx.translate(-window.innerWidth,0);
-    ctx.drawImage(vid,0,0,window.innerWidth,window.innerHeight);
+  ctx.scale(dpr,dpr);
+
+  // 1. Camera frame (mirrored to match preview)
+  const hasVideo=bpStream&&vid.readyState>=2;
+  if(hasVideo){
+    ctx.save();
+    ctx.translate(W,0);ctx.scale(-1,1); // mirror horizontally
+    ctx.drawImage(vid,0,0,W,H);
     ctx.restore();
   } else {
-    const bg=ctx.createLinearGradient(0,0,0,window.innerHeight);
-    bg.addColorStop(0,'#020810');bg.addColorStop(1,'#0a2035');
-    ctx.fillStyle=bg;ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
+    // No camera — dark ocean background
+    const bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
   }
-  // Draw stats overlays
-  const statsTop=document.getElementById('bpStats');
-  const statsBar=document.getElementById('bpStatsBar');
-  // Top bar
-  ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,window.innerWidth,80);
+
+  // 2. Fish overlay (same drawing code, static=true for snapshot)
+  drawFishOverlay(ctx,W,H,true);
+
+  // 3. Top stats bar
+  ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(0,0,W,72);
   if(bpFishData){
-    ctx.font='bold 22px Oswald,sans-serif';ctx.fillStyle='#ff80ff';
+    ctx.font='bold 24px Oswald,sans-serif';ctx.fillStyle='#ff80ff';
     ctx.textAlign='left';
-    ctx.fillText(bpFishData.fish.e+' '+bpFishData.fish.name,16,30);
-    ctx.font='11px "Share Tech Mono",monospace';ctx.fillStyle='#cce8ff';
-    ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,48);
+    ctx.fillText(bpFishData.fish.e+' '+bpFishData.fish.name,16,34);
+    ctx.font='11px "Share Tech Mono",monospace';ctx.fillStyle='rgba(200,232,255,0.85)';
+    ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,52);
   }
-  // Bottom stats bar
-  ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,window.innerHeight-90,window.innerWidth,60);
+
+  // 4. Bottom stats bar
+  ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(0,H-80,W,80);
   if(bpFishData){
     const stats=[
       {lbl:'WEIGHT',val:bpFishData.fish.w||'???',col:'#ff80ff'},
       {lbl:'EARNED',val:'+$'+bpFishData.moneyEarned,col:'#40e080'},
-      {lbl:'POINTS',val:'+'+bpFishData.pointsEarned,col:'#f0c040'},
+      {lbl:'POINTS',val:'+'+bpFishData.pointsEarned+' pts',col:'#f0c040'},
     ];
     stats.forEach((s,i)=>{
-      const sx=window.innerWidth/6+(i*window.innerWidth/3);
-      ctx.font='9px "Share Tech Mono",monospace';ctx.fillStyle='rgba(255,200,255,0.6)';
-      ctx.textAlign='center';ctx.fillText(s.lbl,sx,window.innerHeight-68);
-      ctx.font='bold 18px Oswald,sans-serif';ctx.fillStyle=s.col;
-      ctx.fillText(s.val,sx,window.innerHeight-46);
+      const sx=W/6+(i*W/3);
+      ctx.font='9px "Share Tech Mono",monospace';
+      ctx.fillStyle='rgba(255,200,255,0.6)';
+      ctx.textAlign='center';
+      ctx.fillText(s.lbl,sx,H-58);
+      ctx.font='bold 20px Oswald,sans-serif';
+      ctx.fillStyle=s.col;
+      ctx.fillText(s.val,sx,H-34);
     });
   }
-  // Fish overlay
-  drawFishOverlay(ctx,window.innerWidth,window.innerHeight,true);
-  // Watermark
-  ctx.font='bold 11px Oswald,sans-serif';ctx.fillStyle='rgba(255,200,255,0.5)';
-  ctx.textAlign='center';ctx.fillText('DEEP HOOK FISHING',window.innerWidth/2,window.innerHeight-8);
 
-  bpCaptured=composite.toDataURL('image/jpeg',0.92);
+  // 5. Watermark
+  ctx.font='bold 10px "Share Tech Mono",monospace';
+  ctx.fillStyle='rgba(255,200,255,0.4)';
+  ctx.textAlign='center';
+  ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
+
+  bpCaptured=composite.toDataURL('image/jpeg',0.90);
   document.getElementById('bpShutter').style.display='none';
   document.getElementById('bpSave').style.display='block';
-  document.getElementById('bpHint').style.display='none';
-  // Show preview flash
-  flash.style.opacity='0';
 }
 
 function saveBossPhoto(){
@@ -2340,6 +2462,7 @@ function saveBossPhoto(){
 function skipBossPhoto(){closeBossPhoto();}
 
 function closeBossPhoto(){
+  bpAnimating=false;
   if(bpRAF){cancelAnimationFrame(bpRAF);bpRAF=null;}
   if(bpStream){
     try{bpStream.getTracks().forEach(t=>t.stop());}catch(e){}
@@ -2347,7 +2470,7 @@ function closeBossPhoto(){
   }
   const vid=document.getElementById('bpVid');
   try{vid.pause();vid.srcObject=null;}catch(e){}
-  bpFishData=null;
+  bpFishData=null;bpCaptured=null;
   setTimeout(()=>openShop(),200);
 }
 function startGame(){
