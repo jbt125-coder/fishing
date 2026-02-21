@@ -866,7 +866,7 @@ let licCaptured=null;
 let licNumber='DH-'+Math.floor(100000+Math.random()*900000);
 let licPulseRAF=null;
 
-function openLicenseScreen(){
+async function openLicenseScreen(){
   licCaptured=null;
   document.getElementById('licShutter').style.display='flex';
   document.getElementById('licRetakeBtn').style.display='none';
@@ -875,16 +875,21 @@ function openLicenseScreen(){
   document.getElementById('licVid').style.display='block';
   document.getElementById('licCardOverlay').style.display='block';
   document.getElementById('licHint').textContent='Hold still — smile for your license photo!';
-  // Set license number and date in SVG
   document.getElementById('licNumSvg').textContent=licNumber;
   document.getElementById('licDateSvg').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'});
   showScr('licenseScr');
-  startLicCamera();
   startLicPulse();
+  // Camera called directly here — must stay in user gesture context
+  try {
+    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    document.getElementById('licVid').srcObject = licStream;
+  } catch(err) {
+    console.log('License camera error:', err);
+    document.getElementById('licVid').style.display='none';
+  }
 }
 
 function startLicPulse(){
-  // Animate the SVG pulse border
   let t=0;
   function pulse(){
     const el=document.getElementById('licPulse');
@@ -895,23 +900,95 @@ function startLicPulse(){
   pulse();
 }
 
-async function startLicCamera(){
-  try {
-    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-    document.getElementById('licVid').srcObject = licStream;
-  } catch(err) {
-    console.log('Camera not available:', err);
-    document.getElementById('licVid').style.display = 'none';
-  }
+function drawFishermanHat(ctx, W, H){
+  // Hat sits at top-center — roughly where a face would be on a selfie
+  const cx = W / 2;
+  const hatY = H * 0.18;  // top of hat
+  const brimW = W * 0.38;
+  const brimH = brimW * 0.12;
+  const crownW = brimW * 0.62;
+  const crownH = brimW * 0.45;
+
+  ctx.save();
+
+  // Drop shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.55)';
+  ctx.shadowBlur = 14;
+  ctx.shadowOffsetY = 6;
+
+  // Crown — rounded bucket shape, slightly wider at top
+  const crownGrad = ctx.createLinearGradient(cx - crownW/2, hatY, cx + crownW/2, hatY + crownH);
+  crownGrad.addColorStop(0, '#4a7c2a');
+  crownGrad.addColorStop(0.4, '#3a6a1e');
+  crownGrad.addColorStop(1, '#2a4e12');
+  ctx.fillStyle = crownGrad;
+  ctx.beginPath();
+  ctx.moveTo(cx - crownW * 0.44, hatY + crownH);       // bottom-left
+  ctx.lineTo(cx - crownW * 0.5,  hatY + crownH * 0.3); // upper-left
+  ctx.quadraticCurveTo(cx - crownW * 0.48, hatY, cx, hatY); // top-left curve
+  ctx.quadraticCurveTo(cx + crownW * 0.48, hatY, cx + crownW * 0.5, hatY + crownH * 0.3); // top-right curve
+  ctx.lineTo(cx + crownW * 0.44, hatY + crownH);       // bottom-right
+  ctx.closePath();
+  ctx.fill();
+
+  // Brim
+  const brimGrad = ctx.createLinearGradient(cx, hatY + crownH, cx, hatY + crownH + brimH);
+  brimGrad.addColorStop(0, '#3a6a1e');
+  brimGrad.addColorStop(1, '#2a4e12');
+  ctx.fillStyle = brimGrad;
+  ctx.beginPath();
+  ctx.ellipse(cx, hatY + crownH, brimW / 2, brimH / 2, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Brim highlight
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(cx, hatY + crownH - 1, brimW / 2, brimH / 2, 0, Math.PI, Math.PI * 2);
+  ctx.stroke();
+
+  // Hat band — orange/tan stripe
+  ctx.fillStyle = '#c87820';
+  ctx.fillRect(cx - crownW * 0.44, hatY + crownH * 0.72, crownW * 0.88, crownH * 0.14);
+
+  // Lure/hook pin on the band
+  ctx.shadowBlur = 0;
+  ctx.font = `${Math.round(crownH * 0.28)}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🪝', cx + crownW * 0.18, hatY + crownH * 0.79);
+
+  // Crown highlight sheen
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.ellipse(cx - crownW * 0.1, hatY + crownH * 0.2, crownW * 0.18, crownH * 0.1, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+  ctx.restore();
 }
 
-function takeLicensePhoto(){
+async function takeLicensePhoto(){
   vib([30,15,50]);
   const flash=document.getElementById('licFlash');
   flash.style.opacity='0.95';
   setTimeout(()=>flash.style.opacity='0',200);
 
   const vid=document.getElementById('licVid');
+
+  // If camera not yet started (e.g. permission was deferred), request it now on this tap
+  if(!licStream){
+    try {
+      licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      vid.srcObject = licStream;
+      vid.style.display='block';
+      await new Promise(resolve => setTimeout(resolve, 800));
+    } catch(err) {
+      console.log('License camera error on capture:', err);
+    }
+  }
   const W=window.innerWidth,H=window.innerHeight;
   const dpr=Math.min(window.devicePixelRatio||1,2);
 
@@ -930,6 +1007,9 @@ function takeLicensePhoto(){
     bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
     ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
   }
+
+  // Fisherman's bucket hat on the person
+  drawFishermanHat(ctx, W, H);
 
   // Draw license card onto capture canvas
   drawLicenseCardOnCanvas(ctx,W,H);
@@ -2228,32 +2308,37 @@ async function openBossPhoto(fish,moneyEarned,pointsEarned){
   document.getElementById('bpShutter').style.display='flex';
   document.getElementById('bpCanvas').style.display='none';
 
-  // Show video elements
+  // Show overlays — video stays hidden until camera granted via shutter tap
   const vid=document.getElementById('bpVid');
-  vid.style.display='block';
+  vid.style.display='none';
   document.getElementById('bpFishEmoji').style.display='block';
   document.getElementById('bpStats').style.display='block';
   document.getElementById('bpStatsBar').style.display='flex';
 
   showScr('bossPhoto');
   if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
-
-  // Start camera — exact Shark Boy pattern
-  try {
-    bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-    document.getElementById('bpVid').srcObject = bpStream;
-  } catch(err) {
-    console.log('Camera not available:', err);
-    document.getElementById('bpVid').style.display = 'none';
-  }
+  // Camera will be requested when user taps 📸 (must be a direct user gesture on iOS)
 }
 
-function takeBossPhoto(){
+async function takeBossPhoto(){
   const vid=document.getElementById('bpVid');
   const flash=document.getElementById('bpFlash');
   vib([30,20,60]);
   flash.style.opacity='0.9';
   setTimeout(()=>flash.style.opacity='0',200);
+
+  // Request camera RIGHT HERE in the user gesture — same as Shark Boy's capturePhoto()
+  if(!bpStream){
+    try {
+      bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      vid.srcObject = bpStream;
+      vid.style.display='block';
+      // Give video a moment to start playing before we capture
+      await new Promise(resolve => setTimeout(resolve, 800));
+    } catch(err) {
+      console.log('Boss camera error:', err);
+    }
+  }
 
   const W=window.innerWidth,H=window.innerHeight;
   const dpr=Math.min(window.devicePixelRatio||1,2);
@@ -2278,6 +2363,9 @@ function takeBossPhoto(){
     }
     ctx.globalAlpha=1;
   }
+
+  // Fisherman's bucket hat on the person
+  drawFishermanHat(ctx, W, H);
 
   // 2. Draw fish emoji centered
   const fish=bpFishData.fish;
