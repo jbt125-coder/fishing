@@ -861,8 +861,53 @@ function startTitleAnimation(){
 /* ═══════════════════════════════════════════
    FISHING LICENSE CAMERA
 ═══════════════════════════════════════════ */
-let licStream=null;
-let licCaptured=null;
+let licAutoSkipTimer=null;
+let bpAutoSkipTimer=null;
+
+function startLicAutoSkip(){
+  clearTimeout(licAutoSkipTimer);
+  let secs=30;
+  const hint=document.getElementById('licHint');
+  licAutoSkipTimer=setInterval(()=>{
+    secs--;
+    if(secs>0){
+      hint.textContent=`Hold still — smile for your license photo! (auto-skip in ${secs}s)`;
+    } else {
+      clearInterval(licAutoSkipTimer);licAutoSkipTimer=null;
+      hint.textContent='Auto-skipping...';
+      skipLicense();
+    }
+  },1000);
+}
+
+function clearLicAutoSkip(){
+  clearInterval(licAutoSkipTimer);licAutoSkipTimer=null;
+  // Reset hint if still on screen
+  const hint=document.getElementById('licHint');
+  if(hint)hint.textContent='Hold still — smile for your license photo!';
+}
+
+function startBpAutoSkip(){
+  clearTimeout(bpAutoSkipTimer);
+  let secs=30;
+  const sub=document.getElementById('bpSub');
+  bpAutoSkipTimer=setInterval(()=>{
+    secs--;
+    if(secs>0){
+      if(sub)sub.textContent=`LEGENDARY CATCH · auto-skip in ${secs}s`;
+    } else {
+      clearInterval(bpAutoSkipTimer);bpAutoSkipTimer=null;
+      skipBossPhoto();
+    }
+  },1000);
+}
+
+function clearBpAutoSkip(){
+  clearInterval(bpAutoSkipTimer);bpAutoSkipTimer=null;
+  const sub=document.getElementById('bpSub');
+  if(sub)sub.textContent='LEGENDARY CATCH · DEEP HOOK';
+}
+
 let licNumber='DH-'+Math.floor(100000+Math.random()*900000);
 let licPulseRAF=null;
 
@@ -879,6 +924,7 @@ async function openLicenseScreen(){
   document.getElementById('licDateSvg').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'});
   showScr('licenseScr');
   startLicPulse();
+  startLicAutoSkip();
   // Camera called directly here — must stay in user gesture context
   try {
     licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
@@ -971,6 +1017,7 @@ function drawFishermanHat(ctx, W, H){
 }
 
 async function takeLicensePhoto(){
+  clearLicAutoSkip();  // user acted — cancel auto-skip
   vib([30,15,50]);
   const flash=document.getElementById('licFlash');
   flash.style.opacity='0.95';
@@ -1097,11 +1144,13 @@ function retakeLicense(){
 }
 
 function skipLicense(){
+  clearLicAutoSkip();
   closeLicenseCamera();
   startGame();
 }
 
 function proceedFromLicense(){
+  clearLicAutoSkip();
   closeLicenseCamera();
   startGame();
 }
@@ -2317,10 +2366,12 @@ async function openBossPhoto(fish,moneyEarned,pointsEarned){
 
   showScr('bossPhoto');
   if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
+  startBpAutoSkip();
   // Camera will be requested when user taps 📸 (must be a direct user gesture on iOS)
 }
 
 async function takeBossPhoto(){
+  clearBpAutoSkip();  // user acted — cancel auto-skip
   const vid=document.getElementById('bpVid');
   const flash=document.getElementById('bpFlash');
   vib([30,20,60]);
@@ -2414,6 +2465,7 @@ async function takeBossPhoto(){
 }
 
 function saveBossPhoto(){
+  clearBpAutoSkip();
   if(!bpCaptured)return;
   const a=document.createElement('a');
   a.href=bpCaptured;
@@ -2423,7 +2475,10 @@ function saveBossPhoto(){
   setTimeout(()=>closeBossPhoto(),400);
 }
 
-function skipBossPhoto(){closeBossPhoto();}
+function skipBossPhoto(){
+  clearBpAutoSkip();
+  closeBossPhoto();
+}
 
 function closeBossPhoto(){
   if(bpStream){try{bpStream.getTracks().forEach(t=>t.stop());}catch(e){}bpStream=null;}
