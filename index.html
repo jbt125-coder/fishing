@@ -18,7 +18,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
 .screen.active{display:flex;}
 
-/* ── OVERLAYS (modals/options) ── */
+/* ── OVERLAYS ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:none;align-items:center;justify-content:center;}
 .overlay.show{display:flex;}
 .obox{background:linear-gradient(160deg,#0a1a30,#051020);border:2px solid var(--acc2);border-radius:18px;padding:24px 20px;max-width:320px;width:92%;max-height:90vh;overflow-y:auto;}
@@ -57,19 +57,39 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 @keyframes swingPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
 .gyro-live{font-family:var(--mono);font-size:9px;color:rgba(100,180,255,.5);text-align:center;}
 
-/* ── TITLE ── */
-#S0{background:linear-gradient(180deg,#020810,#0a2035 50%,#0d1a08);align-items:center;justify-content:center;gap:14px;}
-.ttl{font-size:52px;font-weight:700;letter-spacing:6px;color:var(--acc);text-shadow:0 0 30px rgba(240,192,64,.8);text-align:center;}
+/* ── TITLE SCREEN ── */
+#S0{background:#020810;align-items:center;justify-content:flex-end;gap:0;padding-bottom:0;}
+#titleCV{position:absolute;inset:0;width:100%;height:100%;}
+.title-ui{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:48px;width:100%;}
+.ttl{font-size:56px;font-weight:700;letter-spacing:6px;color:var(--acc);text-shadow:0 0 40px rgba(240,192,64,.9),0 0 80px rgba(240,192,64,.4);text-align:center;animation:titlePulse 2.5s ease-in-out infinite;}
+@keyframes titlePulse{0%,100%{text-shadow:0 0 30px rgba(240,192,64,.8);}50%{text-shadow:0 0 60px rgba(240,192,64,1),0 0 100px rgba(240,192,64,.5);}}
 .tsub{font-family:var(--mono);color:var(--acc2);font-size:12px;letter-spacing:4px;opacity:.8;text-align:center;}
-.tfish{font-size:32px;letter-spacing:4px;text-align:center;}
-.btnP{background:linear-gradient(135deg,#1a5a9a,#0d3060);border:2px solid var(--acc);border-radius:12px;color:var(--acc);font-family:var(--font);font-size:20px;font-weight:600;letter-spacing:4px;padding:14px 48px;cursor:pointer;touch-action:manipulation;}
+.btnP{background:linear-gradient(135deg,#1a5a9a,#0d3060);border:2px solid var(--acc);border-radius:12px;color:var(--acc);font-family:var(--font);font-size:22px;font-weight:600;letter-spacing:4px;padding:16px 52px;cursor:pointer;touch-action:manipulation;box-shadow:0 0 24px rgba(240,192,64,.3);}
 .btnP:active{transform:scale(.97);}
 .tinfo{font-family:var(--mono);font-size:10px;color:rgba(100,180,255,.35);text-align:center;line-height:2;}
+.title-gear{font-size:11px;font-family:var(--mono);color:rgba(100,180,255,.3);cursor:pointer;padding:6px;touch-action:manipulation;}
+
+/* ── LICENSE SCREEN ── */
+#licenseScr{background:#000;position:relative;overflow:hidden;}
+#licVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;}
+#licCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.lic-ui{position:absolute;bottom:0;left:0;right:0;z-index:20;padding:12px 20px 28px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.lic-title-bar{position:absolute;top:0;left:0;right:0;z-index:20;padding:14px 16px 10px;background:linear-gradient(180deg,rgba(0,0,0,.85),transparent);}
+.lic-title{font-size:18px;font-weight:700;color:var(--acc);letter-spacing:3px;}
+.lic-sub{font-family:var(--mono);font-size:9px;color:rgba(240,192,64,.6);letter-spacing:2px;}
+.lic-hint{font-family:var(--mono);font-size:11px;color:rgba(200,232,255,.7);text-align:center;letter-spacing:1px;}
+.lic-shutter{width:70px;height:70px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.4);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 0 20px rgba(255,255,255,.3);}
+.lic-shutter:active{transform:scale(.93);}
+.lic-actions{display:flex;gap:14px;align-items:center;}
+.lic-skip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:20px;color:#cce8ff;font-family:var(--font);font-size:13px;padding:9px 20px;cursor:pointer;touch-action:manipulation;}
+.lic-save{background:linear-gradient(135deg,#1a6a2a,#0d4018);border:2px solid var(--grn);border-radius:20px;color:var(--grn);font-family:var(--font);font-size:13px;padding:9px 20px;cursor:pointer;touch-action:manipulation;display:none;}
+.lic-retake{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:20px;color:#cce8ff;font-family:var(--font);font-size:13px;padding:9px 20px;cursor:pointer;touch-action:manipulation;display:none;}
+#licFlash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:30;transition:opacity .12s;}
+.lic-proceed{width:100%;padding:13px;background:linear-gradient(135deg,#1a5a9a,#0d3060);border:2px solid var(--acc);border-radius:12px;color:var(--acc);font-family:var(--font);font-size:16px;font-weight:600;letter-spacing:3px;cursor:pointer;touch-action:manipulation;display:none;}
 
 /* ── FISHING SCREEN ── */
 #S1{background:var(--deep);}
 #CV{width:100%;flex-shrink:0;display:block;touch-action:none;}
-
 .hud{display:flex;justify-content:space-between;align-items:center;padding:3px 8px;background:rgba(0,0,0,.9);border-bottom:1px solid var(--border);flex-shrink:0;}
 .hs{display:flex;flex-direction:column;align-items:center;}
 .hl{font-family:var(--mono);font-size:7px;color:rgba(100,180,255,.5);letter-spacing:1px;}
@@ -78,49 +98,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .hud-gear{font-size:18px;cursor:pointer;padding:2px 4px;touch-action:manipulation;}
 .boss-banner{display:none;background:linear-gradient(90deg,rgba(255,40,255,.15),rgba(255,40,255,.05));border-bottom:1px solid var(--boss);padding:3px 10px;font-family:var(--mono);font-size:10px;color:var(--boss);text-align:center;letter-spacing:2px;flex-shrink:0;}
 .boss-banner.show{display:block;}
-
-/* Tilt bar */
 .tilt-bar-wrap{position:absolute;top:6px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:5px;z-index:20;background:rgba(0,0,0,.75);border:1px solid var(--acc2);border-radius:20px;padding:3px 8px;}
 .tilt-bar-wrap.show{display:flex;}
 .tilt-lbl{font-family:var(--mono);font-size:9px;color:var(--acc2);}
 .tilt-track{width:60px;height:7px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
 .tilt-fill{height:100%;border-radius:3px;background:var(--acc);}
-
-/* CONTROLS — crow fills remaining height, no left col (it's fixed) */
 .crow{flex:1;display:flex;align-items:stretch;gap:6px;padding:4px 6px 6px;min-height:0;overflow:hidden;}
 .ccol{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;min-height:0;overflow:hidden;}
-
-/* ── CAST BAR — fixed to left edge, BOTTOM HALF only ── */
-.castcol{
-  position:fixed;left:0;top:50%;bottom:0;
-  width:52px;z-index:50;
-  display:flex;flex-direction:column;align-items:center;
-  gap:0;padding:6px 4px 10px;
-  background:rgba(2,8,20,0.92);
-  border-right:1px solid rgba(64,192,224,.18);
-  border-top:1px solid rgba(64,192,224,.12);
-  touch-action:none;
-  -webkit-touch-callout:none;
-  -webkit-user-select:none;
-  user-select:none;
-  overscroll-behavior:none;
-}
+.castcol{position:fixed;left:0;top:50%;bottom:0;width:52px;z-index:50;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 4px 10px;background:rgba(2,8,20,0.92);border-right:1px solid rgba(64,192,224,.18);border-top:1px solid rgba(64,192,224,.12);touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;overscroll-behavior:none;}
 .clbl{font-family:var(--mono);font-size:8px;color:var(--acc2);letter-spacing:1px;text-transform:uppercase;text-align:center;line-height:1.2;flex-shrink:0;}
 .cast-track-wrap{flex:1;width:100%;position:relative;min-height:0;touch-action:none;overscroll-behavior:none;}
-
-/* Offset only the control row, not canvas */
 #S1{padding-left:0;}
 .crow{padding-left:58px;}
-/* swing col also fixed bottom half */
-.swing-cast-col{
-  position:fixed;left:0;top:50%;bottom:0;
-  width:52px;z-index:50;
-  display:none;flex-direction:column;align-items:center;gap:4px;
-  padding:6px 4px 10px;
-  background:rgba(2,8,20,0.92);
-  border-right:1px solid rgba(64,192,224,.18);
-  border-top:1px solid rgba(64,192,224,.12);
-}
+.swing-cast-col{position:fixed;left:0;top:50%;bottom:0;width:52px;z-index:50;display:none;flex-direction:column;align-items:center;gap:4px;padding:6px 4px 10px;background:rgba(2,8,20,0.92);border-right:1px solid rgba(64,192,224,.18);border-top:1px solid rgba(64,192,224,.12);}
 .cast-track{position:absolute;inset:0;background:rgba(255,255,255,.05);border-radius:10px;border:1px solid rgba(64,192,224,.2);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:8px;gap:3px;overflow:hidden;}
 .swipe-arrows{display:flex;flex-direction:column;align-items:center;gap:1px;margin-bottom:4px;}
 .sa{color:rgba(64,192,224,.25);font-size:14px;animation:saPulse 1.3s ease-in-out infinite;}
@@ -132,21 +122,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .swipe-ball.charging{background:radial-gradient(circle at 38% 35%,var(--acc),#805000);border-color:var(--acc);box-shadow:0 0 18px rgba(240,192,64,.7);}
 .cast-power-fill{position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,rgba(240,192,64,.3),rgba(64,192,224,.04));border-radius:10px;transition:height .04s;pointer-events:none;}
 .cast-pct{font-family:var(--mono);font-size:8px;color:var(--acc);background:rgba(0,0,0,.5);border-radius:3px;padding:1px 3px;}
-
-/* SWING CAST INDICATOR (shown instead of swipe bar when swing mode) */
 .swing-cast-col{display:flex;flex-direction:column;align-items:center;gap:4px;width:50px;flex-shrink:0;}
 .swing-icon-wrap{flex:1;width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
 .swing-icon{font-size:26px;transition:transform .1s;}
 .swing-status{font-family:var(--mono);font-size:7px;color:rgba(100,180,255,.4);text-align:center;line-height:1.4;}
-
 .buddy{background:rgba(0,15,35,.95);border:1px solid var(--border);border-radius:10px;padding:5px 9px;display:flex;align-items:center;gap:7px;flex-shrink:0;}
 .bav{font-size:22px;flex-shrink:0;}
 .binn{flex:1;min-width:0;}
 .bnm{font-family:var(--mono);font-size:7px;color:rgba(100,180,255,.4);}
 .bmsg{font-size:11px;font-weight:600;color:#cce8ff;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bmsg.cmd{color:var(--acc);}
-
-/* Fish fight panel */
 .fishpan{background:rgba(0,10,25,.98);border-radius:10px;padding:6px 9px;display:none;flex-shrink:0;}
 .fishpan.show{display:block;}
 .fnrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
@@ -155,9 +140,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .bl{font-family:var(--mono);font-size:7px;color:rgba(100,180,255,.4);margin-bottom:1px;}
 .btr{background:rgba(255,255,255,.07);border-radius:4px;height:7px;overflow:hidden;margin-bottom:3px;}
 .bf{height:100%;border-radius:4px;transition:width .1s;}
-
-/* 3-phase cast panels */
-/* Phase 1: Aimer */
 #castAimer{display:none;flex-direction:column;gap:6px;background:rgba(0,12,30,.98);border:1px solid var(--acc2);border-radius:12px;padding:9px 8px;flex-shrink:0;}
 #castAimer.show{display:flex;}
 .aimer-top{display:flex;justify-content:space-between;align-items:center;}
@@ -173,11 +155,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .aimer-cursor{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc);pointer-events:none;z-index:3;}
 .streak-badge{display:none;position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff2020,#ff8000);color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;letter-spacing:1px;white-space:nowrap;animation:sbPop .25s ease-out;}
 @keyframes sbPop{0%{transform:translateX(-50%) scale(0.4);opacity:0}70%{transform:translateX(-50%) scale(1.15);}100%{transform:translateX(-50%) scale(1);opacity:1;}}
-
-/* Aimer hint — instruction below the track */
 .aimer-hint{font-family:var(--mono);font-size:9px;color:var(--acc);text-align:center;padding:3px 0;letter-spacing:1px;font-weight:600;}
-
-/* Idle / wait / catch */
 .cpan{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
 .cpan-hint{font-family:var(--mono);font-size:9px;color:rgba(100,180,255,.45);text-align:center;line-height:1.7;}
 .swipe-demo{font-size:26px;animation:sdAnim 1.6s ease-in-out infinite;}
@@ -190,8 +168,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .cearn{font-size:12px;font-family:var(--mono);color:var(--acc);}
 .boss-catch{background:rgba(80,0,80,.95) !important;border:1px solid var(--boss);}
 .boss-catch .ctit{color:var(--boss);}
-
-/* REEL */
 .rcol{display:flex;flex-direction:column;align-items:center;gap:3px;width:84px;flex-shrink:0;}
 #RW{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#3a3a50,#12121e);border:3px solid #2a4a6a;cursor:grab;position:relative;touch-action:none;transition:border-color .3s,box-shadow .3s;overflow:hidden;}
 #RW.active{border-color:var(--acc);box-shadow:0 0 16px rgba(240,192,64,.5);}
@@ -235,16 +211,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .lrow{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-family:var(--mono);font-size:9px;}
 .lrow .dr{color:var(--red);} .lrow .cr{color:var(--grn);}
 
-/* Boss intro overlay */
+/* Boss intro */
 #bossIntro{background:rgba(0,0,0,.95);flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;}
 #bossIntro h1{font-size:42px;color:var(--boss);text-shadow:0 0 30px var(--boss);animation:bossGlow 1s ease-in-out infinite alternate;}
 @keyframes bossGlow{from{text-shadow:0 0 20px var(--boss);}to{text-shadow:0 0 50px var(--boss),0 0 80px var(--boss);}}
-
 @keyframes cpulse{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
 .score-flash{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);font-size:24px;font-weight:700;pointer-events:none;z-index:800;animation:sfloat 1.1s ease-out forwards;}
 @keyframes sfloat{0%{opacity:1;transform:translate(-50%,-50%);}100%{opacity:0;transform:translate(-50%,-130%);}}
 .sscroll::-webkit-scrollbar{width:3px;}
 .sscroll::-webkit-scrollbar-thumb{background:#3a2a10;border-radius:2px;}
+
+/* Boss photo */
+#bossPhoto{background:#000;position:relative;overflow:hidden;}
+#bpVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;}
+#bpCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -254,14 +234,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
   <div class="obox">
     <h2>⚙️ OPTIONS</h2>
     <div class="osub">DEEP HOOK SETTINGS</div>
-
     <div class="osec">🎮 CAST METHOD</div>
     <div class="cast-mode-btns">
       <button class="cm-btn sel" id="cmSlider" onclick="setCastMode('slider')">📏 SLIDER<br><span style="font-size:9px;opacity:.6">Swipe + aim</span></button>
       <button class="cm-btn" id="cmSwing" onclick="setCastMode('swing')">📱 SWING<br><span style="font-size:9px;opacity:.6">Motion cast</span></button>
     </div>
     <button class="obtn" style="margin-top:8px;" id="trainBtn" onclick="openTraining()">🎯 TRAIN SWING CAST</button>
-
     <div class="osec">📳 VIBRATION</div>
     <div class="orow">
       <span class="olbl">Vibration Feedback</span>
@@ -271,11 +249,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
       <span class="olbl">Test Vibration</span>
       <button class="obtn" style="margin-top:0;padding:6px 12px;width:auto;font-size:11px;" onclick="testVib()">📳 TEST</button>
     </div>
-
     <div class="osec">🎣 GAME INFO</div>
     <div class="orow"><span class="olbl">Boss every 5 levels</span><span style="font-family:var(--mono);font-size:10px;color:var(--boss);">👹 x5</span></div>
     <div class="orow"><span class="olbl">Current cast mode</span><span id="castModeLbl" style="font-family:var(--mono);font-size:10px;color:var(--acc2);">SLIDER</span></div>
-
     <button class="obtn grn" onclick="closeOptions()">✓ DONE</button>
   </div>
 </div>
@@ -284,70 +260,78 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 <div id="trainScr" class="screen">
   <div class="train-title">🎯 SWING TRAINING</div>
   <div class="train-sub">CALIBRATE YOUR CAST · 3 SWINGS</div>
-
   <div class="train-body">
-    <div class="train-step">
-      <div class="step-num">1</div>
-      <div class="step-txt">Hold phone naturally. <strong style="color:var(--acc)">Pull it back</strong> toward your chest like a fishing rod.</div>
-    </div>
-    <div class="train-step">
-      <div class="step-num">2</div>
-      <div class="step-txt"><strong style="color:var(--acc)">Swing forward and down-left</strong> in one smooth arc — like casting a real rod.</div>
-    </div>
-    <div class="train-step">
-      <div class="step-num">3</div>
-      <div class="step-txt">Do this <strong style="color:var(--grn)">3 times</strong>. The game learns your swing and uses it to detect casts.</div>
-    </div>
+    <div class="train-step"><div class="step-num">1</div><div class="step-txt">Hold phone naturally. <strong style="color:var(--acc)">Pull it back</strong> toward your chest like a fishing rod.</div></div>
+    <div class="train-step"><div class="step-num">2</div><div class="step-txt"><strong style="color:var(--acc)">Swing forward and down-left</strong> in one smooth arc — like casting a real rod.</div></div>
+    <div class="train-step"><div class="step-num">3</div><div class="step-txt">Do this <strong style="color:var(--grn)">3 times</strong>. The game learns your swing and uses it to detect casts.</div></div>
   </div>
-
   <div class="swing-viz" id="swingViz">
     <span id="swingEmoji" style="font-size:40px;">📱</span>
     <div class="swing-trail" id="swingTrail">Waiting for swing...</div>
   </div>
-
   <div class="swing-progress">
     <div class="swing-dot active" id="sd0"></div>
     <div class="swing-dot" id="sd1"></div>
     <div class="swing-dot" id="sd2"></div>
   </div>
-
   <div class="gyro-live" id="gyroLive">Tilt your phone to begin</div>
-
   <div style="width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:10px;padding:10px;font-family:var(--mono);font-size:10px;color:rgba(100,180,255,.6);line-height:1.8;">
     <strong style="color:var(--acc2);">Calibrated swings: <span id="calibCount">0</span>/3</strong><br>
     Peak force: <span id="peakForce">—</span><br>
     Avg power: <span id="avgPower">—</span>
   </div>
-
-  <button class="obtn" id="trainDoneBtn" onclick="finishTraining()" style="width:100%;opacity:.4;pointer-events:none;">
-    ✓ DONE — USE THIS CALIBRATION
-  </button>
+  <button class="obtn" id="trainDoneBtn" onclick="finishTraining()" style="width:100%;opacity:.4;pointer-events:none;">✓ DONE — USE THIS CALIBRATION</button>
   <button class="obtn" onclick="closeTraining()" style="width:100%;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2);color:#a0c8e0;">✗ CANCEL</button>
 </div>
 
-<!-- TITLE -->
+<!-- ══════════════════════════════
+     TITLE SCREEN (animated canvas)
+════════════════════════════════ -->
 <div id="S0" class="screen active">
-  <div class="tfish">🎣 🐟 🎣</div>
-  <div class="ttl">DEEP HOOK</div>
-  <div class="tsub">FISHING TOURNAMENT</div>
-  <button class="btnP" id="startBtn">CAST OFF</button>
-  <div class="tinfo">
-    AIM · POWER · CAST<br>
-    BOSS FISH EVERY 5 LEVELS<br>
-    ⚙️ OPTIONS FOR SWING CAST
+  <canvas id="titleCV"></canvas>
+  <div class="title-ui">
+    <div class="ttl">DEEP HOOK</div>
+    <div class="tsub">FISHING TOURNAMENT</div>
+    <button class="btnP" id="startBtn">CAST OFF</button>
+    <div class="tinfo">TAP TO FISH · BOSS FISH EVERY 5 LEVELS</div>
+    <div class="title-gear" id="titleGearBtn">⚙️ OPTIONS</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     FISHING LICENSE SCREEN
+════════════════════════════════ -->
+<div id="licenseScr" class="screen">
+  <video id="licVid" autoplay playsinline muted></video>
+  <canvas id="licCanvas"></canvas>
+
+  <div class="lic-title-bar">
+    <div class="lic-title">🎣 FISHING LICENSE</div>
+    <div class="lic-sub">DEEP HOOK OFFICIAL · TAP 📸 TO CAPTURE</div>
+  </div>
+
+  <div id="licFlash"></div>
+
+  <div class="lic-ui">
+    <div class="lic-hint" id="licHint">Hold still — smile for your license photo!</div>
+    <div class="lic-actions">
+      <button class="lic-skip" id="licSkipBtn" onclick="skipLicense()">SKIP</button>
+      <button class="lic-shutter" id="licShutter" onclick="takeLicensePhoto()">📸</button>
+      <div style="width:52px;"></div>
+    </div>
+    <button class="lic-retake" id="licRetakeBtn" onclick="retakeLicense()">↩ RETAKE</button>
+    <button class="lic-proceed" id="licProceedBtn" onclick="proceedFromLicense()">🎣 START FISHING!</button>
   </div>
 </div>
 
 <!-- FISHING -->
 <div id="S1" class="screen" style="position:relative;">
   <canvas id="CV"></canvas>
-
   <div class="tilt-bar-wrap" id="tiltHUD">
     <span class="tilt-lbl">📱</span>
     <div class="tilt-track"><div class="tilt-fill" id="tiltFill" style="width:0%"></div></div>
     <span class="tilt-lbl" id="tiltVal">0°</span>
   </div>
-
   <div class="hud">
     <div class="hs"><span class="hl">LVL</span><span class="hv" id="hLvl" style="color:var(--acc)">1</span></div>
     <div class="hs"><span class="hl">SCORE</span><span class="hv" id="hScr" style="color:var(--acc2)">0</span></div>
@@ -355,10 +339,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
     <div class="hs"><span class="hl">CASH</span><span class="hv" id="hMon" style="color:var(--grn)">$0</span></div>
     <div class="hud-gear" id="gearBtn" title="Options">⚙️</div>
   </div>
-
   <div class="boss-banner" id="bossBanner">👹 BOSS LEVEL — LEGENDARY CREATURE LURKS BELOW</div>
-
-  <!-- FIXED LEFT CAST BAR (slider mode) -->
   <div class="castcol" id="castColSlider">
     <span class="clbl">PULL<br>↓</span>
     <div class="cast-track-wrap">
@@ -375,8 +356,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
     </div>
     <div class="cast-pct" id="castPct">—</div>
   </div>
-
-  <!-- FIXED LEFT SWING INDICATOR (swing mode) -->
   <div class="swing-cast-col" id="castColSwing">
     <span class="clbl">SWING<br>CAST</span>
     <div class="swing-icon-wrap">
@@ -384,9 +363,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
       <div class="swing-status" id="swingCastStatus">Pull back<br>then swing!</div>
     </div>
   </div>
-
   <div class="crow">
-    <!-- CENTER -->
     <div class="ccol">
       <div class="buddy">
         <div class="bav">🎣</div>
@@ -395,8 +372,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
           <div class="bmsg" id="bmsg">Swipe UP the left bar to cast!</div>
         </div>
       </div>
-
-      <!-- Fight panel -->
       <div class="fishpan" id="fishpan">
         <div class="fnrow">
           <span class="fn" id="fishN">—</span>
@@ -410,8 +385,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
         <div class="btr"><div class="bf" id="stamBar" style="width:100%;background:var(--org)"></div></div>
         <div style="margin-top:3px;font-family:var(--mono);font-size:8px;color:var(--acc2);display:none;" id="tiltHint">📱 Tilt = PULL!</div>
       </div>
-
-      <!-- Aimer panel — aimer auto-starts, tap green zone, then swipe bar -->
       <div id="castAimer">
         <div class="aimer-top">
           <span class="aimer-lbl" id="aimer-lbl-txt">🎯 TAP GREEN ZONE!</span>
@@ -431,23 +404,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
         </div>
         <div class="aimer-hint" id="aimPowerLbl">Tap the green zone!</div>
       </div>
-
-      <!-- Idle -->
       <div class="cpan" id="cpan">
         <div class="swipe-demo">👆</div>
         <div class="cpan-hint" id="cpanHint">Swipe UP left bar<br>to start casting!</div>
       </div>
-
       <div class="waitmsg" id="waitmsg" style="display:none">🌊 Waiting for a bite...</div>
-
       <div class="catchfl" id="catchfl">
         <div class="ctit" id="catchTitle">🎉 FISH ON!</div>
         <div class="cfish" id="cflFish"></div>
         <div class="cearn" id="cflEarn"></div>
       </div>
     </div>
-
-    <!-- RIGHT: Reel -->
     <div class="rcol" style="position:relative;">
       <span class="clbl">REEL</span>
       <div id="RW">
@@ -463,7 +430,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
   </div>
 </div>
 
-<!-- BOSS INTRO (full screen) -->
+<!-- BOSS INTRO -->
 <div id="bossIntro" class="screen">
   <h1 id="bossName">👹 BOSS!</h1>
   <p id="bossDesc" style="font-family:var(--mono);font-size:12px;color:rgba(255,200,255,.7);max-width:260px;line-height:1.7;"></p>
@@ -473,28 +440,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 
 <!-- BOSS PHOTO SCREEN -->
 <div id="bossPhoto" class="screen" style="background:#000;position:relative;overflow:hidden;">
-  <video id="bpVid" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);"></video>
+  <video id="bpVid" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;"></video>
   <canvas id="bpCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
-  <!-- Overlay stats -->
   <div id="bpStats" style="position:absolute;top:0;left:0;right:0;padding:12px 16px;background:linear-gradient(180deg,rgba(0,0,0,.85),transparent);z-index:10;">
     <div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#ff80ff;letter-spacing:2px;text-shadow:0 0 12px #ff40ff;" id="bpName">BOSS FISH</div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#cce8ff;margin-top:2px;" id="bpSub">Size · Points · Cash</div>
   </div>
   <div id="bpStatsBar" style="position:absolute;bottom:80px;left:0;right:0;padding:10px 16px;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);z-index:10;display:flex;justify-content:space-around;">
-    <div style="text-align:center;">
-      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,200,255,.6);">WEIGHT</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#ff80ff;" id="bpWeight">—</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,200,255,.6);">EARNED</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#40e080;" id="bpMoney">$0</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,200,255,.6);">POINTS</div>
-      <div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#f0c040;" id="bpPoints">0</div>
-    </div>
+    <div style="text-align:center;"><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,200,255,.6);">WEIGHT</div><div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#ff80ff;" id="bpWeight">—</div></div>
+    <div style="text-align:center;"><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,200,255,.6);">EARNED</div><div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#40e080;" id="bpMoney">$0</div></div>
+    <div style="text-align:center;"><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,200,255,.6);">POINTS</div><div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#f0c040;" id="bpPoints">0</div></div>
   </div>
-  <!-- Shutter & controls -->
   <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 16px 20px;display:flex;align-items:center;justify-content:space-between;z-index:20;background:rgba(0,0,0,.6);">
     <button onclick="skipBossPhoto()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);border-radius:20px;color:#cce8ff;font-family:'Oswald',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;touch-action:manipulation;">SKIP</button>
     <button id="bpShutter" onclick="takeBossPhoto()" style="width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.5);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-size:26px;">📸</button>
@@ -502,7 +458,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
     <div style="width:52px;"></div>
   </div>
   <div id="bpFlash" style="position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:30;transition:opacity .15s;"></div>
-  <div id="bpHint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Oswald',sans-serif;font-size:16px;color:#fff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.8);pointer-events:none;z-index:15;letter-spacing:1px;">🐟 Hold up your catch!<br><span style="font-size:11px;font-family:'Share Tech Mono',monospace;opacity:.7;">Tap 📸 to capture</span></div>
 </div>
 
 <!-- SHOP -->
@@ -552,9 +507,9 @@ const REELS=[
   {name:'MagForce',      price:700,reelB:55,desc:'Lightning.',   stat:'2.6x speed'},
 ];
 const LINES=[
-  {name:'Mono 6lb',         price:0,  brk:92,desc:'Stretchy.',   stat:'Breaks @92%'},
-  {name:'Mono 12lb',        price:18, brk:95,desc:'Stronger.',   stat:'Breaks @95%'},
-  {name:'Fluorocarbon 15lb',price:55, brk:97,desc:'Invisible.',  stat:'Breaks @97%'},
+  {name:'Mono 6lb',         price:0,  brk:92,desc:'Stretchy.',    stat:'Breaks @92%'},
+  {name:'Mono 12lb',        price:18, brk:95,desc:'Stronger.',    stat:'Breaks @95%'},
+  {name:'Fluorocarbon 15lb',price:55, brk:97,desc:'Invisible.',   stat:'Breaks @97%'},
   {name:'Braid 30lb',       price:140,brk:99,desc:'Zero stretch.',stat:'Breaks @99%'},
   {name:'Titanium 80lb',    price:380,brk:101,desc:'Unbreakable.',stat:'Unbreakable'},
 ];
@@ -566,11 +521,11 @@ const LURES=[
   {name:'Mega Popper',  price:400,lureB:45,tBias:3,desc:'Surface burst.', stat:'+45%'},
 ];
 const BAITS=[
-  {name:'Night Crawlers x5',price:8, lkB:8, ch:5,desc:'Juicy worms.',  stat:'+8% luck'},
-  {name:'Corn Kernels x8',  price:12,lkB:12,ch:8,desc:'Carp magnet.',  stat:'+12% luck'},
-  {name:'Live Shrimp x5',   price:25,lkB:22,ch:5,desc:'Salt star.',    stat:'+22% luck'},
-  {name:'Live Minnows x3',  price:40,lkB:35,ch:3,desc:'Predator bait.',stat:'+35% luck'},
-  {name:'Trophy Chum x1',   price:80,lkB:55,ch:1,desc:'Legend magnet.',stat:'+55% luck'},
+  {name:'Night Crawlers x5',price:8, lkB:8, ch:5,desc:'Juicy worms.',   stat:'+8% luck'},
+  {name:'Corn Kernels x8',  price:12,lkB:12,ch:8,desc:'Carp magnet.',   stat:'+12% luck'},
+  {name:'Live Shrimp x5',   price:25,lkB:22,ch:5,desc:'Salt star.',     stat:'+22% luck'},
+  {name:'Live Minnows x3',  price:40,lkB:35,ch:3,desc:'Predator bait.', stat:'+35% luck'},
+  {name:'Trophy Chum x1',   price:80,lkB:55,ch:1,desc:'Legend magnet.', stat:'+55% luck'},
 ];
 const FTIERS={
   1:{name:'Common',   col:'#7ecba1',pts:10},
@@ -596,14 +551,12 @@ const FISH=[
   {t:5,name:'Bluefin Tuna',   e:'🐠',v:300,w:'200–400lb', ai:'legendary'},
   {t:5,name:'Swordfish',      e:'🐡',v:340,w:'150–500lb', ai:'legendary'},
 ];
-
-// 5 BOSS FISH — 3 mega real + 2 mythical monsters
 const BOSSES=[
-  {id:1, name:'GOLIATH GROUPER',    e:'🐟', sub:'1,000 lb Giant',      col:'#e8a84a', v:500, w:'800–1200lb', ai:'slow_heavy', desc:'A half-ton monster from the deep shelf. Slow, but unstoppable when it dives.'},
-  {id:2, name:'GIANT BLUEFIN',      e:'🐠', sub:'The Ocean Bullet',     col:'#5cb8e4', v:600, w:'900–1400lb', ai:'runner',     desc:'The fastest fish alive. Once it runs, good luck stopping it.'},
-  {id:3, name:'KRAKEN SPAWN',       e:'🦑', sub:'Mythical Horror',      col:'#9b79d9', v:800, w:'Unknown',    ai:'legendary',  desc:'A creature of legend. Multiple tentacles drag the line in every direction.'},
-  {id:4, name:'GHOST MARLIN',       e:'🌊', sub:'The White Shadow',     col:'#e0e8ff', v:700, w:'600–900lb',  ai:'legendary',  desc:'An albino marlin that has never been caught. Leaps free of the water repeatedly.'},
-  {id:5, name:'THE LEVIATHAN',      e:'🐉', sub:'Ancient Sea Beast',    col:'#ff40ff', v:1000,w:'Beyond scale',ai:'legendary', desc:'The creature that haunts the darkest trenches. No one knows its true form.'},
+  {id:1,name:'GOLIATH GROUPER',e:'🐟',sub:'1,000 lb Giant',     col:'#e8a84a',v:500,w:'800–1200lb',ai:'slow_heavy',desc:'A half-ton monster from the deep shelf. Slow, but unstoppable when it dives.'},
+  {id:2,name:'GIANT BLUEFIN',  e:'🐠',sub:'The Ocean Bullet',    col:'#5cb8e4',v:600,w:'900–1400lb',ai:'runner',    desc:'The fastest fish alive. Once it runs, good luck stopping it.'},
+  {id:3,name:'KRAKEN SPAWN',   e:'🦑',sub:'Mythical Horror',     col:'#9b79d9',v:800,w:'Unknown',   ai:'legendary', desc:'A creature of legend. Multiple tentacles drag the line in every direction.'},
+  {id:4,name:'GHOST MARLIN',   e:'🌊',sub:'The White Shadow',    col:'#e0e8ff',v:700,w:'600–900lb', ai:'legendary', desc:'An albino marlin that has never been caught. Leaps free of the water repeatedly.'},
+  {id:5,name:'THE LEVIATHAN',  e:'🐉',sub:'Ancient Sea Beast',   col:'#ff40ff',v:1000,w:'Beyond scale',ai:'legendary',desc:'The creature that haunts the darkest trenches. No one knows its true form.'},
 ];
 
 const BUD={
@@ -627,18 +580,501 @@ const BUD={
 };
 
 /* ═══════════════════════════════════════════
-   GLOBAL SETTINGS
+   TITLE SCREEN ANIMATION
 ═══════════════════════════════════════════ */
-// Seeded star + shooting star state (initialized once in startGame)
+let titleRAF=null;
+let titleStars=[];
+let titleFish=[];   // jumping fish
+let titleCast={phase:'back',t:0,lineX:0,lineY:0,bobX:0,bobY:0,splash:false,splashT:0};
+
+function initTitleCanvas(){
+  const cv=document.getElementById('titleCV');
+  const W=window.innerWidth,H=window.innerHeight;
+  cv.width=W;cv.height=H;
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  // Seed stars
+  titleStars=[];
+  for(let i=0;i<60;i++){
+    titleStars.push({x:Math.random()*W,y:Math.random()*H*0.55,r:Math.random()<0.15?1.8:Math.random()<0.4?1.1:0.6,phase:Math.random()*Math.PI*2,spd:0.2+Math.random()*0.5});
+  }
+  // Seed fish
+  titleFish=[];
+  for(let i=0;i<3;i++){
+    scheduleTitleFish(i,i*3000);
+  }
+}
+
+function scheduleTitleFish(id,delay){
+  setTimeout(()=>{
+    if(!document.getElementById('S0').classList.contains('active'))return;
+    const W=window.innerWidth,H=window.innerHeight;
+    const waterY=H*0.62;
+    titleFish[id]={
+      x:W*0.25+Math.random()*W*0.5,
+      startY:waterY+8,
+      peakY:waterY-(50+Math.random()*80),
+      t:0,dur:0.9+Math.random()*0.4,
+      active:true,
+      splashT:-1,
+      e:['🐟','🐠','🐡'][Math.floor(Math.random()*3)],
+      scale:0.8+Math.random()*0.6,
+    };
+    // reschedule
+    const reDelay=4000+Math.random()*5000;
+    setTimeout(()=>scheduleTitleFish(id,0),reDelay);
+  },delay);
+}
+
+function drawTitle(){
+  if(!document.getElementById('S0').classList.contains('active')){titleRAF=null;return;}
+  const cv=document.getElementById('titleCV');
+  if(!cv){titleRAF=null;return;}
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  const T=Date.now()/1000;
+  ctx.clearRect(0,0,W,H);
+
+  const waterY=H*0.62;
+
+  // Sky gradient
+  const sk=ctx.createLinearGradient(0,0,0,waterY);
+  sk.addColorStop(0,'#020810');sk.addColorStop(0.5,'#0a1e35');sk.addColorStop(1,'#123050');
+  ctx.fillStyle=sk;ctx.fillRect(0,0,W,waterY);
+
+  // Stars
+  for(const s of titleStars){
+    const a=0.2+0.5*Math.abs(Math.sin(T*s.spd+s.phase));
+    ctx.globalAlpha=a;ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.28);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  // Moon
+  const MX=W*0.78,MY=H*0.12;
+  ctx.fillStyle='#ffe890';ctx.shadowColor='#ffe890';ctx.shadowBlur=28;
+  ctx.beginPath();ctx.arc(MX,MY,22,0,6.28);ctx.fill();
+  ctx.shadowBlur=0;
+  // Moon reflection
+  ctx.save();ctx.globalAlpha=0.12;
+  const refG=ctx.createLinearGradient(MX-15,waterY,MX+15,waterY+H*0.15);
+  refG.addColorStop(0,'#ffe890');refG.addColorStop(1,'transparent');
+  ctx.fillStyle=refG;
+  ctx.beginPath();ctx.ellipse(MX,waterY+H*0.07,12+Math.sin(T*0.8)*3,H*0.12,0,0,6.28);ctx.fill();
+  ctx.restore();
+
+  // Water
+  const wg=ctx.createLinearGradient(0,waterY,0,H);
+  wg.addColorStop(0,'#0d2d4a');wg.addColorStop(0.4,'#081828');wg.addColorStop(1,'#030810');
+  ctx.fillStyle=wg;ctx.fillRect(0,waterY,W,H-waterY);
+  // Water shimmer lines
+  ctx.strokeStyle='rgba(60,160,240,.05)';ctx.lineWidth=1;
+  for(let i=0;i<6;i++){
+    const wy=waterY+10+i*18+Math.sin(T+i*1.3)*2;
+    ctx.beginPath();ctx.moveTo(0,wy);ctx.lineTo(W,wy);ctx.stroke();
+  }
+
+  // Pier
+  ctx.fillStyle='#3d2814';ctx.fillRect(0,waterY-4,W*0.28,9);
+  ctx.strokeStyle='#2a1a0a';ctx.lineWidth=1;
+  for(let x=8;x<W*0.28;x+=11){ctx.beginPath();ctx.moveTo(x,waterY-4);ctx.lineTo(x,waterY+5);ctx.stroke();}
+  ctx.fillStyle='#2a1608';
+  [W*.06,W*.13,W*.20,W*.27].forEach(px=>ctx.fillRect(px-3,waterY+5,6,H-waterY-5));
+
+  // === FISHERMAN with animated rod cast ===
+  const PX=W*0.14,PY=waterY-6;
+  const bob=Math.sin(T*0.9)*1.1;
+  // Body
+  ctx.fillStyle='#3a2208';ctx.fillRect(PX-8,PY+14+bob,16,8);
+  ctx.strokeStyle='#1a0e04';ctx.lineWidth=4;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(PX-4,PY+14+bob);ctx.lineTo(PX-6,PY+24+bob);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(PX+4,PY+14+bob);ctx.lineTo(PX+6,PY+24+bob);ctx.stroke();
+  ctx.fillStyle='#1a3a5a';ctx.beginPath();ctx.ellipse(PX,PY+7+bob,8,11,0,0,6.28);ctx.fill();
+  ctx.fillStyle='#c8956a';ctx.beginPath();ctx.arc(PX,PY-3+bob,7,0,6.28);ctx.fill();
+  ctx.fillStyle='#4a3010';ctx.beginPath();ctx.ellipse(PX,PY-9+bob,9,3,0,0,6.28);ctx.fill();
+  ctx.fillRect(PX-5,PY-18+bob,10,10);
+  ctx.fillStyle='#e08040';ctx.fillRect(PX-5,PY-12+bob,10,2);
+
+  // Animated rod cast — cycles: back → forward → wait → back
+  const castCycle=5.5; // seconds per full cycle
+  const ct=(T%castCycle)/castCycle; // 0..1
+  let rodAngle; // angle from vertical, positive = forward
+  let lineLen;
+  if(ct<0.15){
+    // Pull back fast
+    rodAngle=-40*Math.sin(ct/0.15*Math.PI*0.5); // 0 → -40°
+    lineLen=30;
+  } else if(ct<0.25){
+    // Cast forward fast
+    const p=(ct-0.15)/0.10;
+    rodAngle=-40+95*p; // -40° → +55°
+    lineLen=30+70*p;
+  } else if(ct<0.85){
+    // Hold forward with slight bob, line is out
+    rodAngle=55-Math.sin((ct-0.25)/0.6*Math.PI)*8;
+    lineLen=95+Math.sin(T*1.2)*4;
+    // Bobber splash at cast moment (first tick)
+    if(ct<0.27&&!titleCast.splash){
+      titleCast.splash=true;titleCast.splashT=T;
+    }
+  } else {
+    // Return to rest
+    titleCast.splash=false;
+    const p=(ct-0.85)/0.15;
+    rodAngle=55-55*p;
+    lineLen=95-30*p;
+  }
+
+  const armX=PX+14,armY=PY-2+bob;
+  const radA=rodAngle*Math.PI/180;
+  const rodLen=52;
+  const rodTX=armX+Math.sin(radA)*rodLen;
+  const rodTY=armY-Math.cos(radA)*rodLen;
+
+  // Rod
+  ctx.strokeStyle='#8B6914';ctx.lineWidth=3;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(armX,armY);ctx.lineTo(rodTX,rodTY);ctx.stroke();
+
+  // Arm
+  ctx.strokeStyle='#1a3a5a';ctx.lineWidth=5;
+  ctx.beginPath();ctx.moveTo(PX+6,PY+4+bob);ctx.lineTo(armX,armY);ctx.stroke();
+  ctx.strokeStyle='#1a3a5a';ctx.lineWidth=5;
+  ctx.beginPath();ctx.moveTo(PX-6,PY+6+bob);ctx.lineTo(PX-10,PY+13+bob);ctx.stroke();
+
+  // Fishing line & bobber (only when cast is out)
+  if(ct>=0.20&&ct<=0.88){
+    // Line curves down from rod tip toward water
+    const bobberX=rodTX+lineLen*0.85;
+    const bobberY=Math.min(waterY-2,rodTY+lineLen*0.6+Math.sin(T*0.9)*3);
+    ctx.strokeStyle='rgba(180,210,255,.6)';ctx.lineWidth=1.2;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(rodTX,rodTY);ctx.quadraticCurveTo((rodTX+bobberX)/2,rodTY+20,bobberX,bobberY);ctx.stroke();
+    // Bobber
+    const bwob=(ct>0.25&&ct<0.85)?Math.sin(T*1.1)*2.5:0;
+    ctx.strokeStyle='#777';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(bobberX,bobberY-6+bwob);ctx.lineTo(bobberX,bobberY+1+bwob);ctx.stroke();
+    ctx.fillStyle='#e84040';ctx.beginPath();ctx.arc(bobberX,bobberY-3+bwob,5,Math.PI,0);ctx.fill();
+    ctx.fillStyle='#f2f2f2';ctx.beginPath();ctx.arc(bobberX,bobberY-3+bwob,5,0,Math.PI);ctx.fill();
+    // Splash ripple when cast lands
+    if(titleCast.splash){
+      const age=T-titleCast.splashT;
+      if(age<1.5){
+        for(let ring=1;ring<=2;ring++){
+          const rr=age*45+ring*12;
+          const alpha=Math.max(0,0.4-age*0.28)/ring;
+          ctx.strokeStyle=`rgba(80,180,255,${alpha})`;ctx.lineWidth=1.5;
+          ctx.beginPath();ctx.ellipse(bobberX,waterY,rr,rr*0.35,0,0,6.28);ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // Jumping fish
+  const DT=1/60;
+  for(const f of titleFish){
+    if(!f||!f.active)continue;
+    f.t+=DT;
+    const progress=f.t/f.dur;
+    if(progress>=1){f.active=false;continue;}
+    // Parabolic arc
+    const fy=f.startY+(f.peakY-f.startY)*4*progress*(1-progress);
+    const angle=Math.PI*(progress-0.5); // rotate fish through arc
+    ctx.save();ctx.translate(f.x,fy);ctx.rotate(angle*0.4);ctx.font=`${Math.round(22*f.scale)}px serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(f.e,0,0);ctx.restore();
+    // Splash when fish re-enters water
+    if(progress>0.85&&f.splashT<0){
+      f.splashT=T;
+    }
+    if(f.splashT>0){
+      const sAge=T-f.splashT;
+      if(sAge<0.8){
+        const r=sAge*35;const alpha=Math.max(0,0.5-sAge*0.65);
+        ctx.strokeStyle=`rgba(80,180,255,${alpha})`;ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.ellipse(f.x,waterY,r,r*0.3,0,0,6.28);ctx.stroke();
+      }
+    }
+  }
+
+  titleRAF=requestAnimationFrame(drawTitle);
+}
+
+function startTitleAnimation(){
+  if(titleRAF)cancelAnimationFrame(titleRAF);
+  initTitleCanvas();
+  drawTitle();
+}
+
+/* ═══════════════════════════════════════════
+   FISHING LICENSE CAMERA
+═══════════════════════════════════════════ */
+let licStream=null;
+let licRAF=null;
+let licCaptured=null;
+let licAnimating=false;
+let licNumber='DH-'+Math.floor(100000+Math.random()*900000);
+
+function openLicenseScreen(){
+  licCaptured=null;
+  licAnimating=false;
+  document.getElementById('licShutter').style.display='flex';
+  document.getElementById('licRetakeBtn').style.display='none';
+  document.getElementById('licProceedBtn').style.display='none';
+  document.getElementById('licHint').textContent='Hold still — smile for your license photo!';
+  showScr('licenseScr');
+  // Size canvas
+  const cvs=document.getElementById('licCanvas');
+  const W=window.innerWidth,H=window.innerHeight;
+  const dpr=window.devicePixelRatio||1;
+  cvs.width=W*dpr;cvs.height=H*dpr;
+  cvs.style.width=W+'px';cvs.style.height=H+'px';
+  startLicCamera();
+}
+
+function startLicCamera(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    startLicOverlayOnly();return;
+  }
+  // Request front camera
+  const constraints={video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:false};
+  // iOS needs permission prompt
+  if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
+    navigator.mediaDevices.getUserMedia(constraints).then(gotLicStream).catch(()=>startLicOverlayOnly());
+  } else {
+    navigator.mediaDevices.getUserMedia(constraints).then(gotLicStream).catch(()=>startLicOverlayOnly());
+  }
+}
+
+function gotLicStream(stream){
+  licStream=stream;
+  const vid=document.getElementById('licVid');
+  vid.srcObject=stream;
+  vid.muted=true;
+  const onReady=()=>{
+    vid.removeEventListener('loadedmetadata',onReady);
+    vid.removeEventListener('canplay',onReady);
+    vid.play().then(()=>{licAnimating=true;licRAF=requestAnimationFrame(drawLicOverlay);}).catch(()=>startLicOverlayOnly());
+  };
+  vid.addEventListener('loadedmetadata',onReady);
+  vid.addEventListener('canplay',onReady);
+  if(vid.readyState>=2)onReady();
+}
+
+function startLicOverlayOnly(){
+  // No camera available — draw placeholder with dark bg
+  licAnimating=true;
+  licRAF=requestAnimationFrame(drawLicOverlay);
+}
+
+function drawLicOverlay(){
+  if(!licAnimating||!document.getElementById('licenseScr').classList.contains('active')){licRAF=null;return;}
+  const cvs=document.getElementById('licCanvas');
+  const dpr=window.devicePixelRatio||1;
+  const W=window.innerWidth,H=window.innerHeight;
+  if(cvs.width!==Math.round(W*dpr)||cvs.height!==Math.round(H*dpr)){
+    cvs.width=Math.round(W*dpr);cvs.height=Math.round(H*dpr);
+    cvs.style.width=W+'px';cvs.style.height=H+'px';
+  }
+  const ctx=cvs.getContext('2d');
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  ctx.save();ctx.scale(dpr,dpr);
+
+  const vid=document.getElementById('licVid');
+  const hasVideo=licStream&&vid.readyState>=2&&!vid.paused&&vid.videoWidth>0;
+
+  if(hasVideo){
+    // Draw mirrored camera feed
+    ctx.save();ctx.translate(W,0);ctx.scale(-1,1);
+    ctx.drawImage(vid,0,0,W,H);ctx.restore();
+  } else {
+    // Dark placeholder with silhouette
+    const bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    // Person silhouette
+    ctx.fillStyle='rgba(40,80,120,.5)';
+    ctx.beginPath();ctx.arc(W/2,H*0.38,55,0,6.28);ctx.fill();
+    ctx.fillStyle='rgba(40,80,120,.4)';
+    ctx.beginPath();ctx.ellipse(W/2,H*0.62,80,100,0,0,6.28);ctx.fill();
+    ctx.fillStyle='rgba(100,180,255,.2)';ctx.font='14px Share Tech Mono,monospace';
+    ctx.textAlign='center';ctx.fillText('No camera available',W/2,H*0.78);
+  }
+
+  // Draw license card overlay
+  drawLicenseCard(ctx,W,H,false);
+  ctx.restore();
+  licRAF=requestAnimationFrame(drawLicOverlay);
+}
+
+function drawLicenseCard(ctx,W,H,isCapture){
+  const T=Date.now()/1000;
+  const cardW=Math.min(W*0.88,340);
+  const cardH=cardW*0.62;
+  const cardX=(W-cardW)/2;
+  const cardY=H*0.18;
+
+  // Card shadow
+  ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=20;
+  // Card background — aged paper texture effect
+  const cardGrad=ctx.createLinearGradient(cardX,cardY,cardX+cardW,cardY+cardH);
+  cardGrad.addColorStop(0,'#1a3a1a');cardGrad.addColorStop(0.5,'#0f2a14');cardGrad.addColorStop(1,'#162b12');
+  ctx.fillStyle=cardGrad;
+  ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.fill();
+  ctx.shadowBlur=0;
+
+  // Card border — double line official style
+  ctx.strokeStyle='#40c040';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.stroke();
+  ctx.strokeStyle='rgba(64,192,64,.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect(cardX+5,cardY+5,cardW-10,cardH-10,7);ctx.stroke();
+
+  // State seal / emblem (left side)
+  const sealX=cardX+cardW*0.12,sealY=cardY+cardH*0.38;
+  ctx.fillStyle='rgba(64,192,64,.15)';
+  ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.fill();
+  ctx.strokeStyle='rgba(64,192,64,.4)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.stroke();
+  // Fish icon in seal
+  ctx.font=`${Math.round(cardH*0.28)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('🎣',sealX,sealY);
+
+  // Header
+  ctx.fillStyle='#f0c040';ctx.font=`bold ${Math.round(cardH*0.12)}px Oswald,sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText('DEEP HOOK',cardX+cardW/2,cardY+cardH*0.07);
+  ctx.fillStyle='rgba(240,192,64,.7)';ctx.font=`${Math.round(cardH*0.075)}px Share Tech Mono,monospace`;
+  ctx.fillText('OFFICIAL FISHING LICENSE',cardX+cardW/2,cardY+cardH*0.21);
+
+  // Photo box (right side) — face crop guide
+  const photoW=cardW*0.22,photoH=cardH*0.55;
+  const photoX=cardX+cardW*0.73,photoY=cardY+cardH*0.22;
+  ctx.fillStyle='rgba(0,0,0,.4)';
+  ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.fill();
+  ctx.strokeStyle='rgba(240,192,64,.6)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.stroke();
+  if(!isCapture){
+    ctx.fillStyle='rgba(240,192,64,.3)';ctx.font=`${Math.round(photoH*0.12)}px Share Tech Mono,monospace`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('PHOTO',photoX+photoW/2,photoY+photoH/2-8);
+    ctx.fillText('HERE',photoX+photoW/2,photoY+photoH/2+8);
+  }
+
+  // Info lines
+  const infoX=cardX+cardW*0.28;
+  const lineH=cardH*0.14;
+  ctx.textAlign='left';ctx.textBaseline='middle';
+  const infoItems=[
+    {l:'LICENSE #',v:licNumber,col:'#a0c8e0'},
+    {l:'ISSUED',v:new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}),col:'#a0c8e0'},
+    {l:'EXPIRES',v:'DEC 31 2026',col:'#40e080'},
+    {l:'TYPE',v:'ALL WATERS',col:'#f0c040'},
+  ];
+  infoItems.forEach((item,i)=>{
+    const iy=cardY+cardH*0.28+i*lineH;
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font=`${Math.round(cardH*0.065)}px Share Tech Mono,monospace`;
+    ctx.fillText(item.l,infoX,iy);
+    ctx.fillStyle=item.col;ctx.font=`bold ${Math.round(cardH*0.08)}px Share Tech Mono,monospace`;
+    ctx.fillText(item.v,infoX+cardW*0.155,iy);
+  });
+
+  // Barcode-style bottom strip
+  const bcY=cardY+cardH*0.85;
+  ctx.fillStyle='rgba(64,192,64,.2)';ctx.fillRect(cardX+10,bcY,cardW-20,cardH*0.1);
+  ctx.strokeStyle='rgba(64,192,64,.5)';ctx.lineWidth=1;
+  for(let bx=cardX+15;bx<cardX+cardW-15;bx+=3.5){
+    const bh=Math.random()>0.5?cardH*0.08:cardH*0.05;
+    ctx.beginPath();ctx.moveTo(bx,bcY+1);ctx.lineTo(bx,bcY+bh);ctx.stroke();
+  }
+
+  // Pulse effect on card border when live (not capture)
+  if(!isCapture){
+    const pulse=0.5+0.5*Math.sin(T*2);
+    ctx.strokeStyle=`rgba(64,192,64,${0.3+pulse*0.4})`;ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(cardX-2,cardY-2,cardW+4,cardH+4,11);ctx.stroke();
+  }
+}
+
+function takeLicensePhoto(){
+  vib([30,15,50]);
+  const flash=document.getElementById('licFlash');
+  flash.style.opacity='0.95';
+  setTimeout(()=>flash.style.opacity='0',200);
+
+  // Capture composite
+  const W=window.innerWidth,H=window.innerHeight;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const composite=document.createElement('canvas');
+  composite.width=W*dpr;composite.height=H*dpr;
+  const ctx=composite.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  const vid=document.getElementById('licVid');
+  const hasVideo=licStream&&vid.readyState>=2&&vid.videoWidth>0;
+  if(hasVideo){
+    ctx.save();ctx.translate(W,0);ctx.scale(-1,1);
+    ctx.drawImage(vid,0,0,W,H);ctx.restore();
+  } else {
+    const bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  }
+  drawLicenseCard(ctx,W,H,true);
+
+  licCaptured=composite.toDataURL('image/jpeg',0.92);
+
+  // Stop live loop and show static capture
+  licAnimating=false;
+  if(licRAF){cancelAnimationFrame(licRAF);licRAF=null;}
+
+  // Draw the captured frame onto the canvas
+  const cvs=document.getElementById('licCanvas');
+  const ctx2=cvs.getContext('2d');
+  const img=new Image();
+  img.onload=()=>{ctx2.drawImage(img,0,0,cvs.width,cvs.height);};
+  img.src=licCaptured;
+
+  // Update UI
+  document.getElementById('licShutter').style.display='none';
+  document.getElementById('licRetakeBtn').style.display='block';
+  document.getElementById('licProceedBtn').style.display='block';
+  document.getElementById('licHint').textContent='License issued! 🎉 Ready to fish?';
+}
+
+function retakeLicense(){
+  licCaptured=null;
+  document.getElementById('licShutter').style.display='flex';
+  document.getElementById('licRetakeBtn').style.display='none';
+  document.getElementById('licProceedBtn').style.display='none';
+  document.getElementById('licHint').textContent='Hold still — smile for your license photo!';
+  licAnimating=true;
+  licRAF=requestAnimationFrame(drawLicOverlay);
+}
+
+function skipLicense(){
+  closeLicenseCamera();
+  startGame();
+}
+
+function proceedFromLicense(){
+  closeLicenseCamera();
+  startGame();
+}
+
+function closeLicenseCamera(){
+  licAnimating=false;
+  if(licRAF){cancelAnimationFrame(licRAF);licRAF=null;}
+  if(licStream){
+    try{licStream.getTracks().forEach(t=>t.stop());}catch(e){}
+    licStream=null;
+  }
+  const vid=document.getElementById('licVid');
+  try{vid.pause();vid.srcObject=null;}catch(e){}
+}
+
+/* ═══════════════════════════════════════════
+   BACKGROUND STATE
+═══════════════════════════════════════════ */
 let STARS=[];
 let shootingStar={active:false,x:0,y:0,vx:0,vy:0,life:0,maxLife:0,nextAt:0};
 let moonFrenzy={active:false,endAt:0,moonDark:false,flashT:0};
 
-// ── BACKGROUND HUMOR EVENTS ──
-// Each event: {type, state data, nextAt timestamp}
-// Common (20-40s): seagulls, pelican, surfer
-// Uncommon (40-70s): dolphin, shark
-// Rare (90-180s): UFO
 const EVENTS={
   gull:{active:false,birds:[],nextAt:0},
   pelican:{active:false,x:0,y:0,state:'fly',stateT:0,nextAt:0},
@@ -649,33 +1085,28 @@ const EVENTS={
 };
 function scheduleEvents(){
   const now=Date.now();
-  EVENTS.gull.nextAt   = now+rnd(8000,20000);
-  EVENTS.pelican.nextAt= now+rnd(15000,35000);
-  EVENTS.surfer.nextAt = now+rnd(12000,30000);
-  EVENTS.dolphin.nextAt= now+rnd(25000,55000);
-  EVENTS.shark.nextAt  = now+rnd(30000,60000);
-  EVENTS.ufo.nextAt    = now+rnd(60000,140000);
+  EVENTS.gull.nextAt   =now+rnd(8000,20000);
+  EVENTS.pelican.nextAt=now+rnd(15000,35000);
+  EVENTS.surfer.nextAt =now+rnd(12000,30000);
+  EVENTS.dolphin.nextAt=now+rnd(25000,55000);
+  EVENTS.shark.nextAt  =now+rnd(30000,60000);
+  EVENTS.ufo.nextAt    =now+rnd(60000,140000);
 }
 function seedStars(){
   STARS=[];
   const W=window.innerWidth,skyH=Math.round(window.innerHeight*0.40)*0.52;
   for(let i=0;i<55;i++){
-    STARS.push({
-      x:Math.random()*W, y:Math.random()*skyH*0.9,
-      r:Math.random()<0.15?1.7:Math.random()<0.4?1.1:0.65,
-      phase:Math.random()*Math.PI*2, speed:0.2+Math.random()*0.55
-    });
+    STARS.push({x:Math.random()*W,y:Math.random()*skyH*0.9,r:Math.random()<0.15?1.7:Math.random()<0.4?1.1:0.65,phase:Math.random()*Math.PI*2,speed:0.2+Math.random()*0.55});
   }
   shootingStar.nextAt=Date.now()+(8000+Math.random()*12000);
 }
-let VIB_ON = true;
-let CAST_MODE = 'slider';
-let SWING_CALIB = null;
 
-// Perfect cast streak
-let perfectStreak = 0;   // consecutive sweet-spot hits
-let perfectMult = 1;     // current multiplier (1, 2, 4, 8...)
-let perfectCastActive = false; // this cast's fish gets the bonus
+let VIB_ON=true;
+let CAST_MODE='slider';
+let SWING_CALIB=null;
+let perfectStreak=0;
+let perfectMult=1;
+let perfectCastActive=false;
 
 /* ═══════════════════════════════════════════
    STATE
@@ -715,7 +1146,7 @@ function initG(){
 }
 
 /* ═══════════════════════════════════════════
-   CANVAS
+   CANVAS (game)
 ═══════════════════════════════════════════ */
 const CV=document.getElementById('CV');
 const CX=CV.getContext('2d');
@@ -727,7 +1158,15 @@ function resizeCV(){
   CV.style.width=w+'px';CV.style.height=h+'px';
   CX.setTransform(DPR,0,0,DPR,0,0);
 }
-window.addEventListener('resize',resizeCV);
+window.addEventListener('resize',()=>{
+  resizeCV();
+  // Also resize title canvas if on title screen
+  const tcv=document.getElementById('titleCV');
+  if(tcv&&document.getElementById('S0').classList.contains('active')){
+    tcv.width=window.innerWidth;tcv.height=window.innerHeight;
+    tcv.style.width=window.innerWidth+'px';tcv.style.height=window.innerHeight+'px';
+  }
+});
 resizeCV();
 
 /* ═══════════════════════════════════════════
@@ -739,17 +1178,11 @@ function cl(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
 function lr(a,b,t){return a+(b-a)*t;}
 function vib(p){if(!VIB_ON)return;try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 function testVib(){vib([50,40,50,40,100]);}
-function toggleVib(){
-  VIB_ON=!VIB_ON;
-  document.getElementById('vibToggle').className='toggle'+(VIB_ON?' on':'');
-  if(VIB_ON)vib([60]);
-}
-
+function toggleVib(){VIB_ON=!VIB_ON;document.getElementById('vibToggle').className='toggle'+(VIB_ON?' on':'');if(VIB_ON)vib([60]);}
 function buddy(cat,isCmd){
   const arr=BUD[cat]||BUD.idle;
   const el=document.getElementById('bmsg');
-  el.textContent=pick(arr);
-  el.className='bmsg'+(isCmd?' cmd':'');
+  el.textContent=pick(arr);el.className='bmsg'+(isCmd?' cmd':'');
 }
 function updHUD(){
   document.getElementById('hLvl').textContent=G.lv;
@@ -757,7 +1190,7 @@ function updHUD(){
   document.getElementById('hMon').textContent='$'+G.mn;
   const t=G.st,el=document.getElementById('hTim');
   el.textContent=t<10?'0'+t:t;
-  const fishOnLine=(G.ph==='reeling'||G.ph==='hooked');
+  const fishOnLine=(G.ph==='reeling');
   el.style.color=t<=10&&fishOnLine?'var(--org)':t<=10?'var(--red)':'var(--acc2)';
 }
 function showScr(id){
@@ -779,7 +1212,6 @@ function showPan(id){
   else if(id==='castAimer'){el.style.display='flex';el.classList.add('show');}
   else el.style.display='flex';
 }
-// Keep castAimer showing during 'aimed' phase (after aim locked, waiting for swipe)
 function keepAimerShowing(){
   const el=document.getElementById('castAimer');
   if(el){el.style.display='flex';el.classList.add('show');}
@@ -793,166 +1225,66 @@ function scoreFlash(txt,col){
 function isBossLevel(lv){return lv>0&&lv%5===0;}
 
 /* ═══════════════════════════════════════════
-   OPTIONS MENU
+   OPTIONS / TRAINING (unchanged)
 ═══════════════════════════════════════════ */
-function openOptions(){
-  updateCastModeUI();
-  document.getElementById('optOverlay').classList.add('show');
-}
-function closeOptions(){
-  document.getElementById('optOverlay').classList.remove('show');
-}
-function setCastMode(mode){
-  CAST_MODE=mode;
-  updateCastModeUI();
-}
+function openOptions(){updateCastModeUI();document.getElementById('optOverlay').classList.add('show');}
+function closeOptions(){document.getElementById('optOverlay').classList.remove('show');}
+function setCastMode(mode){CAST_MODE=mode;updateCastModeUI();}
 function updateCastModeUI(){
   document.getElementById('cmSlider').className='cm-btn'+(CAST_MODE==='slider'?' sel':'');
   document.getElementById('cmSwing').className='cm-btn'+(CAST_MODE==='swing'?' sel':'');
   document.getElementById('castModeLbl').textContent=CAST_MODE.toUpperCase();
-  document.getElementById('cpanHint').textContent=
-    CAST_MODE==='swing'?'Pull back phone\nthen SWING to cast!':'Swipe UP left bar\nto start casting!';
+  document.getElementById('cpanHint').textContent=CAST_MODE==='swing'?'Pull back phone\nthen SWING to cast!':'Swipe UP left bar\nto start casting!';
   document.getElementById('castColSlider').style.display=CAST_MODE==='slider'?'flex':'none';
   document.getElementById('castColSwing').style.display=CAST_MODE==='swing'?'flex':'none';
 }
-
-/* ═══════════════════════════════════════════
-   TRAINING SCREEN
-═══════════════════════════════════════════ */
-let trainSwings=[];
-let trainListening=false;
-let trainMotionHandler=null;
-let trainLastAcc=0;
-let trainInSwing=false;
-let trainPeak=0;
+let trainSwings=[],trainListening=false,trainMotionHandler=null,trainInSwing=false,trainPeak=0;
 const TRAIN_NEEDED=3;
-
-function openTraining(){
-  closeOptions();
-  trainSwings=[];
-  trainListening=false;
-  trainInSwing=false;
-  trainPeak=0;
-  updateTrainUI();
-  showScr('trainScr');
-  requestGyroIfNeeded(startTrainListen);
-}
-
-function closeTraining(){
-  stopTrainListen();
-  // go back to options or title
-  document.getElementById('optOverlay').classList.add('show');
-  showScr(document.getElementById('S1').classList.contains('active')?'S1':'S0');
-  document.getElementById('optOverlay').classList.add('show');
-}
-
+function openTraining(){closeOptions();trainSwings=[];trainListening=false;trainInSwing=false;trainPeak=0;updateTrainUI();showScr('trainScr');requestGyroIfNeeded(startTrainListen);}
+function closeTraining(){stopTrainListen();document.getElementById('optOverlay').classList.add('show');showScr(document.getElementById('S1').classList.contains('active')?'S1':'S0');document.getElementById('optOverlay').classList.add('show');}
 function finishTraining(){
   if(trainSwings.length<TRAIN_NEEDED)return;
   const avg=trainSwings.reduce((a,b)=>a+b,0)/trainSwings.length;
   SWING_CALIB={avgPeak:avg,threshold:avg*0.55};
-  stopTrainListen();
-  // Switch to swing mode automatically
-  CAST_MODE='swing';
-  updateCastModeUI();
-  closeOptions();
+  stopTrainListen();CAST_MODE='swing';updateCastModeUI();closeOptions();
   alert('✅ Calibrated! Avg power: '+Math.round(avg)+'\nSwing cast is now active.');
   showScr('S0');
 }
-
 function startTrainListen(){
   trainListening=true;
   trainMotionHandler=(e)=>{
-    const acc=e.accelerationIncludingGravity;
-    if(!acc)return;
+    const acc=e.accelerationIncludingGravity;if(!acc)return;
     const mag=Math.sqrt((acc.x||0)**2+(acc.y||0)**2+(acc.z||0)**2);
-    document.getElementById('gyroLive').textContent=
-      `X:${(acc.x||0).toFixed(1)} Y:${(acc.y||0).toFixed(1)} Z:${(acc.z||0).toFixed(1)} |mag:${mag.toFixed(1)}`;
-
-    if(!trainInSwing&&mag>12){
-      trainInSwing=true;trainPeak=mag;
-    } else if(trainInSwing){
-      trainPeak=Math.max(trainPeak,mag);
-      if(mag<8){
-        // Swing ended
-        trainInSwing=false;
-        if(trainSwings.length<TRAIN_NEEDED){
-          trainSwings.push(trainPeak);
-          vib([40,20,40]);
-          updateTrainUI();
-        }
-        trainPeak=0;
-      }
-    }
-    trainLastAcc=mag;
+    document.getElementById('gyroLive').textContent=`X:${(acc.x||0).toFixed(1)} Y:${(acc.y||0).toFixed(1)} Z:${(acc.z||0).toFixed(1)} |mag:${mag.toFixed(1)}`;
+    if(!trainInSwing&&mag>12){trainInSwing=true;trainPeak=mag;}
+    else if(trainInSwing){trainPeak=Math.max(trainPeak,mag);if(mag<8){trainInSwing=false;if(trainSwings.length<TRAIN_NEEDED){trainSwings.push(trainPeak);vib([40,20,40]);updateTrainUI();}trainPeak=0;}}
   };
   window.addEventListener('devicemotion',trainMotionHandler,true);
 }
-
-function stopTrainListen(){
-  trainListening=false;
-  if(trainMotionHandler){window.removeEventListener('devicemotion',trainMotionHandler,true);trainMotionHandler=null;}
-}
-
+function stopTrainListen(){trainListening=false;if(trainMotionHandler){window.removeEventListener('devicemotion',trainMotionHandler,true);trainMotionHandler=null;}}
 function updateTrainUI(){
   const n=trainSwings.length;
-  for(let i=0;i<TRAIN_NEEDED;i++){
-    const d=document.getElementById('sd'+i);
-    if(!d)continue;
-    d.className='swing-dot'+(i<n?' done':i===n?' active':'');
-  }
+  for(let i=0;i<TRAIN_NEEDED;i++){const d=document.getElementById('sd'+i);if(!d)continue;d.className='swing-dot'+(i<n?' done':i===n?' active':'');}
   document.getElementById('calibCount').textContent=n;
   document.getElementById('peakForce').textContent=trainSwings.length?trainSwings.map(v=>v.toFixed(1)).join(', '):'—';
-  if(n>0){
-    const avg=trainSwings.reduce((a,b)=>a+b,0)/n;
-    document.getElementById('avgPower').textContent=avg.toFixed(1);
-  }
+  if(n>0){const avg=trainSwings.reduce((a,b)=>a+b,0)/n;document.getElementById('avgPower').textContent=avg.toFixed(1);}
   const doneBtn=document.getElementById('trainDoneBtn');
-  if(n>=TRAIN_NEEDED){
-    doneBtn.style.opacity='1';doneBtn.style.pointerEvents='auto';
-    document.getElementById('swingEmoji').textContent='✅';
-    document.getElementById('swingTrail').textContent='Calibrated! Tap DONE below.';
-    vib([60,40,60,40,200]);
-  } else {
-    document.getElementById('swingEmoji').textContent=n>0?'⭐'.repeat(n):'📱';
-    document.getElementById('swingTrail').textContent=`Swing ${n+1} of 3...`;
-  }
+  if(n>=TRAIN_NEEDED){doneBtn.style.opacity='1';doneBtn.style.pointerEvents='auto';document.getElementById('swingEmoji').textContent='✅';document.getElementById('swingTrail').textContent='Calibrated! Tap DONE below.';vib([60,40,60,40,200]);}
+  else{document.getElementById('swingEmoji').textContent=n>0?'⭐'.repeat(n):'📱';document.getElementById('swingTrail').textContent=`Swing ${n+1} of 3...`;}
 }
 
 /* ═══════════════════════════════════════════
-   AUDIO RUMBLE — works on iOS + Android as physical feedback
-   Low-frequency bursts through speaker = felt in hand
+   AUDIO
 ═══════════════════════════════════════════ */
 let _AC=null;
-function getAC(){
-  if(!_AC)try{_AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
-  return _AC;
-}
-function rumble(pattern,intensity=1){
-  // pattern: array of {freq,dur,gain} objects OR presets
-  const ac=getAC();if(!ac)return;
-  if(ac.state==='suspended')ac.resume();
-  let t=ac.currentTime+0.02;
-  pattern.forEach(p=>{
-    const osc=ac.createOscillator();
-    const gain=ac.createGain();
-    osc.connect(gain);gain.connect(ac.destination);
-    osc.type='sine';
-    osc.frequency.setValueAtTime(p.f||60,t);
-    gain.gain.setValueAtTime(0,t);
-    gain.gain.linearRampToValueAtTime((p.g||0.4)*intensity,t+0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001,t+p.d-0.01);
-    osc.start(t);osc.stop(t+p.d);
-    t+=p.d+(p.gap||0);
-  });
-}
-// Presets
-function rumbleCatch(){    rumble([{f:55,d:.12,g:.5},{f:80,d:.08,g:.3,gap:.04},{f:55,d:.25,g:.6}],1);}
-function rumbleBoss(){     rumble([{f:40,d:.15,g:.7},{f:55,d:.1,g:.5,gap:.05},{f:40,d:.15,g:.7},{f:60,d:.3,g:.8,gap:.06},{f:40,d:.4,g:.9}],1);}
-function rumbleNibble(){   rumble([{f:80,d:.06,g:.25},{f:80,d:.06,g:.25,gap:.06}]);}
-function rumbleFishOn(){   rumble([{f:50,d:.1,g:.5,gap:.04},{f:70,d:.1,g:.6,gap:.04},{f:50,d:.2,g:.7}],1);}
-function rumbleEscape(){   rumble([{f:120,d:.08,g:.3},{f:80,d:.15,g:.2,gap:.03}],0.8);}
-function rumbleCast(){     rumble([{f:90,d:.06,g:.2}],0.6);}
-// Unlock audio on first touch (iOS requirement)
+function getAC(){if(!_AC)try{_AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}return _AC;}
+function rumble(pattern,intensity=1){const ac=getAC();if(!ac)return;if(ac.state==='suspended')ac.resume();let t=ac.currentTime+0.02;pattern.forEach(p=>{const osc=ac.createOscillator();const gain=ac.createGain();osc.connect(gain);gain.connect(ac.destination);osc.type='sine';osc.frequency.setValueAtTime(p.f||60,t);gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime((p.g||0.4)*intensity,t+0.02);gain.gain.exponentialRampToValueAtTime(0.001,t+p.d-0.01);osc.start(t);osc.stop(t+p.d);t+=p.d+(p.gap||0);});}
+function rumbleCatch(){rumble([{f:55,d:.12,g:.5},{f:80,d:.08,g:.3,gap:.04},{f:55,d:.25,g:.6}],1);}
+function rumbleBoss(){rumble([{f:40,d:.15,g:.7},{f:55,d:.1,g:.5,gap:.05},{f:40,d:.15,g:.7},{f:60,d:.3,g:.8,gap:.06},{f:40,d:.4,g:.9}],1);}
+function rumbleNibble(){rumble([{f:80,d:.06,g:.25},{f:80,d:.06,g:.25,gap:.06}]);}
+function rumbleFishOn(){rumble([{f:50,d:.1,g:.5,gap:.04},{f:70,d:.1,g:.6,gap:.04},{f:50,d:.2,g:.7}],1);}
+function rumbleEscape(){rumble([{f:120,d:.08,g:.3},{f:80,d:.15,g:.2,gap:.03}],0.8);}
+function rumbleCast(){rumble([{f:90,d:.06,g:.2}],0.6);}
 document.addEventListener('touchend',()=>{const ac=getAC();if(ac&&ac.state==='suspended')ac.resume();},{once:true,passive:true});
 let gyroInited=false;
 function requestGyroIfNeeded(cb){
@@ -963,141 +1295,84 @@ function requestGyroIfNeeded(cb){
 function initGyro(){
   requestGyroIfNeeded(()=>{
     let tiltSmooth=0;
-    // Orientation for tilt pull — smoothed with deadzone
     window.addEventListener('deviceorientation',e=>{
       if(e.beta===null)return;
       const b=e.beta;
       if(tiltBaseline===null)tiltBaseline=b;
       const raw=b-tiltBaseline;
-      // 8° deadzone, only respond above that, max at 45° (was 60)
-      const dead=8;
-      const range=45;
+      const dead=8,range=45;
       const clamped=raw<dead?0:cl((raw-dead)/range,0,1);
-      // Smooth heavily — lerp toward target at 8% per frame
       tiltSmooth=tiltSmooth*0.92+clamped*0.08;
       G.tiltAngle=cl(raw,0,60);G.tiltPull=tiltSmooth;
       if(G.ph==='reeling'){
         document.getElementById('tiltHUD').classList.add('show');
         document.getElementById('tiltFill').style.width=Math.round(tiltSmooth*100)+'%';
         document.getElementById('tiltVal').textContent=Math.round(G.tiltAngle)+'°';
-      } else {
-        document.getElementById('tiltHUD').classList.remove('show');
-      }
+      } else {document.getElementById('tiltHUD').classList.remove('show');}
     },true);
-
-    // Motion for swing cast
     window.addEventListener('devicemotion',e=>{
       const acc=e.accelerationIncludingGravity;if(!acc)return;
       const mag=Math.sqrt((acc.x||0)**2+(acc.y||0)**2+(acc.z||0)**2);
       const threshold=SWING_CALIB?SWING_CALIB.threshold:14;
-      // In idle: swing launches aimer
       if(CAST_MODE==='swing'&&G.ph==='idle'&&mag>threshold){
         const power=SWING_CALIB?cl(Math.round((mag/SWING_CALIB.avgPeak)*100),20,100):Math.round(cl((mag-threshold)*8,20,100));
         document.getElementById('swingCastIcon').style.transform='rotate(30deg)';
         document.getElementById('swingCastStatus').textContent='Aim locked!';
         setTimeout(()=>{document.getElementById('swingCastIcon').style.transform='';document.getElementById('swingCastStatus').textContent='Pull back\nthen swing!';},500);
-        G.castPct=power;
-        launchAimer();
+        G.castPct=power;launchAimer();
       }
-      // In aimed (swing mode): swing executes the cast
       if(CAST_MODE==='swing'&&G.ph==='aimed'&&mag>threshold){
         const power=SWING_CALIB?cl(Math.round((mag/SWING_CALIB.avgPeak)*100),20,100):Math.round(cl((mag-threshold)*8,20,100));
-        G.castPct=power;
-        executeCast(G.castPct,G.castAimPos);
+        G.castPct=power;executeCast(G.castPct,G.castAimPos);
       }
     },true);
   });
 }
 
 /* ═══════════════════════════════════════════
-   SWIPE CAST (slider mode) — pull DOWN to charge, UP to fire
+   SLIDER CAST
 ═══════════════════════════════════════════ */
 const castColSlider=document.getElementById('castColSlider');
-let sliderCharging=false;
-let sliderStartY=null;
-let sliderPeakPct=0; // power locked at max downward pull
-
+let sliderCharging=false,sliderStartY=null,sliderPeakPct=0;
 castColSlider.addEventListener('touchstart',e=>{
-  if(G.ph!=='aimed'||CAST_MODE!=='slider')return;
-  e.preventDefault();
-  sliderStartY=e.touches[0].clientY;
-  sliderCharging=true;
-  sliderPeakPct=0;
-  G.castPct=0;
+  if(G.ph!=='aimed'||CAST_MODE!=='slider')return;e.preventDefault();
+  sliderStartY=e.touches[0].clientY;sliderCharging=true;sliderPeakPct=0;G.castPct=0;
   document.getElementById('swipeBall').className='swipe-ball';
   document.getElementById('castPct').textContent='Pull ↓';
 },{passive:false});
-
 castColSlider.addEventListener('touchmove',e=>{
-  if(!sliderCharging||G.ph!=='aimed')return;
-  e.preventDefault();
-  const dy=e.touches[0].clientY-sliderStartY; // positive = pulled DOWN
-  if(dy>0){
-    const pct=cl(Math.round((dy/120)*100),0,100);
-    sliderPeakPct=Math.max(sliderPeakPct,pct); // lock peak power
-    G.castPct=pct;
-    document.getElementById('castPowerFill').style.height=pct+'%';
-    document.getElementById('castPct').textContent=pct>5?pct+'%':'Pull ↓';
-    document.getElementById('swipeBall').className='swipe-ball'+(pct>20?' charging':'');
-  } else if(sliderPeakPct>0){
-    // Going back up — show locked power, keep bar filled at peak
-    document.getElementById('castPct').textContent=sliderPeakPct+'% ↑';
-    document.getElementById('swipeBall').className='swipe-ball charging';
-  }
+  if(!sliderCharging||G.ph!=='aimed')return;e.preventDefault();
+  const dy=e.touches[0].clientY-sliderStartY;
+  if(dy>0){const pct=cl(Math.round((dy/120)*100),0,100);sliderPeakPct=Math.max(sliderPeakPct,pct);G.castPct=pct;document.getElementById('castPowerFill').style.height=pct+'%';document.getElementById('castPct').textContent=pct>5?pct+'%':'Pull ↓';document.getElementById('swipeBall').className='swipe-ball'+(pct>20?' charging':'');}
+  else if(sliderPeakPct>0){document.getElementById('castPct').textContent=sliderPeakPct+'% ↑';document.getElementById('swipeBall').className='swipe-ball charging';}
 },{passive:false});
-
 castColSlider.addEventListener('touchend',e=>{
-  if(!sliderCharging)return;
-  e.preventDefault();
+  if(!sliderCharging)return;e.preventDefault();
   const endY=e.changedTouches[0].clientY;
-  const releasedAboveStart=endY<=sliderStartY+10; // finger returned to/above start
-  const hadPull=sliderPeakPct>=5;
-  sliderCharging=false;
-  document.getElementById('castPowerFill').style.height='0%';
-  document.getElementById('castPct').textContent='—';
-  document.getElementById('swipeBall').className='swipe-ball';
-  if(hadPull&&releasedAboveStart&&G.ph==='aimed'){
-    executeCast(sliderPeakPct,G.castAimPos);
-  } else if(G.ph==='aimed'){
-    document.getElementById('aimPowerLbl').textContent='Pull DOWN ↓ then flick UP ↑';
-  }
+  const releasedAboveStart=endY<=sliderStartY+10;
+  const hadPull=sliderPeakPct>=5;sliderCharging=false;
+  document.getElementById('castPowerFill').style.height='0%';document.getElementById('castPct').textContent='—';document.getElementById('swipeBall').className='swipe-ball';
+  if(hadPull&&releasedAboveStart&&G.ph==='aimed')executeCast(sliderPeakPct,G.castAimPos);
+  else if(G.ph==='aimed')document.getElementById('aimPowerLbl').textContent='Pull DOWN ↓ then flick UP ↑';
 },{passive:false});
-
-// Desktop mouse fallback
 let mSliderStartY=null,mSliderCharging=false,mSliderPeakPct=0;
-castColSlider.addEventListener('mousedown',e=>{
-  if(G.ph!=='aimed'||CAST_MODE!=='slider')return;
-  mSliderStartY=e.clientY;mSliderCharging=true;mSliderPeakPct=0;G.castPct=0;
-});
+castColSlider.addEventListener('mousedown',e=>{if(G.ph!=='aimed'||CAST_MODE!=='slider')return;mSliderStartY=e.clientY;mSliderCharging=true;mSliderPeakPct=0;G.castPct=0;});
 document.addEventListener('mousemove',e=>{
   if(!mSliderCharging||G.ph!=='aimed')return;
   const dy=e.clientY-mSliderStartY;
-  if(dy>0){
-    const pct=cl(Math.round((dy/120)*100),0,100);
-    mSliderPeakPct=Math.max(mSliderPeakPct,pct);
-    G.castPct=pct;
-    document.getElementById('castPowerFill').style.height=pct+'%';
-    document.getElementById('castPct').textContent=pct>5?pct+'%':'Pull ↓';
-    document.getElementById('swipeBall').className='swipe-ball'+(pct>20?' charging':'');
-  } else if(mSliderPeakPct>0){
-    document.getElementById('castPct').textContent=mSliderPeakPct+'% ↑';
-    document.getElementById('swipeBall').className='swipe-ball charging';
-  }
+  if(dy>0){const pct=cl(Math.round((dy/120)*100),0,100);mSliderPeakPct=Math.max(mSliderPeakPct,pct);G.castPct=pct;document.getElementById('castPowerFill').style.height=pct+'%';document.getElementById('castPct').textContent=pct>5?pct+'%':'Pull ↓';document.getElementById('swipeBall').className='swipe-ball'+(pct>20?' charging':'');}
+  else if(mSliderPeakPct>0){document.getElementById('castPct').textContent=mSliderPeakPct+'% ↑';document.getElementById('swipeBall').className='swipe-ball charging';}
 });
 document.addEventListener('mouseup',e=>{
   if(!mSliderCharging)return;
-  const releasedAboveStart=e.clientY<=mSliderStartY+10;
-  const savedPeak=mSliderPeakPct;
-  mSliderCharging=false;
-  document.getElementById('castPowerFill').style.height='0%';
-  document.getElementById('castPct').textContent='—';
-  document.getElementById('swipeBall').className='swipe-ball';
+  const releasedAboveStart=e.clientY<=mSliderStartY+10;const savedPeak=mSliderPeakPct;
+  mSliderCharging=false;document.getElementById('castPowerFill').style.height='0%';document.getElementById('castPct').textContent='—';document.getElementById('swipeBall').className='swipe-ball';
   if(savedPeak>=5&&releasedAboveStart&&G.ph==='aimed')executeCast(savedPeak,G.castAimPos);
   mSliderStartY=null;mSliderPeakPct=0;
 });
 
 /* ═══════════════════════════════════════════
-   AIMER — auto-starts from idle, tap green = lock aim, THEN swipe bar
+   AIMER
 ═══════════════════════════════════════════ */
 function launchAimer(){
   if(G.ph!=='idle')return;
@@ -1105,34 +1380,26 @@ function launchAimer(){
   const zoneSize=cl(0.44-(G.lv-1)*0.05,0.10,0.44);
   const zoneL=rnd(0.04,0.96-zoneSize);
   G.aimerZoneL=zoneL;G.aimerZoneR=zoneL+zoneSize;
-  // Sweet spot: center 10% of the green zone
   const zoneCenter=(zoneL+G.aimerZoneR)/2;
   const sweetW=0.10;
-  G.aimerSweetL=zoneCenter-sweetW/2;
-  G.aimerSweetR=zoneCenter+sweetW/2;
+  G.aimerSweetL=zoneCenter-sweetW/2;G.aimerSweetR=zoneCenter+sweetW/2;
   G.aimerPos=0;G.aimerDir=1;G.aimerActive=true;
   perfectCastActive=false;
   document.getElementById('aimerZone').style.left=(zoneL*100)+'%';
   document.getElementById('aimerZone').style.width=((G.aimerZoneR-zoneL)*100)+'%';
-  // Sweet spot position
   const sw=document.getElementById('aimerSweet');
-  sw.style.left=(G.aimerSweetL*100)+'%';
-  sw.style.width=(sweetW*100)+'%';
-  sw.classList.remove('pulse');
-  // Show streak badge if streak active
+  sw.style.left=(G.aimerSweetL*100)+'%';sw.style.width=(sweetW*100)+'%';sw.classList.remove('pulse');
   const badge=document.getElementById('streakBadge');
-  if(perfectStreak>0){
-    badge.textContent='🔥 x'+perfectMult+' streak!';
-    badge.style.display='block';
-  } else {
-    badge.style.display='none';
-  }
+  if(perfectStreak>0){badge.textContent='🔥 x'+perfectMult+' streak!';badge.style.display='block';}
+  else{badge.style.display='none';}
   document.getElementById('aimPowerLbl').textContent='—';
   document.getElementById('aimer-lbl-txt').textContent='🎯 TAP GREEN  ●RED=PERFECT!';
   showPan('castAimer');buddy('aim',false);vib([15]);
+  // Aimer speed: base 0.022, caps at level 5 → 0.055
+  const aimSpeed=cl(0.022+(G.lv-1)*0.0083,0.022,0.055);
   function tick(){
     if(!G.aimerActive)return;
-    G.aimerPos+=0.022*G.aimerDir;
+    G.aimerPos+=aimSpeed*G.aimerDir;
     if(G.aimerPos>=1){G.aimerPos=1;G.aimerDir=-1;}
     if(G.aimerPos<=0){G.aimerPos=0;G.aimerDir=1;}
     document.getElementById('aimerCursor').style.left=(G.aimerPos*100)+'%';
@@ -1142,7 +1409,6 @@ function launchAimer(){
   G.aimerRAF=requestAnimationFrame(tick);
 }
 
-// Tap screen during aiming = lock aim. If in zone → ph='aimed', show swipe prompt
 function onTapScreen(){
   if(G.ph==='aiming'){
     const pos=G.aimerPos;
@@ -1150,122 +1416,81 @@ function onTapScreen(){
     if(inZone){
       G.aimerActive=false;
       if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
-      G.castAimPos=pos;
-      G.ph='aimed';
-
-      // ── SWEET SPOT CHECK ──
+      G.castAimPos=pos;G.ph='aimed';
       const inSweet=pos>=G.aimerSweetL&&pos<=G.aimerSweetR;
       if(inSweet){
-        perfectStreak++;
-        perfectMult=Math.min(Math.pow(2,perfectStreak),16); // x2, x4, x8, x16 cap
-        perfectCastActive=true;
-        // Visual + audio feedback
-        const sw=document.getElementById('aimerSweet');
-        sw.classList.add('pulse');
+        perfectStreak++;perfectMult=Math.min(Math.pow(2,perfectStreak),16);perfectCastActive=true;
+        const sw=document.getElementById('aimerSweet');sw.classList.add('pulse');
         vib([30,15,30,15,60]);rumbleCatch();
         scoreFlash('🎯 PERFECT! x'+perfectMult,'#ff4040');
         document.getElementById('aimer-lbl-txt').textContent='🔥 PERFECT CAST x'+perfectMult+'!';
         document.getElementById('streakBadge').style.display='none';
       } else {
-        // Hit green zone but not sweet spot — break streak
-        perfectStreak=0;perfectMult=1;perfectCastActive=false;
-        vib([20,15,40]);
+        perfectStreak=0;perfectMult=1;perfectCastActive=false;vib([20,15,40]);
         document.getElementById('aimer-lbl-txt').textContent='✅ AIM LOCKED!';
         document.getElementById('streakBadge').style.display='none';
       }
-
-      document.getElementById('aimPowerLbl').textContent=
-        CAST_MODE==='swing'?'Casting...':'Pull bar DOWN ↓ then flick UP ↑';
+      document.getElementById('aimPowerLbl').textContent=CAST_MODE==='swing'?'Casting...':'Pull bar DOWN ↓ then flick UP ↑';
       keepAimerShowing();
-      if(CAST_MODE==='swing'){
-        G.castPct=60;
-        executeCast(G.castPct,G.castAimPos);
-      } else {
-        buddy('swipe',false);
-      }
+      if(CAST_MODE==='swing'){G.castPct=60;executeCast(G.castPct,G.castAimPos);}
+      else{buddy('swipe',false);}
     } else {
-      // Missed zone entirely — break streak
       perfectStreak=0;perfectMult=1;perfectCastActive=false;
       document.getElementById('streakBadge').style.display='none';
       G.misses++;updateMissDots();vib([50]);
-      G.sc=Math.max(-999,G.sc-10);updHUD();
-      scoreFlash('-10','var(--red)');
+      G.sc=Math.max(-999,G.sc-10);updHUD();scoreFlash('-10','var(--red)');
       if(G.misses>=3){
-        G.aimerActive=false;
-        if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
+        G.aimerActive=false;if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
         G.ph='idle';showPan('castAimer');buddy('castFail',true);vib([80,40,80]);
         setTimeout(()=>launchAimer(),400);
       } else buddy('miss',true);
     }
   }
 }
-
-function updateMissDots(){
-  for(let i=0;i<3;i++){
-    const d=document.getElementById('md'+i);
-    if(d)d.className='miss-dot'+(i<G.misses?' used':'');
-  }
-}
+function updateMissDots(){for(let i=0;i<3;i++){const d=document.getElementById('md'+i);if(d)d.className='miss-dot'+(i<G.misses?' used':'');}}
 
 /* ═══════════════════════════════════════════
-   EXECUTE CAST — called automatically after aimer tap
+   EXECUTE CAST
 ═══════════════════════════════════════════ */
 function executeCast(power,aimPos){
   showPan(null);G.ph='casting';
   const W=CV.width/DPR;
-  G.bx=W*0.22+aimPos*(W*0.65);
-  G.by=(CV.height/DPR)*0.52+4;
+  G.bx=W*0.22+aimPos*(W*0.65);G.by=(CV.height/DPR)*0.52+4;
   if(G.bc>0){G.bc--;if(G.bc===0)G.lk=0;}
-  // Capture perfect cast state for this cast's fish
-  const isPerfect=perfectCastActive;
-  perfectCastActive=false; // consumed
+  const isPerfect=perfectCastActive;perfectCastActive=false;
   buddy('cast',false);vib([25,15,40]);rumbleCast();
   setTimeout(()=>{
-    G.ph='bobbing';
-    G.rip.push({x:G.bx,y:G.by,b:Date.now(),s:0.7+power/200});
+    G.ph='bobbing';G.rip.push({x:G.bx,y:G.by,b:Date.now(),s:0.7+power/200});
     showPan('waitmsg');
     const rod=RODS[G.ri],lure=LURES[G.lui];
     const bon=(rod.tier*8+lure.lureB+G.lk)/100;
-
-    // Boss chance during boss levels
     const bossChance=G.isBossLevel&&!G.bossDefeated?0.25:0;
-
     const delay=lr(7000,2000,bon);
     G.bTO=setTimeout(()=>{
       if(G.ph!=='bobbing')return;
       const triggerBoss=bossChance>0&&Math.random()<bossChance;
-      G.ph='nibble';G.nib=true;
-      buddy('nibble',false);vib([60,40,60,40,60]);rumbleNibble();
+      G.ph='nibble';G.nib=true;buddy('nibble',false);vib([60,40,60,40,60]);rumbleNibble();
       G.hTO=setTimeout(()=>{
-        if(G.ph!=='nibble')return;
-        G.nib=false;
+        if(G.ph!=='nibble')return;G.nib=false;
         let fish;
         if(triggerBoss){
           const bossIdx=Math.floor(G.lv/5)-1;
           fish=Object.assign({},BOSSES[cl(bossIdx,0,BOSSES.length-1)]);
           fish.isBoss=true;fish.t=5;G.currentBoss=fish;
         } else if(isPerfect){
-          // Perfect cast: guaranteed Tier 3 or 4 fish (rare/epic)
           const tier=Math.random()<0.5?3:4;
           const pool=FISH.filter(f=>f.t===tier);
           fish=Object.assign({},pick(pool));
-          fish.perfectMult=perfectMult; // carry multiplier into fight
-        } else {
-          fish=pickFish();
-        }
-        G.fish=fish;
-        G.prog=0;
+          fish.perfectMult=perfectMult;
+        } else {fish=pickFish();}
+        G.fish=fish;G.prog=0;
         G.ten=G.lv===1?8:G.lv<=2?18:G.lv<=4?30:38;
         G.stam=100;G.ph='hooked';
         const isB=fish.isBoss;
-        // Special flash for perfect cast bite
-        if(isPerfect&&!isB){
-          scoreFlash('🎯 RARE BITE! x'+perfectMult,'#ff4040');
-          rumble([{f:60,d:.1,g:.5},{f:90,d:.15,g:.7}]);
-        }
+        if(isPerfect&&!isB){scoreFlash('🎯 RARE BITE! x'+perfectMult,'#ff4040');rumble([{f:60,d:.1,g:.5},{f:90,d:.15,g:.7}]);}
         buddy(isB?'bossStrike':'strike',true);
         vib(isB?[100,50,100,50,200,50,100]:[80,40,120]);
-        isB?rumbleFishOn():rumbleFishOn();
+        rumbleFishOn();
         updFishPan();showPan('fishpan');
         document.getElementById('tiltHint').style.display='block';
         startFight();
@@ -1288,18 +1513,10 @@ function checkBossLevel(){
     document.getElementById('bossBanner').textContent='👹 BOSS LEVEL '+G.lv+' — '+boss.sub+' LURKS BELOW';
     showScr('bossIntro');
   } else {
-    G.isBossLevel=false;
-    document.getElementById('bossBanner').classList.remove('show');
+    G.isBossLevel=false;document.getElementById('bossBanner').classList.remove('show');
   }
 }
-function startBossRound(){
-  showScr('S1');
-  G.st=90;updHUD();
-  document.getElementById('hTim').style.color='var(--boss)';
-  if(!G.aid)draw();
-  startTimer();
-  setTimeout(()=>launchAimer(),200);
-}
+function startBossRound(){showScr('S1');G.st=90;updHUD();document.getElementById('hTim').style.color='var(--boss)';if(!G.aid)draw();startTimer();setTimeout(()=>launchAimer(),200);}
 
 /* ═══════════════════════════════════════════
    FISH SELECTION
@@ -1308,10 +1525,7 @@ function pickFish(){
   const rod=RODS[G.ri],lure=LURES[G.lui];
   const tb=rod.tier+lure.tBias;
   let w=[72,20,6,1.5,0.5];
-  for(let i=0;i<tb&&i<4;i++){
-    w[0]=Math.max(8,w[0]-10);w[i+1]=(w[i+1]||0)+8;
-    if(i+2<5)w[i+2]=(w[i+2]||0)+2;
-  }
+  for(let i=0;i<tb&&i<4;i++){w[0]=Math.max(8,w[0]-10);w[i+1]=(w[i+1]||0)+8;if(i+2<5)w[i+2]=(w[i+2]||0)+2;}
   const lf=G.lk/100;
   w[0]=Math.max(5,w[0]-lf*18);w[3]=Math.min(22,w[3]+lf*7);w[4]=Math.min(18,w[4]+lf*11);
   const tot=w.reduce((a,b)=>a+b,0);
@@ -1321,19 +1535,17 @@ function pickFish(){
 }
 
 /* ═══════════════════════════════════════════
-   DRAWING
+   DRAWING (game canvas)
 ═══════════════════════════════════════════ */
 function draw(){
   const W=CV.width/DPR,H=CV.height/DPR;
   CX.clearRect(0,0,W,H);
   const WY=H*0.52,T=Date.now()/1000;
 
-  // Sky
   const sk=CX.createLinearGradient(0,0,0,WY);
   sk.addColorStop(0,'#020810');sk.addColorStop(.5,'#0d2240');sk.addColorStop(1,'#1a4060');
   CX.fillStyle=sk;CX.fillRect(0,0,W,WY);
 
-  // Stars — seeded positions, twinkle only
   const now2=Date.now();
   for(const s of STARS){
     CX.globalAlpha=0.25+0.45*Math.abs(Math.sin(T*s.speed+s.phase));
@@ -1344,25 +1556,18 @@ function draw(){
   // Shooting star
   const MX=W*.82,MY=H*.09;
   if(!shootingStar.active&&now2>=shootingStar.nextAt){
-    const sw=CV.width/DPR,skyH2=WY*0.85;
+    const skyH2=WY*0.85;
     shootingStar.active=true;
-    // Rare chance (1-in-5) it aims for the moon
     const aimMoon=!moonFrenzy.active&&Math.random()<0.20;
     shootingStar.aimsMoon=aimMoon;
     if(aimMoon){
       shootingStar.x=rnd(0,W*0.2);shootingStar.y=rnd(WY*0.05,WY*0.15);
       const dx=MX-shootingStar.x,dy=MY-shootingStar.y;
-      const dist=Math.sqrt(dx*dx+dy*dy);
-      const spd=dist/0.9; // arrive in ~0.9s
-      shootingStar.vx=dx/0.9;shootingStar.vy=dy/0.9;
-      shootingStar.maxLife=0.95;
+      shootingStar.vx=dx/0.9;shootingStar.vy=dy/0.9;shootingStar.maxLife=0.95;
     } else {
-      shootingStar.x=Math.random()*sw*0.6;
-      shootingStar.y=Math.random()*skyH2*0.4;
-      const angle=Math.PI/6+Math.random()*Math.PI/6;
-      const spd=220+Math.random()*120;
-      shootingStar.vx=Math.cos(angle)*spd;
-      shootingStar.vy=Math.sin(angle)*spd;
+      shootingStar.x=Math.random()*W*0.6;shootingStar.y=Math.random()*skyH2*0.4;
+      const angle=Math.PI/6+Math.random()*Math.PI/6;const spd=220+Math.random()*120;
+      shootingStar.vx=Math.cos(angle)*spd;shootingStar.vy=Math.sin(angle)*spd;
       shootingStar.maxLife=0.6+Math.random()*0.4;
     }
     shootingStar.life=shootingStar.maxLife;
@@ -1370,36 +1575,24 @@ function draw(){
   }
   if(shootingStar.active){
     const dt2=1/60;
-    shootingStar.x+=shootingStar.vx*dt2;
-    shootingStar.y+=shootingStar.vy*dt2;
-    shootingStar.life-=dt2;
-    // Check moon hit
-    if(shootingStar.aimsMoon){
-      const dx=shootingStar.x-MX,dy=shootingStar.y-MY;
-      if(Math.sqrt(dx*dx+dy*dy)<22){
-        shootingStar.active=false;
-        startMoonFrenzy();
-      }
-    }
-    if(shootingStar.life<=0||shootingStar.x>CV.width/DPR+40||shootingStar.y>WY){
-      shootingStar.active=false;
-    } else {
+    shootingStar.x+=shootingStar.vx*dt2;shootingStar.y+=shootingStar.vy*dt2;shootingStar.life-=dt2;
+    if(shootingStar.aimsMoon){const dx=shootingStar.x-MX,dy=shootingStar.y-MY;if(Math.sqrt(dx*dx+dy*dy)<22){shootingStar.active=false;startMoonFrenzy();}}
+    if(shootingStar.life<=0||shootingStar.x>CV.width/DPR+40||shootingStar.y>WY){shootingStar.active=false;}
+    else{
       const progress=1-(shootingStar.life/shootingStar.maxLife);
       const alpha=shootingStar.life/shootingStar.maxLife;
       const tailLen=40+progress*30;
       const tx=shootingStar.x-Math.cos(Math.atan2(shootingStar.vy,shootingStar.vx))*tailLen;
       const ty=shootingStar.y-Math.sin(Math.atan2(shootingStar.vy,shootingStar.vx))*tailLen;
       const grad=CX.createLinearGradient(tx,ty,shootingStar.x,shootingStar.y);
-      grad.addColorStop(0,'rgba(255,255,255,0)');
-      grad.addColorStop(1,`rgba(255,255,220,${alpha})`);
+      grad.addColorStop(0,'rgba(255,255,255,0)');grad.addColorStop(1,`rgba(255,255,220,${alpha})`);
       CX.strokeStyle=grad;CX.lineWidth=shootingStar.aimsMoon?2.5:1.5;CX.lineCap='round';
       CX.beginPath();CX.moveTo(tx,ty);CX.lineTo(shootingStar.x,shootingStar.y);CX.stroke();
-      CX.fillStyle=`rgba(255,255,220,${alpha})`;
-      CX.beginPath();CX.arc(shootingStar.x,shootingStar.y,shootingStar.aimsMoon?3:2,0,6.28);CX.fill();
+      CX.fillStyle=`rgba(255,255,220,${alpha})`;CX.beginPath();CX.arc(shootingStar.x,shootingStar.y,shootingStar.aimsMoon?3:2,0,6.28);CX.fill();
     }
   }
 
-  // Moon — dark + cracked during frenzy
+  // Moon
   const frenzyActive=moonFrenzy.active;
   const moonFlicker=frenzyActive?0.3+Math.sin(T*18)*0.25:1;
   CX.fillStyle=frenzyActive?`rgba(40,40,50,${moonFlicker})`:(G.isBossLevel?'#ff80ff':'#ffe890');
@@ -1407,11 +1600,9 @@ function draw(){
   CX.shadowBlur=frenzyActive?4:22;
   CX.beginPath();CX.arc(MX,MY,17,0,6.28);CX.fill();
   if(frenzyActive){
-    // Crack lines on dark moon
     CX.strokeStyle='rgba(200,200,255,0.4)';CX.lineWidth=1;
     CX.beginPath();CX.moveTo(MX-8,MY-6);CX.lineTo(MX+4,MY+8);CX.stroke();
     CX.beginPath();CX.moveTo(MX+6,MY-8);CX.lineTo(MX-3,MY+6);CX.stroke();
-    // Frenzy timer ring
     const rem=Math.max(0,(moonFrenzy.endAt-now2)/10000);
     CX.strokeStyle=`rgba(255,200,50,${0.6+Math.sin(T*8)*0.3})`;CX.lineWidth=3;
     CX.beginPath();CX.arc(MX,MY,21,-Math.PI/2,-Math.PI/2+rem*Math.PI*2);CX.stroke();
@@ -1420,30 +1611,21 @@ function draw(){
 
   // Water
   const wg=CX.createLinearGradient(0,WY,0,H);
-  wg.addColorStop(0,G.isBossLevel?'#1a0d2a':'#0d2d4a');
-  wg.addColorStop(.4,'#081828');wg.addColorStop(1,'#030810');
+  wg.addColorStop(0,G.isBossLevel?'#1a0d2a':'#0d2d4a');wg.addColorStop(.4,'#081828');wg.addColorStop(1,'#030810');
   CX.fillStyle=wg;CX.fillRect(0,WY,W,H-WY);
   CX.strokeStyle='rgba(60,160,240,.06)';CX.lineWidth=1;
-  for(let i=0;i<5;i++){
-    const wy=WY+12+i*16+Math.sin(T+i*1.3)*2;
-    CX.beginPath();CX.moveTo(0,wy);CX.lineTo(W,wy);CX.stroke();
-  }
+  for(let i=0;i<5;i++){const wy=WY+12+i*16+Math.sin(T+i*1.3)*2;CX.beginPath();CX.moveTo(0,wy);CX.lineTo(W,wy);CX.stroke();}
 
-  // === PIER ===
+  // Pier
   CX.fillStyle='#3d2814';CX.fillRect(0,WY-4,W*.3,9);
   CX.strokeStyle='#2a1a0a';CX.lineWidth=1;
   for(let x=8;x<W*.3;x+=11){CX.beginPath();CX.moveTo(x,WY-4);CX.lineTo(x,WY+5);CX.stroke();}
-  CX.fillStyle='#2a1608';
-  [W*.06,W*.13,W*.20,W*.28].forEach(px=>CX.fillRect(px-3,WY+5,6,H-WY-5));
-  CX.strokeStyle='rgba(255,200,100,.15)';CX.lineWidth=2;
-  CX.beginPath();CX.moveTo(0,WY-4);CX.lineTo(W*.3,WY-4);CX.stroke();
-  CX.strokeStyle='#5a3a1a';CX.lineWidth=2;
-  CX.beginPath();CX.moveTo(W*.01,WY-12);CX.lineTo(W*.28,WY-12);CX.stroke();
-  [W*.04,W*.09,W*.14,W*.19,W*.24].forEach(rx=>{
-    CX.beginPath();CX.moveTo(rx,WY-12);CX.lineTo(rx,WY-4);CX.stroke();
-  });
+  CX.fillStyle='#2a1608';[W*.06,W*.13,W*.20,W*.28].forEach(px=>CX.fillRect(px-3,WY+5,6,H-WY-5));
+  CX.strokeStyle='rgba(255,200,100,.15)';CX.lineWidth=2;CX.beginPath();CX.moveTo(0,WY-4);CX.lineTo(W*.3,WY-4);CX.stroke();
+  CX.strokeStyle='#5a3a1a';CX.lineWidth=2;CX.beginPath();CX.moveTo(W*.01,WY-12);CX.lineTo(W*.28,WY-12);CX.stroke();
+  [W*.04,W*.09,W*.14,W*.19,W*.24].forEach(rx=>{CX.beginPath();CX.moveTo(rx,WY-12);CX.lineTo(rx,WY-4);CX.stroke();});
 
-  // === FISHERMAN ===
+  // Fisherman
   const PX=W*.14,PY=WY-6,bob=Math.sin(T*.9)*1.2;
   CX.fillStyle='#3a2208';CX.fillRect(PX-8,PY+14+bob,16,8);
   CX.strokeStyle='#5a3a10';CX.lineWidth=1;CX.strokeRect(PX-8,PY+14+bob,16,8);
@@ -1457,8 +1639,7 @@ function draw(){
   CX.beginPath();CX.moveTo(PX-6,PY+6+bob);CX.lineTo(PX-10,PY+13+bob);CX.stroke();
   CX.beginPath();CX.moveTo(PX+6,PY+4+bob);CX.lineTo(PX+14+armSway,PY-2+bob);CX.stroke();
   CX.fillStyle='#c8956a';CX.beginPath();CX.arc(PX,PY-3+bob,7,0,6.28);CX.fill();
-  CX.fillStyle='#4a3010';
-  CX.beginPath();CX.ellipse(PX,PY-9+bob,9,3,0,0,6.28);CX.fill();
+  CX.fillStyle='#4a3010';CX.beginPath();CX.ellipse(PX,PY-9+bob,9,3,0,0,6.28);CX.fill();
   CX.fillRect(PX-5,PY-18+bob,10,10);
   CX.fillStyle='#6a4818';CX.beginPath();CX.ellipse(PX,PY-18+bob,5,2,0,0,6.28);CX.fill();
   CX.fillStyle='#e08040';CX.fillRect(PX-5,PY-12+bob,10,2);
@@ -1472,10 +1653,7 @@ function draw(){
   const rodTX=rodBX+22+tilt*6,rodTY=rodBY-30-tilt*16;
   CX.strokeStyle='#8B6914';CX.lineWidth=3;CX.lineCap='round';
   CX.beginPath();CX.moveTo(rodBX,rodBY);CX.lineTo(rodTX,rodTY);CX.stroke();
-  if(tilt>0.2){
-    CX.strokeStyle=`rgba(240,192,64,${tilt*.55})`;CX.lineWidth=5;
-    CX.beginPath();CX.moveTo(rodBX,rodBY);CX.lineTo(rodTX,rodTY);CX.stroke();
-  }
+  if(tilt>0.2){CX.strokeStyle=`rgba(240,192,64,${tilt*.55})`;CX.lineWidth=5;CX.beginPath();CX.moveTo(rodBX,rodBY);CX.lineTo(rodTX,rodTY);CX.stroke();}
 
   // Line & Bobber
   const ph=G.ph;
@@ -1507,8 +1685,7 @@ function draw(){
   for(const r of G.rip){
     const age=(now-r.b)/1000;
     for(let ring=1;ring<=3;ring++){
-      const alpha=Math.max(0,.45-age*.18)/ring;
-      const rr=(age*42+ring*14)*r.s;
+      const alpha=Math.max(0,.45-age*.18)/ring;const rr=(age*42+ring*14)*r.s;
       CX.strokeStyle=`rgba(80,180,255,${alpha})`;CX.lineWidth=1.5;
       CX.beginPath();CX.ellipse(r.x,r.y,rr,rr*.38,0,0,6.28);CX.stroke();
     }
@@ -1521,22 +1698,18 @@ function draw(){
     }
     CX.globalAlpha=1;
   }
-  // ── HUMOR EVENTS — clipped to correct zones ──
-  const nowE=Date.now();
-  // Safe boundaries
-  const pierEndX=W*0.32; // pier ends here — events start past this
 
-  // SEAGULLS — sky only, start past pier
+  const nowE=Date.now();
+  const pierEndX=W*0.32;
+
+  // SEAGULLS
   if(!EVENTS.gull.active&&nowE>=EVENTS.gull.nextAt){
     EVENTS.gull.active=true;EVENTS.gull.birds=[];
     const count=2+Math.floor(Math.random()*4);
-    for(let i=0;i<count;i++) EVENTS.gull.birds.push({
-      x:W+30+i*22, y:rnd(WY*0.08,WY*0.5), spd:-(rnd(55,90)),
-      flapT:Math.random()*Math.PI*2, flapSpd:rnd(3,5)
-    });
+    for(let i=0;i<count;i++)EVENTS.gull.birds.push({x:W+30+i*22,y:rnd(WY*0.08,WY*0.5),spd:-(rnd(55,90)),flapT:Math.random()*Math.PI*2,flapSpd:rnd(3,5)});
   }
   if(EVENTS.gull.active){
-    CX.save();CX.beginPath();CX.rect(0,0,W,WY-2);CX.clip(); // clip to sky
+    CX.save();CX.beginPath();CX.rect(0,0,W,WY-2);CX.clip();
     let allGone=true;
     for(const b of EVENTS.gull.birds){
       b.x+=b.spd/60;b.flapT+=b.flapSpd/60;
@@ -1550,12 +1723,10 @@ function draw(){
     if(allGone){EVENTS.gull.active=false;EVENTS.gull.nextAt=nowE+rnd(20000,40000);}
   }
 
-  // PELICAN — sky/water surface, appears from right past pier
+  // PELICAN
   if(!EVENTS.pelican.active&&nowE>=EVENTS.pelican.nextAt){
-    EVENTS.pelican.active=true;
-    EVENTS.pelican.x=W+20;EVENTS.pelican.y=rnd(WY*0.15,WY*0.45);
-    EVENTS.pelican.state='fly';EVENTS.pelican.stateT=nowE;
-    EVENTS.pelican.diveX=rnd(W*0.5,W*0.85);
+    EVENTS.pelican.active=true;EVENTS.pelican.x=W+20;EVENTS.pelican.y=rnd(WY*0.15,WY*0.45);
+    EVENTS.pelican.state='fly';EVENTS.pelican.stateT=nowE;EVENTS.pelican.diveX=rnd(W*0.5,W*0.85);
   }
   if(EVENTS.pelican.active){
     const p=EVENTS.pelican;const age=(nowE-p.stateT)/1000;
@@ -1570,70 +1741,44 @@ function draw(){
       if(p.x<=p.diveX){p.state='dive';p.stateT=nowE;}
       if(p.x<-30){EVENTS.pelican.active=false;EVENTS.pelican.nextAt=nowE+rnd(25000,50000);}
     } else if(p.state==='dive'){
-      p.y+=5;
-      CX.fillStyle='#b0c0d0';CX.beginPath();CX.ellipse(p.x,p.y,8,16,-Math.PI/3,0,6.28);CX.fill();
+      p.y+=5;CX.fillStyle='#b0c0d0';CX.beginPath();CX.ellipse(p.x,p.y,8,16,-Math.PI/3,0,6.28);CX.fill();
       if(p.y>=WY){p.state='splash';p.stateT=nowE;G.rip.push({x:p.x,y:WY,b:nowE,s:0.5});}
     } else {
-      CX.globalAlpha=Math.max(0,1-age*0.7);
-      CX.fillStyle='#b0c0d0';CX.beginPath();CX.ellipse(p.diveX,WY-4,14,6,0,0,6.28);CX.fill();
-      CX.globalAlpha=1;
+      CX.globalAlpha=Math.max(0,1-age*0.7);CX.fillStyle='#b0c0d0';CX.beginPath();CX.ellipse(p.diveX,WY-4,14,6,0,0,6.28);CX.fill();CX.globalAlpha=1;
       if(age>2.5){EVENTS.pelican.active=false;EVENTS.pelican.nextAt=nowE+rnd(25000,50000);}
     }
     CX.restore();
   }
 
-  // SURFER — rides waterline right-to-left. All coords absolute, no nested save/translate.
+  // SURFER
   if(!EVENTS.surfer.active&&nowE>=EVENTS.surfer.nextAt){
-    EVENTS.surfer.active=true;
-    EVENTS.surfer.x=W+40;EVENTS.surfer.spd=rnd(50,80);
-    EVENTS.surfer.alive=true;
+    EVENTS.surfer.active=true;EVENTS.surfer.x=W+40;EVENTS.surfer.spd=rnd(50,80);EVENTS.surfer.alive=true;
   }
   if(EVENTS.surfer.active){
     const sf=EVENTS.surfer;
     if(sf.alive){
       sf.x-=sf.spd/60;
-      const bob=Math.sin(T*3)*1.5;
-      const brdY=WY+3+bob;   // board sits right at waterline
-      const feetY=brdY-2;    // feet on board
-      const waistY=feetY-8;
-      const shoulderY=waistY-7;
-      const headY=shoulderY-6;
+      const bob=Math.sin(T*3)*1.5;const brdY=WY+3+bob;const feetY=brdY-2;const waistY=feetY-8;const shoulderY=waistY-7;const headY=shoulderY-6;
       CX.save();CX.beginPath();CX.rect(pierEndX,WY-32,W-pierEndX,H-WY+32);CX.clip();
-      // Wake spray to the right (behind surfer)
       CX.strokeStyle='rgba(180,230,255,0.4)';CX.lineWidth=2;CX.lineCap='round';
       CX.beginPath();CX.moveTo(sf.x+20,brdY);CX.quadraticCurveTo(sf.x+34,brdY-8,sf.x+44,brdY);CX.stroke();
-      // Board — red longboard, pointed ends
-      CX.fillStyle='#d02828';
-      CX.beginPath();CX.moveTo(sf.x-28,brdY+2);CX.quadraticCurveTo(sf.x,brdY+5,sf.x+28,brdY+2);
-      CX.quadraticCurveTo(sf.x,brdY-1,sf.x-28,brdY+2);CX.closePath();CX.fill();
-      CX.fillStyle='rgba(255,255,255,0.3)';
-      CX.beginPath();CX.moveTo(sf.x-18,brdY+1);CX.quadraticCurveTo(sf.x-4,brdY-1,sf.x+10,brdY+1);
-      CX.quadraticCurveTo(sf.x-4,brdY+2,sf.x-18,brdY+1);CX.closePath();CX.fill();
-      // Legs (slightly bent)
+      CX.fillStyle='#d02828';CX.beginPath();CX.moveTo(sf.x-28,brdY+2);CX.quadraticCurveTo(sf.x,brdY+5,sf.x+28,brdY+2);CX.quadraticCurveTo(sf.x,brdY-1,sf.x-28,brdY+2);CX.closePath();CX.fill();
+      CX.fillStyle='rgba(255,255,255,0.3)';CX.beginPath();CX.moveTo(sf.x-18,brdY+1);CX.quadraticCurveTo(sf.x-4,brdY-1,sf.x+10,brdY+1);CX.quadraticCurveTo(sf.x-4,brdY+2,sf.x-18,brdY+1);CX.closePath();CX.fill();
       CX.strokeStyle='#1a3060';CX.lineWidth=3;CX.lineCap='round';
       CX.beginPath();CX.moveTo(sf.x-3,feetY);CX.lineTo(sf.x-4,waistY+2);CX.stroke();
       CX.beginPath();CX.moveTo(sf.x+3,feetY);CX.lineTo(sf.x+4,waistY+2);CX.stroke();
-      // Torso (wetsuit)
-      CX.strokeStyle='#1a5a9a';CX.lineWidth=5;
-      CX.beginPath();CX.moveTo(sf.x,waistY);CX.lineTo(sf.x,shoulderY);CX.stroke();
-      // Arms out for balance
-      CX.strokeStyle='#1a5a9a';CX.lineWidth=3;
-      CX.beginPath();CX.moveTo(sf.x,shoulderY+2);CX.lineTo(sf.x-16,shoulderY+5);CX.stroke();
+      CX.strokeStyle='#1a5a9a';CX.lineWidth=5;CX.beginPath();CX.moveTo(sf.x,waistY);CX.lineTo(sf.x,shoulderY);CX.stroke();
+      CX.strokeStyle='#1a5a9a';CX.lineWidth=3;CX.beginPath();CX.moveTo(sf.x,shoulderY+2);CX.lineTo(sf.x-16,shoulderY+5);CX.stroke();
       CX.beginPath();CX.moveTo(sf.x,shoulderY+2);CX.lineTo(sf.x+16,shoulderY+5);CX.stroke();
-      // Head (skin tone)
       CX.fillStyle='#d4956a';CX.beginPath();CX.arc(sf.x,headY,5,0,6.28);CX.fill();
-      // Hair
       CX.fillStyle='#2a1808';CX.beginPath();CX.arc(sf.x,headY-1,5,Math.PI,0);CX.fill();
       CX.restore();
     } else {
       const wipeAge=(nowE-sf.wipeT)/1000;
       CX.save();CX.beginPath();CX.rect(0,WY,W,H-WY);CX.clip();
       CX.globalAlpha=Math.max(0,1-wipeAge*0.65);
-      // Board pieces + body parts scatter
       [{c:'#d02828',a:-0.5},{c:'#1a5a9a',a:0},{c:'#d4956a',a:0.3},{c:'#d02828',a:-1.2},{c:'#1a5a9a',a:1.0},{c:'#d4956a',a:0.8}].forEach((p,i)=>{
-        const dist=wipeAge*65;
-        CX.fillStyle=p.c;CX.beginPath();
-        CX.arc(sf.x+Math.cos(p.a)*dist,WY+6+Math.abs(Math.sin(p.a))*dist*0.4,3+i%2,0,6.28);CX.fill();
+        const dist=wipeAge*65;CX.fillStyle=p.c;CX.beginPath();CX.arc(sf.x+Math.cos(p.a)*dist,WY+6+Math.abs(Math.sin(p.a))*dist*0.4,3+i%2,0,6.28);CX.fill();
       });
       CX.globalAlpha=1;CX.restore();
       if(wipeAge>2.2){EVENTS.surfer.active=false;EVENTS.surfer.nextAt=nowE+rnd(15000,35000);}
@@ -1641,125 +1786,103 @@ function draw(){
     if(sf.alive&&sf.x<-60){EVENTS.surfer.active=false;EVENTS.surfer.nextAt=nowE+rnd(15000,35000);}
   }
 
-  // SHARK — water zone, hunts the surfer if active, else patrols
+  // SHARK — fixed: triangle head leads, wake behind tail
   if(!EVENTS.shark.active&&nowE>=EVENTS.shark.nextAt){
-    EVENTS.shark.active=true;
-    EVENTS.shark.x=W+60;EVENTS.shark.y=WY+10;
+    EVENTS.shark.active=true;EVENTS.shark.x=W+60;EVENTS.shark.y=WY+10;
     EVENTS.shark.spd=rnd(40,70);EVENTS.shark.dir=-1;
     EVENTS.shark.hunting=EVENTS.surfer.active&&EVENTS.surfer.alive;
-    EVENTS.shark.startT=nowE;EVENTS.shark.life=rnd(6000,12000);
-    EVENTS.shark.attacked=false;
+    EVENTS.shark.startT=nowE;EVENTS.shark.life=rnd(6000,12000);EVENTS.shark.attacked=false;
   }
   if(EVENTS.shark.active){
     const sh=EVENTS.shark;
-    // If surfer is active and alive, shark hunts it
     if(sh.hunting&&EVENTS.surfer.active&&EVENTS.surfer.alive){
-      const dx=EVENTS.surfer.x-sh.x;
-      sh.dir=dx>0?1:-1;
-      sh.x+=sh.spd*sh.dir/60;
-      // Attack if close enough
+      const dx=EVENTS.surfer.x-sh.x;sh.dir=dx>0?1:-1;sh.x+=sh.spd*sh.dir/60;
       const dist=Math.abs(EVENTS.surfer.x-sh.x);
       if(dist<25&&!sh.attacked){
-        sh.attacked=true;
-        // SURFER GETS GOT
-        EVENTS.surfer.alive=false;EVENTS.surfer.wipeT=nowE;
+        sh.attacked=true;EVENTS.surfer.alive=false;EVENTS.surfer.wipeT=nowE;
         G.rip.push({x:EVENTS.surfer.x,y:WY,b:nowE,s:1.2});
-        scoreFlash('🦈 SHARK!','#ff4040');
-        vib&&vib([200,50,150]);rumbleEscape&&rumbleEscape();
-        // Shark dives and disappears
+        scoreFlash('🦈 SHARK!','#ff4040');vib&&vib([200,50,150]);rumbleEscape&&rumbleEscape();
         setTimeout(()=>{EVENTS.shark.active=false;EVENTS.shark.nextAt=nowE+rnd(30000,60000);},1500);
       }
     } else {
       sh.x+=sh.spd*sh.dir/60;
       if(sh.x<-30||sh.x>W+30)sh.dir*=-1;
     }
-    // Draw fin — only the tip visible above water
     CX.save();CX.beginPath();CX.rect(pierEndX,WY-18,W-pierEndX,H-WY+18);CX.clip();
+    // dir: -1 = moving left, +1 = moving right
+    // Triangle head points in direction of travel (sh.dir)
+    // Fin tip points opposite to direction (trailing)
+    const finTipX = sh.x - sh.dir * 14; // fin tip trails behind
+    const finBaseL = sh.x + sh.dir * 6;  // leading edge of fin base
+    const finBaseT = sh.y + 2;
     CX.fillStyle='#2a4a6a';
-    CX.beginPath();CX.moveTo(sh.x,sh.y-16);CX.lineTo(sh.x-sh.dir*12,sh.y+2);CX.lineTo(sh.x+sh.dir*6,sh.y+2);CX.closePath();CX.fill();
+    CX.beginPath();
+    CX.moveTo(sh.x + sh.dir * 8, sh.y - 16); // top of fin — over the head side
+    CX.lineTo(finTipX, finBaseT);             // trailing base corner
+    CX.lineTo(finBaseL, finBaseT);            // leading base corner
+    CX.closePath();CX.fill();
     CX.strokeStyle='rgba(0,0,0,.3)';CX.lineWidth=1;CX.stroke();
+    // Wake trails behind the shark (opposite to direction)
     CX.strokeStyle='rgba(180,220,255,.25)';CX.lineWidth=1.5;
-    CX.beginPath();CX.moveTo(sh.x+sh.dir*6,sh.y+2);CX.quadraticCurveTo(sh.x+sh.dir*20,sh.y+5,sh.x+sh.dir*32,sh.y+2);CX.stroke();
+    CX.beginPath();
+    CX.moveTo(sh.x - sh.dir * 6, sh.y + 2);
+    CX.quadraticCurveTo(sh.x - sh.dir * 20, sh.y + 5, sh.x - sh.dir * 32, sh.y + 2);
+    CX.stroke();
     CX.restore();
     if(!sh.hunting&&nowE-sh.startT>sh.life){EVENTS.shark.active=false;EVENTS.shark.nextAt=nowE+rnd(25000,55000);}
   }
 
-  // DOLPHIN — deeper water zone, swims right-to-left, arcs up to surface periodically
+  // DOLPHIN
   if(!EVENTS.dolphin.active&&nowE>=EVENTS.dolphin.nextAt){
-    EVENTS.dolphin.active=true;
-    EVENTS.dolphin.x=W+40;
-    EVENTS.dolphin.jumpT=nowE;EVENTS.dolphin.jumpCount=0;
+    EVENTS.dolphin.active=true;EVENTS.dolphin.x=W+40;EVENTS.dolphin.jumpT=nowE;EVENTS.dolphin.jumpCount=0;
   }
   if(EVENTS.dolphin.active){
-    const d=EVENTS.dolphin;
-    d.x-=55/60;
-    const waterDepth=H-WY;
-    const baseY=WY+waterDepth*0.28;
+    const d=EVENTS.dolphin;d.x-=55/60;
+    const waterDepth=H-WY;const baseY=WY+waterDepth*0.28;
     const jumpAge=(nowE-d.jumpT)/1000;
     const arc=Math.max(0,Math.sin(jumpAge*Math.PI/1.0)*waterDepth*0.24);
-    const dy=baseY-arc;
-    const facingAngle=arc>5?(jumpAge<0.5?-0.28:0.28):0;
+    const dy=baseY-arc;const facingAngle=arc>5?(jumpAge<0.5?-0.28:0.28):0;
     CX.save();CX.beginPath();CX.rect(pierEndX,WY,W-pierEndX,H-WY);CX.clip();
     CX.save();CX.translate(d.x,dy);CX.rotate(facingAngle);
-    // Body (snout LEFT = direction of travel)
     CX.fillStyle='#4a80b0';CX.beginPath();CX.ellipse(0,0,20,9,0,0,6.28);CX.fill();
     CX.fillStyle='#78b0d8';CX.beginPath();CX.ellipse(-2,-4,15,6,0,0,6.28);CX.fill();
-    // Tail RIGHT (trailing end)
-    CX.fillStyle='#3a6a90';
-    CX.beginPath();CX.moveTo(18,0);CX.lineTo(30,-8);CX.lineTo(26,0);CX.closePath();CX.fill();
+    CX.fillStyle='#3a6a90';CX.beginPath();CX.moveTo(18,0);CX.lineTo(30,-8);CX.lineTo(26,0);CX.closePath();CX.fill();
     CX.beginPath();CX.moveTo(18,0);CX.lineTo(30,8);CX.lineTo(26,0);CX.closePath();CX.fill();
-    // Dorsal fin
     CX.beginPath();CX.moveTo(4,-9);CX.lineTo(-2,-22);CX.lineTo(-10,-9);CX.closePath();CX.fill();
-    // Snout LEFT (leading end)
-    CX.fillStyle='#4a80b0';
-    CX.beginPath();CX.moveTo(-20,0);CX.lineTo(-30,3);CX.lineTo(-20,5);CX.closePath();CX.fill();
-    // Eye
+    CX.fillStyle='#4a80b0';CX.beginPath();CX.moveTo(-20,0);CX.lineTo(-30,3);CX.lineTo(-20,5);CX.closePath();CX.fill();
     CX.fillStyle='#111';CX.beginPath();CX.arc(-15,-3,2.5,0,6.28);CX.fill();
     CX.fillStyle='rgba(255,255,255,0.7)';CX.beginPath();CX.arc(-14,-4,1,0,6.28);CX.fill();
-    // Pec fin
-    CX.fillStyle='#3a6a90';
-    CX.beginPath();CX.moveTo(-4,6);CX.lineTo(-12,18);CX.lineTo(6,8);CX.closePath();CX.fill();
+    CX.fillStyle='#3a6a90';CX.beginPath();CX.moveTo(-4,6);CX.lineTo(-12,18);CX.lineTo(6,8);CX.closePath();CX.fill();
     CX.restore();
-    if(arc>waterDepth*0.18&&d.jumpCount<6&&jumpAge>0.08){
-      G.rip.push({x:d.x,y:WY+4,b:nowE,s:0.45});d.jumpCount++;
-    }
+    if(arc>waterDepth*0.18&&d.jumpCount<6&&jumpAge>0.08){G.rip.push({x:d.x,y:WY+4,b:nowE,s:0.45});d.jumpCount++;}
     if(jumpAge>1.05){d.jumpT=nowE+rnd(300,700);d.jumpCount=0;}
     CX.restore();
     if(d.x<-55){EVENTS.dolphin.active=false;EVENTS.dolphin.nextAt=nowE+rnd(40000,70000);}
   }
 
-  // UFO — sky only, right side
+  // UFO
   if(!EVENTS.ufo.active&&nowE>=EVENTS.ufo.nextAt){
-    EVENTS.ufo.active=true;
-    EVENTS.ufo.x=rnd(W*0.5,W*0.88);EVENTS.ufo.y=-60;
-    EVENTS.ufo.targetY=rnd(WY*0.18,WY*0.42);
-    EVENTS.ufo.state='descend';EVENTS.ufo.stateT=nowE;
+    EVENTS.ufo.active=true;EVENTS.ufo.x=rnd(W*0.5,W*0.88);EVENTS.ufo.y=-60;
+    EVENTS.ufo.targetY=rnd(WY*0.18,WY*0.42);EVENTS.ufo.state='descend';EVENTS.ufo.stateT=nowE;
     EVENTS.ufo.beamAlpha=0;EVENTS.ufo.hoverT=rnd(2500,5000);
   }
   if(EVENTS.ufo.active){
     const u=EVENTS.ufo;const age=(nowE-u.stateT)/1000;
     if(u.state==='descend'){u.y+=3;if(u.y>=u.targetY){u.state='hover';u.stateT=nowE;}}
-    else if(u.state==='hover'){
-      u.y=u.targetY+Math.sin(T*1.5)*3;
-      u.beamAlpha=Math.min(0.35,u.beamAlpha+0.02);
-      if(age>u.hoverT/1000){u.state='flee';u.stateT=nowE;}
-    } else {u.y-=6;u.x+=2;u.beamAlpha=Math.max(0,u.beamAlpha-0.04);}
-    CX.save();CX.beginPath();CX.rect(W*0.35,0,W*0.65,WY);CX.clip(); // right sky only
+    else if(u.state==='hover'){u.y=u.targetY+Math.sin(T*1.5)*3;u.beamAlpha=Math.min(0.35,u.beamAlpha+0.02);if(age>u.hoverT/1000){u.state='flee';u.stateT=nowE;}}
+    else{u.y-=6;u.x+=2;u.beamAlpha=Math.max(0,u.beamAlpha-0.04);}
+    CX.save();CX.beginPath();CX.rect(W*0.35,0,W*0.65,WY);CX.clip();
     if(u.beamAlpha>0){
       const bw=28+Math.sin(T*3)*4;
       const grad=CX.createLinearGradient(u.x,u.y+12,u.x,WY);
       grad.addColorStop(0,`rgba(180,255,180,${u.beamAlpha})`);grad.addColorStop(1,'rgba(180,255,180,0)');
-      CX.fillStyle=grad;CX.beginPath();
-      CX.moveTo(u.x-8,u.y+12);CX.lineTo(u.x-bw,WY);CX.lineTo(u.x+bw,WY);CX.lineTo(u.x+8,u.y+12);CX.closePath();CX.fill();
+      CX.fillStyle=grad;CX.beginPath();CX.moveTo(u.x-8,u.y+12);CX.lineTo(u.x-bw,WY);CX.lineTo(u.x+bw,WY);CX.lineTo(u.x+8,u.y+12);CX.closePath();CX.fill();
     }
     CX.save();CX.translate(u.x,u.y);
     CX.fillStyle='#a0c0e0';CX.beginPath();CX.ellipse(0,4,32,8,0,0,6.28);CX.fill();
     CX.fillStyle='#c8e8ff';CX.beginPath();CX.ellipse(0,-2,18,10,0,0,6.28);CX.fill();
     CX.strokeStyle='#80b0d8';CX.lineWidth=1;CX.stroke();
-    [-20,-10,0,10,20].forEach((lx,i)=>{
-      CX.fillStyle=Math.sin(T*5+i*1.2)>0?['#ff4040','#40ff40','#4040ff','#ffff40','#ff40ff'][i]:'rgba(255,255,255,.1)';
-      CX.beginPath();CX.arc(lx,6,3,0,6.28);CX.fill();
-    });
+    [-20,-10,0,10,20].forEach((lx,i)=>{CX.fillStyle=Math.sin(T*5+i*1.2)>0?['#ff4040','#40ff40','#4040ff','#ffff40','#ff40ff'][i]:'rgba(255,255,255,.1)';CX.beginPath();CX.arc(lx,6,3,0,6.28);CX.fill();});
     CX.restore();CX.restore();
     if(u.state==='flee'&&u.y<-80){EVENTS.ufo.active=false;EVENTS.ufo.nextAt=nowE+rnd(90000,180000);}
   }
@@ -1774,16 +1897,10 @@ function updFishPan(){
   const f=G.fish;if(!f)return;
   const isBoss=f.isBoss;
   const ti=isBoss?{col:f.col||'var(--boss)'}:FTIERS[f.t];
-  const fn=document.getElementById('fishN');
-  fn.textContent=f.e+' '+f.name;fn.style.color=ti.col;
+  const fn=document.getElementById('fishN');fn.textContent=f.e+' '+f.name;fn.style.color=ti.col;
   const tb=document.getElementById('fishTB');
-  if(isBoss){
-    tb.textContent='👹 PHASE 1';tb.style.background='rgba(255,40,255,.15)';
-    tb.style.color='var(--boss)';tb.style.border='1px solid rgba(255,40,255,.4)';
-  } else {
-    tb.textContent='T'+f.t+' '+(FTIERS[f.t]?.name||'').toUpperCase();
-    tb.style.background=ti.col+'20';tb.style.color=ti.col;tb.style.border='1px solid '+ti.col+'50';
-  }
+  if(isBoss){tb.textContent='👹 PHASE 1';tb.style.background='rgba(255,40,255,.15)';tb.style.color='var(--boss)';tb.style.border='1px solid rgba(255,40,255,.4)';}
+  else{tb.textContent='T'+f.t+' '+(FTIERS[f.t]?.name||'').toUpperCase();tb.style.background=ti.col+'20';tb.style.color=ti.col;tb.style.border='1px solid '+ti.col+'50';}
 }
 
 function startFight(){
@@ -1792,74 +1909,68 @@ function startFight(){
   const isBoss=G.fish&&G.fish.isBoss;
   const cmds=isBoss?['reel','reel','tooFast','letOut']:['reel','reel','reel','tooFast','letOut'];
   G.cmdInt=6000+Math.random()*4000;G.cmdTimer=0;
-  // Boss phase tracking
   G.bossPhase=1;G.bossPhaseAnnounced=0;
   function issueCmd(){G.cmd=pick(cmds);buddy(G.cmd,true);G.cmdInt=5500+Math.random()*4000;G.cmdTimer=0;}
   issueCmd();
   let last=Date.now();clearInterval(G.fInt);
-  const diffScale=[0.06,0.25,0.6,1.0,1.4,1.7,2.0,2.3,2.6,3.0];
-  const baseDiff=isBoss?2.2:diffScale[Math.min(G.lv-1,diffScale.length-1)];
   const lineBreakThresh=G.lv<=2?101:LINES[G.li].brk;
+
+  // Each gear piece independently reduces fight difficulty
+  // Cane Pole (rod tier 0) = 5x fight difficulty vs Legend Rod (rod tier 4)
+  // Same for reel, line, lure tiers
+  const rodMult    = 1.0 - (RODS[G.ri].tier   / 4) * 0.6;   // 1.0 → 0.4
+  const reelMult   = 1.0 - (G.rli              / 4) * 0.3;   // 1.0 → 0.7
+  const lineMult   = 1.0 - (G.li               / 4) * 0.2;   // 1.0 → 0.8
+  const lureMult   = 1.0 - (LURES[G.lui].tBias / 3) * 0.15;  // 1.0 → 0.85
+  // Combined gear score: all 4 multiply together
+  // Worst gear: 1.0×1.0×1.0×1.0 = 1.0 (base difficulty)
+  // Best gear:  0.4×0.7×0.8×0.85 ≈ 0.190 → about 5× easier than cane pole only
+  const gearMult = rodMult * reelMult * lineMult * lureMult;
+
+  const diffScale=[0.08,0.30,0.65,1.05,1.45,1.80,2.10,2.40,2.70,3.10];
+  const baseDiff=isBoss?2.5:diffScale[Math.min(G.lv-1,diffScale.length-1)];
+  const diff=baseDiff*gearMult;
 
   G.fInt=setInterval(()=>{
     if(G.ph!=='reeling'){clearInterval(G.fInt);G.fInt=null;return;}
     const now=Date.now(),dt=(now-last)/1000;last=now;
     G.cmdTimer+=dt*1000;if(G.cmdTimer>=G.cmdInt)issueCmd();
 
-    // Boss phase escalation
-    let diff=baseDiff;
+    let currentDiff=diff;
     if(isBoss){
       if(G.prog>=66&&G.bossPhase<3){
         G.bossPhase=3;
-        if(G.bossPhaseAnnounced<3){
-          G.bossPhaseAnnounced=3;
-          document.getElementById('fishTB').textContent='👹 PHASE 3 — BERSERK!';
-          document.getElementById('fishTB').style.color='#ff2020';
-          vib([200,80,200,80,200]);
-          scoreFlash('⚠️ PHASE 3!','#ff2020');
-        }
+        if(G.bossPhaseAnnounced<3){G.bossPhaseAnnounced=3;document.getElementById('fishTB').textContent='👹 PHASE 3 — BERSERK!';document.getElementById('fishTB').style.color='#ff2020';vib([200,80,200,80,200]);scoreFlash('⚠️ PHASE 3!','#ff2020');}
       } else if(G.prog>=33&&G.bossPhase<2){
         G.bossPhase=2;
-        if(G.bossPhaseAnnounced<2){
-          G.bossPhaseAnnounced=2;
-          document.getElementById('fishTB').textContent='👹 PHASE 2 — ENRAGED!';
-          document.getElementById('fishTB').style.color='var(--boss)';
-          vib([120,60,120]);
-          scoreFlash('⚠️ PHASE 2!','var(--boss)');
-        }
+        if(G.bossPhaseAnnounced<2){G.bossPhaseAnnounced=2;document.getElementById('fishTB').textContent='👹 PHASE 2 — ENRAGED!';document.getElementById('fishTB').style.color='var(--boss)';vib([120,60,120]);scoreFlash('⚠️ PHASE 2!','var(--boss)');}
       }
-      // Phase multipliers: P1=1×, P2=1.8×, P3=3.0×
-      diff=baseDiff*(G.bossPhase===3?3.0:G.bossPhase===2?1.8:1.0);
+      currentDiff=diff*(G.bossPhase===3?3.0:G.bossPhase===2?1.8:1.0);
     }
 
     const fish=G.fish,reel=REELS[G.rli];
     const rd=G.rdelta,tp=G.tiltPull,Ts=now/1000;
     let ff=0;
     switch(fish.ai){
-      case 'passive':   ff=0.05;break;
-      case 'steady':    ff=0.35;break;
-      case 'erratic':   ff=0.25+Math.sin(Ts*3)*.45;break;
-      case 'aggressive':ff=0.65+Math.sin(Ts*5)*.35;break;
-      case 'runner':    ff=Math.random()<0.05?3.5:0.2;break;
-      case 'deep_dive': ff=0.5+(tp<.2?.7:0);break;
-      case 'slow_heavy':ff=0.65;break;
-      case 'strike':    ff=Math.random()<0.03?4:0.1;break;
-      case 'legendary': ff=0.85+Math.sin(Ts*2)*.85;break;
+      case 'passive':    ff=0.05;break;
+      case 'steady':     ff=0.35;break;
+      case 'erratic':    ff=0.25+Math.sin(Ts*3)*.45;break;
+      case 'aggressive': ff=0.65+Math.sin(Ts*5)*.35;break;
+      case 'runner':     ff=Math.random()<0.05?3.5:0.2;break;
+      case 'deep_dive':  ff=0.5+(tp<.2?.7:0);break;
+      case 'slow_heavy': ff=0.65;break;
+      case 'strike':     ff=Math.random()<0.03?4:0.1;break;
+      case 'legendary':  ff=0.85+Math.sin(Ts*2)*.85;break;
     }
-    ff*=diff*(G.stam/100);
+    ff*=currentDiff*(G.stam/100);
     const wh=G.wheelDown;
     if(!wh&&G.ten>15){G.ten=Math.max(0,G.ten-6*dt*60);document.getElementById('letout').classList.add('show');}
     else document.getElementById('letout').classList.remove('show');
-    const rmult=1+reel.reelB/100;
-    const pr=rd*rmult;
-    const tiltContrib=tp*1.5;
+    const rmult=1+reel.reelB/100;const pr=rd*rmult;const tiltContrib=tp*1.5;
     let progD=0;
     if(wh&&rd>0)progD=pr*.5-ff*.06+tiltContrib*.2;
     else progD=tiltContrib*.12-ff*.03;
-    // Phase 3 boss: progress drains when not actively reeling
-    if(isBoss&&G.bossPhase===3&&(!wh||rd<=0)){
-      progD-=0.04; // drain ~2.4 prog/s if idle
-    }
+    if(isBoss&&G.bossPhase===3&&(!wh||rd<=0))progD-=0.04;
     const tRF=G.lv<=2?0.25:isBoss?(G.bossPhase===3?2.0:G.bossPhase===2?1.5:1.1):1.0;
     let newTen=G.ten+(rd>0?rd*1.1*tRF:-1.2)-ff*1.4+tp*(-2.2);
     newTen=cl(newTen,0,100);G.ten=newTen;
@@ -1868,20 +1979,13 @@ function startFight(){
     G.stam=Math.max(0,G.stam-dt*ff*.35);
     G.prog=cl(G.prog+progD,0,100);
     if(G.prog>=100){
-      // 10% chance fish escapes at the last moment (non-boss)
-      if(!isBoss&&Math.random()<0.10){
-        scoreFlash('💨 GOT AWAY!','var(--org)');
-        vib([80,30,40]);rumbleEscape();
-        endFight(false);
-      } else {
-        endFight(true);
-      }
+      if(!isBoss&&Math.random()<0.10){scoreFlash('💨 GOT AWAY!','var(--org)');vib([80,30,40]);rumbleEscape();endFight(false);}
+      else endFight(true);
       return;
     }
     document.getElementById('progBar').style.width=G.prog+'%';
     const tc=G.ten>82?'#e84040':G.ten>65?'#e08040':'#40e080';
-    document.getElementById('tenBar').style.width=G.ten+'%';
-    document.getElementById('tenBar').style.background=tc;
+    document.getElementById('tenBar').style.width=G.ten+'%';document.getElementById('tenBar').style.background=tc;
     document.getElementById('stamBar').style.width=G.stam+'%';
     G.rdelta=0;
   },80);
@@ -1895,11 +1999,7 @@ function endFight(win){
   document.getElementById('tiltHint').style.display='none';
   document.getElementById('fishpan').classList.remove('show');
   if(win)landFish(G.fish);
-  else{
-    buddy('lost',false);vib([180,50,80]);
-    G.canim=false;G.fish=null;G.ph='idle';
-    setTimeout(()=>launchAimer(),300);
-  }
+  else{buddy('lost',false);vib([180,50,80]);G.canim=false;G.fish=null;G.ph='idle';setTimeout(()=>launchAimer(),300);}
 }
 
 function landFish(fish){
@@ -1910,18 +2010,13 @@ function landFish(fish){
   vib(isBoss?[100,50,100,50,200,50,200,50,200]:[60,30,60,30,180]);
   isBoss?rumbleBoss():rumbleCatch();
   const rod=RODS[G.ri];const mult=1+rod.catchB/100;
-  const pm=fish.perfectMult||1; // perfect cast multiplier
+  const pm=fish.perfectMult||1;
   const em=Math.round(fish.v*mult*pm);
   const ep=Math.round((isBoss?500:FTIERS[fish.t]?.pts||100)*mult*pm);
-  if(pm>1){
-    scoreFlash('🎯 x'+pm+' PERFECT BONUS!','#ff4040');
-    rumble([{f:50,d:.08,g:.4},{f:80,d:.12,g:.6},{f:60,d:.2,g:.5}]);
-  }
+  if(pm>1){scoreFlash('🎯 x'+pm+' PERFECT BONUS!','#ff4040');rumble([{f:50,d:.08,g:.4},{f:80,d:.12,g:.6},{f:60,d:.2,g:.5}]);}
   G.mn+=em;G.sc+=ep;G.tf++;G.sf++;G.ss+=ep;
-  // +5 seconds bonus for catching a fish
   G.st=Math.min(G.st+5,isBoss?120:90);
-  updHUD();
-  scoreFlash('+5s ⏱','var(--acc2)');
+  updHUD();scoreFlash('+5s ⏱','var(--acc2)');
   G.clog.unshift({fish,money:em,points:ep,isBoss});
   if(G.clog.length>14)G.clog.pop();
   G.ledger.unshift({type:'earn',amount:em,desc:fish.name});
@@ -1932,16 +2027,12 @@ function landFish(fish){
   document.getElementById('cflFish').style.color=isBoss?(fish.col||'var(--boss)'):(FTIERS[fish.t]?.col||'#fff');
   document.getElementById('cflEarn').textContent='+$'+em+' | +'+ep+' pts';
   showPan('catchfl');updHUD();
-  scoreFlash(isBoss?'👹 +$'+em:'+'+'$'+em,isBoss?'var(--boss)':'var(--grn)');
+  scoreFlash(isBoss?'👹 +$'+em:'+$'+em,isBoss?'var(--boss)':'var(--grn)');
   setTimeout(()=>scoreFlash('+5s ⏱','var(--acc2)'),500);
   setTimeout(()=>{
     G.canim=false;G.fish=null;G.ph='idle';
-    if(isBoss){
-      if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
-      openBossPhoto(fish,em,ep);
-    } else {
-      setTimeout(()=>launchAimer(),100);
-    }
+    if(isBoss){if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}openBossPhoto(fish,em,ep);}
+    else{setTimeout(()=>launchAimer(),100);}
   },isBoss?3200:2800);
 }
 
@@ -1952,24 +2043,17 @@ const RW=document.getElementById('RW');
 RW.addEventListener('touchstart',wStart,{passive:false});
 RW.addEventListener('mousedown',wStart);
 function wStart(e){
-  e.preventDefault();G.wheelDown=true;
-  RW.classList.add('active');RW.classList.remove('release');
-  const rect=RW.getBoundingClientRect();
-  const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
-  const clx=e.touches?e.touches[0].clientX:e.clientX;
-  const cly=e.touches?e.touches[0].clientY:e.clientY;
+  e.preventDefault();G.wheelDown=true;RW.classList.add('active');RW.classList.remove('release');
+  const rect=RW.getBoundingClientRect();const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+  const clx=e.touches?e.touches[0].clientX:e.clientX;const cly=e.touches?e.touches[0].clientY:e.clientY;
   G.wDrag={cx,cy,last:Math.atan2(cly-cy,clx-cx)*57.3};
-  document.addEventListener('touchmove',wMove,{passive:false});
-  document.addEventListener('touchend',wEnd,{passive:false});
+  document.addEventListener('touchmove',wMove,{passive:false});document.addEventListener('touchend',wEnd,{passive:false});
   document.addEventListener('mousemove',wMove);document.addEventListener('mouseup',wEnd);
 }
 function wMove(e){
   if(!G.wDrag)return;e.preventDefault();
-  const {cx,cy,last}=G.wDrag;
-  const clx=e.touches?e.touches[0].clientX:e.clientX;
-  const cly=e.touches?e.touches[0].clientY:e.clientY;
-  const na=Math.atan2(cly-cy,clx-cx)*57.3;
-  let d=na-last;if(d>180)d-=360;if(d<-180)d+=360;
+  const {cx,cy,last}=G.wDrag;const clx=e.touches?e.touches[0].clientX:e.clientX;const cly=e.touches?e.touches[0].clientY:e.clientY;
+  const na=Math.atan2(cly-cy,clx-cx)*57.3;let d=na-last;if(d>180)d-=360;if(d<-180)d+=360;
   G.wDrag.last=na;G.wAng+=d;
   for(let i=0;i<6;i++){const el=document.getElementById('k'+i);if(el)el.style.transform=`translateX(-50%) rotate(${i*60+G.wAng}deg)`;}
   if(G.ph==='reeling'&&d>0){G.rdelta+=d*.12;if(Math.abs(d)>2)vib([4]);}
@@ -1983,14 +2067,13 @@ function wEnd(e){
 }
 
 /* ═══════════════════════════════════════════
-   TIMER
+   TIMER — only freeze if REELING (fish actively on line)
 ═══════════════════════════════════════════ */
 function startTimer(){
   clearInterval(G.tInt);
   G.tInt=setInterval(()=>{
-    // Freeze last 10 seconds if fish is on the line OR approaching the hook
-    const fishActive=(G.ph==='reeling'||G.ph==='hooked'||G.ph==='nibble'||G.ph==='bobbing'||G.ph==='casting');
-    if(G.st<=10&&fishActive){
+    if(G.st<=10&&G.ph==='reeling'){
+      // Freeze only during active reel fight
       document.getElementById('hTim').style.color='var(--org)';
       return;
     }
@@ -1998,11 +2081,11 @@ function startTimer(){
     if(G.st<=0){clearInterval(G.tInt);G.tInt=null;endSess();}
   },1000);
 }
+
 function endSess(){
   clearInterval(G.fInt);G.fInt=null;
   clearTimeout(G.bTO);clearTimeout(G.hTO);
-  if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
-  G.aimerActive=false;
+  if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}G.aimerActive=false;
   G.ph='idle';G.fish=null;G.nib=false;G.canim=false;
   document.getElementById('RW').classList.remove('active','release');
   document.getElementById('tiltHUD').classList.remove('show');
@@ -2034,52 +2117,37 @@ function renderShop(tab){
   else if(tab==='lines')LINES.forEach((r,i)=>el.appendChild(mkItem({n:r.name,p:r.price,d:r.desc,s:r.stat,sc:'#e8a84a',em:'〰️',ow:i<=G.li,ac:i===G.li,rep:false,cb:G.mn>=r.price&&i>G.li,fn:()=>buyG('line',i)})));
   else if(tab==='lures')LURES.forEach((r,i)=>el.appendChild(mkItem({n:r.name,p:r.price,d:r.desc,s:r.stat,sc:'#7ecba1',em:'🪝',ow:i<=G.lui,ac:i===G.lui,rep:false,cb:G.mn>=r.price&&i>G.lui,fn:()=>buyG('lure',i)})));
   else if(tab==='bait'){
-    const info=document.createElement('div');
-    info.style.cssText='background:rgba(0,0,0,.4);border-radius:8px;padding:6px 9px;margin-bottom:6px;font-family:var(--mono);font-size:10px;color:var(--grn);';
-    info.textContent='🍀 Luck: +'+Math.round(G.lk)+'% | Charges: '+G.bc;
-    el.appendChild(info);
+    const info=document.createElement('div');info.style.cssText='background:rgba(0,0,0,.4);border-radius:8px;padding:6px 9px;margin-bottom:6px;font-family:var(--mono);font-size:10px;color:var(--grn);';
+    info.textContent='🍀 Luck: +'+Math.round(G.lk)+'% | Charges: '+G.bc;el.appendChild(info);
     BAITS.forEach(b=>el.appendChild(mkItem({n:b.name,p:b.price,d:b.desc,s:b.stat,sc:'#a0e870',em:'🪱',ow:false,ac:false,rep:true,cb:G.mn>=b.price,fn:()=>buyBait(b)})));
   } else if(tab==='stats')renderStats(el);
 }
 function mkItem({n,p,d,s,sc,em,ow,ac,rep,cb,fn}){
-  const div=document.createElement('div');
-  div.className='sitem'+(ac?' oa':ow&&!rep?' oi':'');
+  const div=document.createElement('div');div.className='sitem'+(ac?' oa':ow&&!rep?' oi':'');
   const badge=ac?'<span class="beq">EQUIPPED</span>':ow&&!rep?'<span class="bow">OWNED</span>':'';
-  const btn=p===0&&!rep?'<span style="color:var(--grn);font-family:var(--mono);font-size:9px">FREE</span>'
-    :ow&&!rep?'<span style="color:#5a5a4a;font-family:var(--mono);font-size:9px">✓</span>'
-    :`<button class="bbuy"${cb?'':' disabled'}>$${p}</button>`;
+  const btn=p===0&&!rep?'<span style="color:var(--grn);font-family:var(--mono);font-size:9px">FREE</span>':ow&&!rep?'<span style="color:#5a5a4a;font-family:var(--mono);font-size:9px">✓</span>':`<button class="bbuy"${cb?'':' disabled'}>$${p}</button>`;
   div.innerHTML=`<div class="ilft"><div class="inm">${em} ${n} ${badge}</div><div class="idsc">${d}</div><span class="istat" style="background:${sc}15;color:${sc};border:1px solid ${sc}30">${s}</span></div><div style="margin-left:7px;flex-shrink:0">${btn}</div>`;
   const b=div.querySelector('.bbuy');if(b&&cb)b.addEventListener('click',fn);
   return div;
 }
 function buyG(type,idx){
-  const mp={rod:RODS,reel:REELS,line:LINES,lure:LURES};
-  const pp={rod:'ri',reel:'rli',line:'li',lure:'lui'};
+  const mp={rod:RODS,reel:REELS,line:LINES,lure:LURES};const pp={rod:'ri',reel:'rli',line:'li',lure:'lui'};
   const item=mp[type][idx];if(G.mn<item.price)return;
   G.mn-=item.price;G[pp[type]]=idx;
   G.ledger.unshift({type:'spend',amount:item.price,desc:item.name});
-  document.getElementById('shMon').textContent='$'+G.mn;
-  updHUD();document.getElementById('gmini').textContent=RODS[G.ri].name;
-  renderShop(G.stab);
+  document.getElementById('shMon').textContent='$'+G.mn;updHUD();document.getElementById('gmini').textContent=RODS[G.ri].name;renderShop(G.stab);
 }
 function buyBait(bait){
-  if(G.mn<bait.price)return;
-  G.mn-=bait.price;G.bc+=bait.ch;G.lk=Math.min(G.lk+bait.lkB,100);
+  if(G.mn<bait.price)return;G.mn-=bait.price;G.bc+=bait.ch;G.lk=Math.min(G.lk+bait.lkB,100);
   G.ledger.unshift({type:'spend',amount:bait.price,desc:bait.name});
-  document.getElementById('shMon').textContent='$'+G.mn;
-  updHUD();renderShop(G.stab);
+  document.getElementById('shMon').textContent='$'+G.mn;updHUD();renderShop(G.stab);
 }
 function renderStats(el){
   const g=document.createElement('div');g.className='sgrid';
-  g.innerHTML=`
-    <div class="scard"><div class="scv" style="color:var(--acc)">${G.sc}</div><div class="scl">SCORE</div></div>
-    <div class="scard"><div class="scv" style="color:var(--grn)">${G.tf}</div><div class="scl">FISH</div></div>
-    <div class="scard"><div class="scv" style="color:var(--acc2)">$${G.mn}</div><div class="scl">CASH</div></div>
-    <div class="scard"><div class="scv" style="color:var(--org)">${G.lv}</div><div class="scl">LEVEL</div></div>
-  `;el.appendChild(g);
+  g.innerHTML=`<div class="scard"><div class="scv" style="color:var(--acc)">${G.sc}</div><div class="scl">SCORE</div></div><div class="scard"><div class="scv" style="color:var(--grn)">${G.tf}</div><div class="scl">FISH</div></div><div class="scard"><div class="scv" style="color:var(--acc2)">$${G.mn}</div><div class="scl">CASH</div></div><div class="scard"><div class="scv" style="color:var(--org)">${G.lv}</div><div class="scl">LEVEL</div></div>`;
+  el.appendChild(g);
   if(G.clog.length){
-    const cd=document.createElement('div');
-    cd.style.cssText='background:rgba(0,10,25,.8);border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-bottom:6px;';
+    const cd=document.createElement('div');cd.style.cssText='background:rgba(0,10,25,.8);border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-bottom:6px;';
     cd.innerHTML='<div style="font-size:11px;font-weight:600;color:var(--acc2);margin-bottom:4px;letter-spacing:2px">🐟 CATCHES</div>';
     G.clog.slice(0,10).forEach(e=>{
       const ti=e.isBoss?{col:'var(--boss)'}:(FTIERS[e.fish.t]||{col:'#fff'});
@@ -2088,413 +2156,205 @@ function renderStats(el){
       cd.appendChild(r);
     });el.appendChild(cd);
   }
-  // Boss status
-  const bd=document.createElement('div');
-  bd.style.cssText='background:rgba(80,0,80,.2);border:1px solid rgba(255,40,255,.3);border-radius:9px;padding:8px 10px;';
+  const bd=document.createElement('div');bd.style.cssText='background:rgba(80,0,80,.2);border:1px solid rgba(255,40,255,.3);border-radius:9px;padding:8px 10px;';
   bd.innerHTML='<div style="font-size:11px;font-weight:600;color:var(--boss);margin-bottom:4px;letter-spacing:2px">👹 BOSS FISH</div>';
   BOSSES.forEach((b,i)=>{
-    const needed=(i+1)*5;
-    const unlocked=G.lv>=needed;
-    const defeated=G.clog.some(e=>e.isBoss&&e.fish.name===b.name);
+    const needed=(i+1)*5;const unlocked=G.lv>=needed;const defeated=G.clog.some(e=>e.isBoss&&e.fish.name===b.name);
     const r=document.createElement('div');r.className='lrow';
     r.innerHTML=`<span style="color:${defeated?'var(--grn)':unlocked?b.col:'rgba(255,255,255,.2)'}">${b.e} ${b.name}</span><span style="font-family:var(--mono);font-size:9px;color:${defeated?'var(--grn)':'rgba(255,255,255,.3)'}">Lv${needed} ${defeated?'✓DONE':unlocked?'ACTIVE':'LOCKED'}</span>`;
     bd.appendChild(r);
   });el.appendChild(bd);
 }
+
 function goFish(){
-  G.lv++;G.st=60;G.sf=0;G.ss=0;
-  G.ph='idle';G.fish=null;G.nib=false;G.canim=false;G.cmd=null;
+  G.lv++;G.st=60;G.sf=0;G.ss=0;G.ph='idle';G.fish=null;G.nib=false;G.canim=false;G.cmd=null;
   G.prog=0;G.ten=25;G.stam=100;G.wheelDown=false;
   perfectStreak=0;perfectMult=1;perfectCastActive=false;
-  if(G.fInt){clearInterval(G.fInt);G.fInt=null;}
-  if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
+  if(G.fInt){clearInterval(G.fInt);G.fInt=null;}if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
   if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}G.aimerActive=false;
   if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
   document.getElementById('RW').classList.remove('active','release');
-  document.getElementById('tiltHUD').classList.remove('show');
-  document.getElementById('tiltHint').style.display='none';
-  document.getElementById('fishpan').classList.remove('show');
-  document.getElementById('hTim').style.color='var(--acc2)';
-  showPan('castAimer');buddy('idle',false);updHUD();
-  document.getElementById('gmini').textContent=RODS[G.ri].name;
+  document.getElementById('tiltHUD').classList.remove('show');document.getElementById('tiltHint').style.display='none';
+  document.getElementById('fishpan').classList.remove('show');document.getElementById('hTim').style.color='var(--acc2)';
+  showPan('castAimer');buddy('idle',false);updHUD();document.getElementById('gmini').textContent=RODS[G.ri].name;
   checkBossLevel();
-  if(!document.getElementById('bossIntro').classList.contains('active')){
-    showScr('S1');draw();startTimer();
-    setTimeout(()=>launchAimer(),200);
-  }
+  if(!document.getElementById('bossIntro').classList.contains('active')){showScr('S1');draw();startTimer();setTimeout(()=>launchAimer(),200);}
 }
 
 /* ═══════════════════════════════════════════
-   MOON FRENZY — 10 second rapid catch mode
+   MOON FRENZY
 ═══════════════════════════════════════════ */
 let frenzyInt=null;
-
 function startMoonFrenzy(){
   if(moonFrenzy.active||G.ph==='caught'||!document.getElementById('S1').classList.contains('active'))return;
-  moonFrenzy.active=true;
-  moonFrenzy.endAt=Date.now()+10000;
-  moonFrenzy.moonDark=true;
-  // Cancel any current fight/cast
+  moonFrenzy.active=true;moonFrenzy.endAt=Date.now()+10000;moonFrenzy.moonDark=true;
   if(G.fInt){clearInterval(G.fInt);G.fInt=null;}
-  if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
-  G.aimerActive=false;
-  G.fish=null;G.ph='idle';
-  clearTimeout(G.bTO);clearTimeout(G.hTO);
-  showPan(null);
-  document.getElementById('fishpan').classList.remove('show');
+  if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}G.aimerActive=false;
+  G.fish=null;G.ph='idle';clearTimeout(G.bTO);clearTimeout(G.hTO);
+  showPan(null);document.getElementById('fishpan').classList.remove('show');
   scoreFlash('🌑 MOON FRENZY!','#ffcc00');
   rumble([{f:40,d:.2,g:.8},{f:60,d:.15,g:.6,gap:.05},{f:80,d:.3,g:.9}]);
   vib&&vib([100,30,100,30,200]);
-  // Show frenzy banner
-  buddy('idle',false);
   document.getElementById('bmsg').textContent='🌑 FRENZY! Cast fast — no aiming!';
-  // Auto-rapid cast every 1.4s
   frenzyAutocast();
   frenzyInt=setInterval(()=>{
     if(!moonFrenzy.active){clearInterval(frenzyInt);frenzyInt=null;return;}
     if(Date.now()>=moonFrenzy.endAt){endMoonFrenzy();return;}
     if(G.ph==='idle'||G.ph==='bobbing')frenzyAutocast();
   },1400);
-  // End after 10s
   setTimeout(endMoonFrenzy,10000);
 }
-
 function frenzyAutocast(){
   if(!moonFrenzy.active)return;
-  // Skip aimer entirely — cast to random spot with random power
   const W2=CV.width/DPR;
-  G.bx=W2*0.35+Math.random()*(W2*0.5);
-  G.by=(CV.height/DPR)*0.52+4;
-  G.ph='bobbing';
-  G.rip.push({x:G.bx,y:G.by,b:Date.now(),s:0.9});
-  showPan('waitmsg');
-  document.getElementById('waitmsg').textContent='🎣 FRENZY CAST!';
-  rumbleCast();
-  // Fast nibble → instant catch
+  G.bx=W2*0.35+Math.random()*(W2*0.5);G.by=(CV.height/DPR)*0.52+4;
+  G.ph='bobbing';G.rip.push({x:G.bx,y:G.by,b:Date.now(),s:0.9});
+  showPan('waitmsg');document.getElementById('waitmsg').textContent='🎣 FRENZY CAST!';rumbleCast();
   G.bTO=setTimeout(()=>{
     if(!moonFrenzy.active||G.ph!=='bobbing')return;
-    G.ph='nibble';G.nib=true;
-    vib&&vib([40,20,40]);
+    G.ph='nibble';G.nib=true;vib&&vib([40,20,40]);
     G.hTO=setTimeout(()=>{
-      if(!moonFrenzy.active)return;
-      G.nib=false;
-      // Always catch a fish during frenzy — weighted toward good ones
-      const f=pickFish();
-      G.fish=f;G.prog=0;G.ten=50;G.stam=100;
-      // Skip the fight entirely — instant land
-      G.ph='reeling';
-      setTimeout(()=>{
-        if(!moonFrenzy.active)return;
-        landFishFrenzy(f);
-      },400);
+      if(!moonFrenzy.active)return;G.nib=false;
+      const f=pickFish();G.fish=f;G.prog=0;G.ten=50;G.stam=100;G.ph='reeling';
+      setTimeout(()=>{if(!moonFrenzy.active)return;landFishFrenzy(f);},400);
     },300+Math.random()*400);
   },400+Math.random()*600);
 }
-
 function landFishFrenzy(fish){
-  if(!fish)return;
-  G.canim=true;G.ph='caught';
+  if(!fish)return;G.canim=true;G.ph='caught';
   const rod=RODS[G.ri];const mult=1+rod.catchB/100;
-  const em=Math.round(fish.v*mult*1.5); // 1.5x bonus during frenzy
-  const ep=Math.round((FTIERS[fish.t]?.pts||10)*mult*1.5);
-  G.mn+=em;G.sc+=ep;G.tf++;G.sf++;G.ss+=ep;
-  updHUD();
-  scoreFlash(fish.e+' +$'+em,'var(--acc)');
-  rumbleCatch();
-  G.clog.unshift({fish,money:em,points:ep,isBoss:false});
-  if(G.clog.length>14)G.clog.pop();
+  const em=Math.round(fish.v*mult*1.5);const ep=Math.round((FTIERS[fish.t]?.pts||10)*mult*1.5);
+  G.mn+=em;G.sc+=ep;G.tf++;G.sf++;G.ss+=ep;updHUD();
+  scoreFlash(fish.e+' +$'+em,'var(--acc)');rumbleCatch();
+  G.clog.unshift({fish,money:em,points:ep,isBoss:false});if(G.clog.length>14)G.clog.pop();
   setTimeout(()=>{G.canim=false;G.fish=null;G.ph='idle';},600);
 }
-
 function endMoonFrenzy(){
-  if(!moonFrenzy.active)return;
-  moonFrenzy.active=false;moonFrenzy.moonDark=false;
+  if(!moonFrenzy.active)return;moonFrenzy.active=false;moonFrenzy.moonDark=false;
   if(frenzyInt){clearInterval(frenzyInt);frenzyInt=null;}
-  clearTimeout(G.bTO);clearTimeout(G.hTO);
-  G.nib=false;G.canim=false;G.fish=null;G.ph='idle';
-  scoreFlash('🌕 MOON RESTORED','#ffe890');
-  rumble([{f:80,d:.1,g:.4},{f:60,d:.2,g:.3,gap:.08}]);
-  document.getElementById('waitmsg').textContent='🌊 Waiting for a bite...';
-  showPan(null);
+  clearTimeout(G.bTO);clearTimeout(G.hTO);G.nib=false;G.canim=false;G.fish=null;G.ph='idle';
+  scoreFlash('🌕 MOON RESTORED','#ffe890');rumble([{f:80,d:.1,g:.4},{f:60,d:.2,g:.3,gap:.08}]);
+  document.getElementById('waitmsg').textContent='🌊 Waiting for a bite...';showPan(null);
   setTimeout(()=>launchAimer(),500);
 }
-let bpStream=null;
-let bpCaptured=null;
-let bpFishData=null;
-let bpRAF=null;
-let bpAnimating=false;
 
+/* ═══════════════════════════════════════════
+   BOSS PHOTO (existing, unchanged except camera draw fix)
+═══════════════════════════════════════════ */
+let bpStream=null,bpCaptured=null,bpFishData=null,bpRAF=null,bpAnimating=false;
 function openBossPhoto(fish,moneyEarned,pointsEarned){
-  bpFishData={fish,moneyEarned,pointsEarned};
-  bpCaptured=null;
-  bpAnimating=false;
+  bpFishData={fish,moneyEarned,pointsEarned};bpCaptured=null;bpAnimating=false;
   document.getElementById('bpName').textContent=fish.e+' '+fish.name;
   document.getElementById('bpSub').textContent='LEGENDARY CATCH · DEEP HOOK';
   document.getElementById('bpWeight').textContent=fish.w||'???';
   document.getElementById('bpMoney').textContent='+$'+moneyEarned;
   document.getElementById('bpPoints').textContent='+'+pointsEarned+' pts';
-  document.getElementById('bpSave').style.display='none';
-  document.getElementById('bpShutter').style.display='flex';
-  document.getElementById('bpHint').style.display='none'; // hide — canvas covers everything
+  document.getElementById('bpSave').style.display='none';document.getElementById('bpShutter').style.display='flex';
   showScr('bossPhoto');
-
-  // Stop game loops cleanly
-  if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
-  if(bpRAF){cancelAnimationFrame(bpRAF);bpRAF=null;}
-
-  // Size canvas to full screen at device pixel ratio
-  const cvs=document.getElementById('bpCanvas');
-  const dpr=window.devicePixelRatio||1;
+  if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}if(bpRAF){cancelAnimationFrame(bpRAF);bpRAF=null;}
+  const cvs=document.getElementById('bpCanvas');const dpr=window.devicePixelRatio||1;
   const W=window.innerWidth,H=window.innerHeight;
-  cvs.width=W*dpr;cvs.height=H*dpr;
-  cvs.style.width=W+'px';cvs.style.height=H+'px';
-  cvs.style.zIndex='5'; // sits above video, below UI overlays
-
+  cvs.width=W*dpr;cvs.height=H*dpr;cvs.style.width=W+'px';cvs.style.height=H+'px';cvs.style.zIndex='5';
   const vid=document.getElementById('bpVid');
-
-  const startOverlay=()=>{
-    bpAnimating=true;
-    bpRAF=requestAnimationFrame(drawBossPhotoOverlay);
-  };
-
+  const startOverlay=()=>{bpAnimating=true;bpRAF=requestAnimationFrame(drawBossPhotoOverlay);};
   const tryCamera=()=>{
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-      startFishOnlyLoop();return;
-    }
-    navigator.mediaDevices.getUserMedia({
-      video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},
-      audio:false
-    }).then(stream=>{
-      bpStream=stream;
-      vid.srcObject=stream;
-      vid.muted=true;
-      // Use multiple events to ensure play() is called reliably
-      const onReady=()=>{
-        vid.removeEventListener('loadedmetadata',onReady);
-        vid.removeEventListener('canplay',onReady);
-        vid.play().then(startOverlay).catch(startOverlay);
-      };
-      vid.addEventListener('loadedmetadata',onReady);
-      vid.addEventListener('canplay',onReady);
-      // Fallback: if already ready
-      if(vid.readyState>=2)onReady();
-    }).catch(err=>{
-      console.warn('Camera denied or unavailable:',err.name,err.message);
-      startFishOnlyLoop();
-    });
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){startFishOnlyLoop();return;}
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:false})
+      .then(stream=>{
+        bpStream=stream;vid.srcObject=stream;vid.muted=true;
+        const onReady=()=>{vid.removeEventListener('loadedmetadata',onReady);vid.removeEventListener('canplay',onReady);vid.play().then(startOverlay).catch(startOverlay);};
+        vid.addEventListener('loadedmetadata',onReady);vid.addEventListener('canplay',onReady);
+        if(vid.readyState>=2)onReady();
+      }).catch(()=>startFishOnlyLoop());
   };
-
   setTimeout(tryCamera,250);
 }
-
-function startFishOnlyLoop(){
-  // No camera — draw animated fish on dark bg
-  bpAnimating=true;
-  bpRAF=requestAnimationFrame(drawBossPhotoOverlay);
-}
-
+function startFishOnlyLoop(){bpAnimating=true;bpRAF=requestAnimationFrame(drawBossPhotoOverlay);}
 function drawBossPhotoOverlay(){
-  if(!bpAnimating||!document.getElementById('bossPhoto').classList.contains('active')){
-    bpRAF=null;return;
-  }
-  const cvs=document.getElementById('bpCanvas');
-  const dpr=window.devicePixelRatio||1;
+  if(!bpAnimating||!document.getElementById('bossPhoto').classList.contains('active')){bpRAF=null;return;}
+  const cvs=document.getElementById('bpCanvas');const dpr=window.devicePixelRatio||1;
   const W=window.innerWidth,H=window.innerHeight;
-  // Re-size only if screen dimensions changed (e.g. orientation)
-  if(cvs.width!==Math.round(W*dpr)||cvs.height!==Math.round(H*dpr)){
-    cvs.width=Math.round(W*dpr);cvs.height=Math.round(H*dpr);
-    cvs.style.width=W+'px';cvs.style.height=H+'px';
-  }
-  const ctx=cvs.getContext('2d');
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  // Scale for DPR
+  if(cvs.width!==Math.round(W*dpr)||cvs.height!==Math.round(H*dpr)){cvs.width=Math.round(W*dpr);cvs.height=Math.round(H*dpr);cvs.style.width=W+'px';cvs.style.height=H+'px';}
+  const ctx=cvs.getContext('2d');ctx.clearRect(0,0,cvs.width,cvs.height);
   ctx.save();ctx.scale(dpr,dpr);
-
-  // If no camera stream, draw dark ocean background
   const vid=document.getElementById('bpVid');
-  const hasVideo=bpStream&&vid.readyState>=2&&!vid.paused;
-  if(!hasVideo){
-    const bg=ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
+  const hasVideo=bpStream&&vid.readyState>=2&&!vid.paused&&vid.videoWidth>0;
+  if(hasVideo){
+    ctx.save();ctx.translate(W,0);ctx.scale(-1,1);ctx.drawImage(vid,0,0,W,H);ctx.restore();
+  } else {
+    const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
     ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-    // Subtle stars
-    for(let i=0;i<40;i++){
-      const sx=(i*137.5)%W,sy=(i*97.3)%H*0.5;
-      const twinkle=0.2+0.6*Math.abs(Math.sin(Date.now()/1000*0.5+i));
-      ctx.globalAlpha=twinkle;ctx.fillStyle='#fff';
-      ctx.beginPath();ctx.arc(sx,sy,0.8,0,6.28);ctx.fill();
-    }
+    for(let i=0;i<40;i++){const sx=(i*137.5)%W,sy=(i*97.3)%H*0.5;const twinkle=0.2+0.6*Math.abs(Math.sin(Date.now()/1000*0.5+i));ctx.globalAlpha=twinkle;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(sx,sy,0.8,0,6.28);ctx.fill();}
     ctx.globalAlpha=1;
   }
-
   drawFishOverlay(ctx,W,H,false);
   ctx.restore();
   bpRAF=requestAnimationFrame(drawBossPhotoOverlay);
 }
-
 function drawFishOverlay(ctx,W,H,staticMode){
   if(!bpFishData)return;
-  const fish=bpFishData.fish;
-  const T2=Date.now()/1000;
-  // Center fish large
-  const cx=W*0.5,cy=H*0.42;
-  const bob=staticMode?0:Math.sin(T2*1.2)*6;
+  const fish=bpFishData.fish;const T2=Date.now()/1000;
+  const cx=W*0.5,cy=H*0.42;const bob=staticMode?0:Math.sin(T2*1.2)*6;
   const scale=Math.min(W,H)*0.0018;
   ctx.save();ctx.translate(cx,cy+bob);ctx.scale(scale,scale);
-  // Boss fish body
   const fishColor=fish.col||'#ff80ff';
-  // Glow
   ctx.shadowBlur=40;ctx.shadowColor=fishColor;
-  // Body
-  const grad=ctx.createRadialGradient(-20,0,10,0,0,80);
-  grad.addColorStop(0,fishColor);grad.addColorStop(1,fishColor.replace('ff','60').replace('#','rgba(').replace('60','60,0.6)'));
-  // simplify: just use solid color with glow
   ctx.fillStyle=fishColor;ctx.globalAlpha=0.9;
   ctx.beginPath();ctx.ellipse(0,0,90,35,0,0,Math.PI*2);ctx.fill();
-  // belly
-  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.globalAlpha=0.5;
-  ctx.beginPath();ctx.ellipse(10,8,60,18,0.1,0,Math.PI*2);ctx.fill();
-  // tail
-  ctx.fillStyle=fishColor;ctx.globalAlpha=0.9;
-  ctx.beginPath();ctx.moveTo(-90,0);ctx.lineTo(-130,-40);ctx.lineTo(-130,40);ctx.closePath();ctx.fill();
-  // eye
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.globalAlpha=0.5;ctx.beginPath();ctx.ellipse(10,8,60,18,0.1,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=fishColor;ctx.globalAlpha=0.9;ctx.beginPath();ctx.moveTo(-90,0);ctx.lineTo(-130,-40);ctx.lineTo(-130,40);ctx.closePath();ctx.fill();
   ctx.shadowBlur=0;ctx.globalAlpha=1;
   ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(65,-8,10,0,6.28);ctx.fill();
   ctx.fillStyle='#000';ctx.beginPath();ctx.arc(67,-8,6,0,6.28);ctx.fill();
   ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(69,-10,2,0,6.28);ctx.fill();
-  // fins
   ctx.fillStyle=fishColor;ctx.globalAlpha=0.7;
   ctx.beginPath();ctx.moveTo(20,-35);ctx.lineTo(-10,-70);ctx.lineTo(-30,-35);ctx.closePath();ctx.fill();
   ctx.beginPath();ctx.moveTo(10,35);ctx.lineTo(-10,60);ctx.lineTo(-25,35);ctx.closePath();ctx.fill();
-  // emoji on side
-  ctx.globalAlpha=0.9;ctx.font='bold 42px serif';ctx.textAlign='center';
-  ctx.fillText(fish.e,0,12);
-  ctx.restore();
-  ctx.shadowBlur=0;ctx.globalAlpha=1;
-  // "DEEP HOOK" watermark
-  ctx.font='bold 13px Oswald,sans-serif';ctx.fillStyle='rgba(255,200,255,0.5)';
-  ctx.textAlign='center';ctx.letterSpacing='3px';
-  ctx.fillText('DEEP HOOK FISHING',W/2,H-28);
+  ctx.globalAlpha=0.9;ctx.font='bold 42px serif';ctx.textAlign='center';ctx.fillText(fish.e,0,12);
+  ctx.restore();ctx.shadowBlur=0;ctx.globalAlpha=1;
+  ctx.font='bold 13px Oswald,sans-serif';ctx.fillStyle='rgba(255,200,255,0.5)';ctx.textAlign='center';ctx.fillText('DEEP HOOK FISHING',W/2,H-28);
 }
-
 function takeBossPhoto(){
-  const vid=document.getElementById('bpVid');
-  const flash=document.getElementById('bpFlash');
-  vib([30,20,60]);
-  flash.style.opacity='0.9';
-  setTimeout(()=>flash.style.opacity='0',200);
-
-  const W=window.innerWidth,H=window.innerHeight;
-  const dpr=Math.min(window.devicePixelRatio||1,2); // cap at 2x for file size
-  const composite=document.createElement('canvas');
-  composite.width=W*dpr;composite.height=H*dpr;
-  const ctx=composite.getContext('2d');
-  ctx.scale(dpr,dpr);
-
-  // 1. Camera frame (mirrored to match preview)
-  const hasVideo=bpStream&&vid.readyState>=2;
-  if(hasVideo){
-    ctx.save();
-    ctx.translate(W,0);ctx.scale(-1,1); // mirror horizontally
-    ctx.drawImage(vid,0,0,W,H);
-    ctx.restore();
-  } else {
-    // No camera — dark ocean background
-    const bg=ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
-    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  }
-
-  // 2. Fish overlay (same drawing code, static=true for snapshot)
+  const vid=document.getElementById('bpVid');const flash=document.getElementById('bpFlash');
+  vib([30,20,60]);flash.style.opacity='0.9';setTimeout(()=>flash.style.opacity='0',200);
+  const W=window.innerWidth,H=window.innerHeight;const dpr=Math.min(window.devicePixelRatio||1,2);
+  const composite=document.createElement('canvas');composite.width=W*dpr;composite.height=H*dpr;
+  const ctx=composite.getContext('2d');ctx.scale(dpr,dpr);
+  const hasVideo=bpStream&&vid.readyState>=2&&vid.videoWidth>0;
+  if(hasVideo){ctx.save();ctx.translate(W,0);ctx.scale(-1,1);ctx.drawImage(vid,0,0,W,H);ctx.restore();}
+  else{const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);}
   drawFishOverlay(ctx,W,H,true);
-
-  // 3. Top stats bar
   ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(0,0,W,72);
-  if(bpFishData){
-    ctx.font='bold 24px Oswald,sans-serif';ctx.fillStyle='#ff80ff';
-    ctx.textAlign='left';
-    ctx.fillText(bpFishData.fish.e+' '+bpFishData.fish.name,16,34);
-    ctx.font='11px "Share Tech Mono",monospace';ctx.fillStyle='rgba(200,232,255,0.85)';
-    ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,52);
-  }
-
-  // 4. Bottom stats bar
+  if(bpFishData){ctx.font='bold 24px Oswald,sans-serif';ctx.fillStyle='#ff80ff';ctx.textAlign='left';ctx.fillText(bpFishData.fish.e+' '+bpFishData.fish.name,16,34);ctx.font='11px "Share Tech Mono",monospace';ctx.fillStyle='rgba(200,232,255,0.85)';ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,52);}
   ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(0,H-80,W,80);
-  if(bpFishData){
-    const stats=[
-      {lbl:'WEIGHT',val:bpFishData.fish.w||'???',col:'#ff80ff'},
-      {lbl:'EARNED',val:'+$'+bpFishData.moneyEarned,col:'#40e080'},
-      {lbl:'POINTS',val:'+'+bpFishData.pointsEarned+' pts',col:'#f0c040'},
-    ];
-    stats.forEach((s,i)=>{
-      const sx=W/6+(i*W/3);
-      ctx.font='9px "Share Tech Mono",monospace';
-      ctx.fillStyle='rgba(255,200,255,0.6)';
-      ctx.textAlign='center';
-      ctx.fillText(s.lbl,sx,H-58);
-      ctx.font='bold 20px Oswald,sans-serif';
-      ctx.fillStyle=s.col;
-      ctx.fillText(s.val,sx,H-34);
-    });
-  }
-
-  // 5. Watermark
-  ctx.font='bold 10px "Share Tech Mono",monospace';
-  ctx.fillStyle='rgba(255,200,255,0.4)';
-  ctx.textAlign='center';
-  ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
-
+  if(bpFishData){const stats=[{lbl:'WEIGHT',val:bpFishData.fish.w||'???',col:'#ff80ff'},{lbl:'EARNED',val:'+$'+bpFishData.moneyEarned,col:'#40e080'},{lbl:'POINTS',val:'+'+bpFishData.pointsEarned+' pts',col:'#f0c040'}];stats.forEach((s,i)=>{const sx=W/6+(i*W/3);ctx.font='9px "Share Tech Mono",monospace';ctx.fillStyle='rgba(255,200,255,0.6)';ctx.textAlign='center';ctx.fillText(s.lbl,sx,H-58);ctx.font='bold 20px Oswald,sans-serif';ctx.fillStyle=s.col;ctx.fillText(s.val,sx,H-34);});}
+  ctx.font='bold 10px "Share Tech Mono",monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
   bpCaptured=composite.toDataURL('image/jpeg',0.90);
-  document.getElementById('bpShutter').style.display='none';
-  document.getElementById('bpSave').style.display='block';
+  document.getElementById('bpShutter').style.display='none';document.getElementById('bpSave').style.display='block';
 }
-
-function saveBossPhoto(){
-  if(!bpCaptured)return;
-  const a=document.createElement('a');
-  a.href=bpCaptured;
-  a.download='DeepHook_Boss_'+Date.now()+'.jpg';
-  a.click();
-  vib([40,20,80]);
-  setTimeout(()=>closeBossPhoto(),400);
-}
-
+function saveBossPhoto(){if(!bpCaptured)return;const a=document.createElement('a');a.href=bpCaptured;a.download='DeepHook_Boss_'+Date.now()+'.jpg';a.click();vib([40,20,80]);setTimeout(()=>closeBossPhoto(),400);}
 function skipBossPhoto(){closeBossPhoto();}
-
 function closeBossPhoto(){
-  bpAnimating=false;
-  if(bpRAF){cancelAnimationFrame(bpRAF);bpRAF=null;}
-  if(bpStream){
-    try{bpStream.getTracks().forEach(t=>t.stop());}catch(e){}
-    bpStream=null;
-  }
-  const vid=document.getElementById('bpVid');
-  try{vid.pause();vid.srcObject=null;}catch(e){}
-  bpFishData=null;bpCaptured=null;
-  setTimeout(()=>openShop(),200);
-}
-function startGame(){
-  initG();updHUD();showPan('castAimer');
-  tiltBaseline=null;
-  seedStars();
-  scheduleEvents();
-  document.getElementById('gmini').textContent=RODS[G.ri].name;
-  document.getElementById('bossBanner').classList.remove('show');
-  updateCastModeUI();
-  initGyro();
-  showScr('S1');
-  if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
-  draw();startTimer();
-  setTimeout(()=>launchAimer(),200);
+  bpAnimating=false;if(bpRAF){cancelAnimationFrame(bpRAF);bpRAF=null;}
+  if(bpStream){try{bpStream.getTracks().forEach(t=>t.stop());}catch(e){}bpStream=null;}
+  const vid=document.getElementById('bpVid');try{vid.pause();vid.srcObject=null;}catch(e){}
+  bpFishData=null;bpCaptured=null;setTimeout(()=>openShop(),200);
 }
 
 /* ═══════════════════════════════════════════
-   FIRST LAUNCH — show options
+   START GAME
 ═══════════════════════════════════════════ */
-function firstLaunch(){
-  // Show options on first launch
-  updateCastModeUI();
-  openOptions();
+function startGame(){
+  // Stop title animation
+  if(titleRAF){cancelAnimationFrame(titleRAF);titleRAF=null;}
+  initG();updHUD();showPan('castAimer');
+  tiltBaseline=null;seedStars();scheduleEvents();
+  document.getElementById('gmini').textContent=RODS[G.ri].name;
+  document.getElementById('bossBanner').classList.remove('show');
+  updateCastModeUI();initGyro();
+  showScr('S1');
+  if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
+  draw();startTimer();setTimeout(()=>launchAimer(),200);
 }
 
 /* ═══════════════════════════════════════════
@@ -2506,17 +2366,19 @@ function wireTap(id,fn){
   el.addEventListener('click',fn);
 }
 
-wireTap('startBtn',()=>{startGame();});
+// Title: CAST OFF → open license screen
+wireTap('startBtn',()=>{
+  if(titleRAF){cancelAnimationFrame(titleRAF);titleRAF=null;}
+  openLicenseScreen();
+});
+wireTap('titleGearBtn',openOptions);
 wireTap('gearBtn',openOptions);
 wireTap('goFishBtn',goFish);
 
-// ── GLOBAL SCREEN TAP to stop aimer (works anywhere on screen during aiming) ──
-// Use touchend on the fishing screen itself — catches taps on canvas, center panel, anywhere
 document.getElementById('S1').addEventListener('touchend',e=>{
   if(G.ph!=='aiming')return;
   if(e.target.closest('#gearBtn')||e.target.closest('#RW')||e.target.closest('.castcol')||e.target.closest('.swing-cast-col'))return;
-  e.preventDefault();e.stopPropagation();
-  onTapScreen();
+  e.preventDefault();e.stopPropagation();onTapScreen();
 },{passive:false});
 document.getElementById('S1').addEventListener('click',e=>{
   if(G.ph!=='aiming')return;
@@ -2524,24 +2386,29 @@ document.getElementById('S1').addEventListener('click',e=>{
   onTapScreen();
 });
 
-// Shop tabs
 document.querySelectorAll('.stab').forEach(el=>{
   const tab=el.dataset.tab;
   el.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();shopTab(tab);},{passive:false});
   el.addEventListener('click',()=>shopTab(tab));
 });
 
-// Prevent scroll/bounce but allow cast bar and reel wheel to handle their own touches
 document.addEventListener('touchmove',e=>{
   if(e.target.closest('.sscroll')||e.target.closest('.obox')||e.target.closest('#trainScr'))return;
-  if(e.target.closest('.castcol')||e.target.closest('#RW'))return; // let these handle themselves
+  if(e.target.closest('.castcol')||e.target.closest('#RW'))return;
   e.preventDefault();
 },{passive:false});
 document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
+document.addEventListener('touchend',()=>{const ac=getAC();if(ac&&ac.state==='suspended')ac.resume();},{passive:true});
 
-// Show options on first load (after title renders)
+// Start title animation on load
 window.addEventListener('load',()=>{
-  setTimeout(firstLaunch,300);
+  setTimeout(()=>{
+    // Size title canvas
+    const tcv=document.getElementById('titleCV');
+    tcv.width=window.innerWidth;tcv.height=window.innerHeight;
+    tcv.style.width=window.innerWidth+'px';tcv.style.height=window.innerHeight+'px';
+    startTitleAnimation();
+  },100);
 });
 </script>
 </body>
