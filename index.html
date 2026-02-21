@@ -71,8 +71,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 
 /* ── LICENSE SCREEN ── */
 #licenseScr{background:#000;position:relative;overflow:hidden;}
-#licVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;}
-#licCanvas{position:absolute;inset:0;width:100%;height:100%;}
+#licVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);}
+#licCardOverlay{position:absolute;inset:0;pointer-events:none;z-index:5;}
+#licCaptureCanvas{display:none;position:absolute;inset:0;width:100%;height:100%;z-index:6;}
 .lic-ui{position:absolute;bottom:0;left:0;right:0;z-index:20;padding:12px 20px 28px;display:flex;flex-direction:column;align-items:center;gap:10px;}
 .lic-title-bar{position:absolute;top:0;left:0;right:0;z-index:20;padding:14px 16px 10px;background:linear-gradient(180deg,rgba(0,0,0,.85),transparent);}
 .lic-title{font-size:18px;font-weight:700;color:var(--acc);letter-spacing:3px;}
@@ -216,6 +217,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 #bossIntro h1{font-size:42px;color:var(--boss);text-shadow:0 0 30px var(--boss);animation:bossGlow 1s ease-in-out infinite alternate;}
 @keyframes bossGlow{from{text-shadow:0 0 20px var(--boss);}to{text-shadow:0 0 50px var(--boss),0 0 80px var(--boss);}}
 @keyframes cpulse{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+@keyframes bossFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.07);}}
 .score-flash{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);font-size:24px;font-weight:700;pointer-events:none;z-index:800;animation:sfloat 1.1s ease-out forwards;}
 @keyframes sfloat{0%{opacity:1;transform:translate(-50%,-50%);}100%{opacity:0;transform:translate(-50%,-130%);}}
 .sscroll::-webkit-scrollbar{width:3px;}
@@ -303,7 +305,53 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 ════════════════════════════════ -->
 <div id="licenseScr" class="screen">
   <video id="licVid" autoplay playsinline muted></video>
-  <canvas id="licCanvas"></canvas>
+  <!-- SVG license card drawn over live video -->
+  <svg id="licCardOverlay" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#1a3a1a"/>
+        <stop offset="50%" style="stop-color:#0f2a14"/>
+        <stop offset="100%" style="stop-color:#162b12"/>
+      </linearGradient>
+    </defs>
+    <!-- Card body -->
+    <rect x="20" y="60" width="360" height="200" rx="10" fill="url(#cardGrad)" opacity="0.88"/>
+    <!-- Card borders -->
+    <rect x="20" y="60" width="360" height="200" rx="10" fill="none" stroke="#40c040" stroke-width="2.5"/>
+    <rect x="26" y="66" width="348" height="188" rx="7" fill="none" stroke="rgba(64,192,64,0.3)" stroke-width="1"/>
+    <!-- Seal circle -->
+    <circle cx="72" cy="168" r="52" fill="rgba(64,192,64,0.12)" stroke="rgba(64,192,64,0.4)" stroke-width="1.5"/>
+    <text x="72" y="178" text-anchor="middle" font-size="38">🎣</text>
+    <!-- Header -->
+    <text x="200" y="88" text-anchor="middle" font-family="Oswald,Arial" font-weight="700" font-size="20" fill="#f0c040">DEEP HOOK</text>
+    <text x="200" y="104" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="11" fill="rgba(240,192,64,0.7)">OFFICIAL FISHING LICENSE</text>
+    <!-- Info lines -->
+    <text x="136" y="132" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(255,255,255,0.4)">LICENSE #</text>
+    <text x="200" y="132" font-family="'Share Tech Mono',monospace" font-size="10" font-weight="700" fill="#a0c8e0" id="licNumSvg">DH-000000</text>
+    <text x="136" y="152" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(255,255,255,0.4)">ISSUED</text>
+    <text x="200" y="152" font-family="'Share Tech Mono',monospace" font-size="10" font-weight="700" fill="#a0c8e0" id="licDateSvg">--</text>
+    <text x="136" y="172" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(255,255,255,0.4)">EXPIRES</text>
+    <text x="200" y="172" font-family="'Share Tech Mono',monospace" font-size="10" font-weight="700" fill="#40e080">DEC 31 2026</text>
+    <text x="136" y="192" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(255,255,255,0.4)">TYPE</text>
+    <text x="200" y="192" font-family="'Share Tech Mono',monospace" font-size="10" font-weight="700" fill="#f0c040">ALL WATERS</text>
+    <!-- Photo box -->
+    <rect x="308" y="110" width="58" height="126" rx="4" fill="rgba(0,0,0,0.4)" stroke="rgba(240,192,64,0.6)" stroke-width="1.5"/>
+    <text x="337" y="170" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(240,192,64,0.4)" id="licPhotoLabel">PHOTO</text>
+    <text x="337" y="182" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(240,192,64,0.4)" id="licPhotoLabel2">HERE</text>
+    <!-- Barcode strip -->
+    <rect x="30" y="236" width="340" height="16" fill="rgba(64,192,64,0.15)"/>
+    <line x1="35" y1="237" x2="35" y2="251" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
+    <line x1="40" y1="237" x2="40" y2="248" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
+    <line x1="44" y1="237" x2="44" y2="251" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
+    <line x1="47" y1="237" x2="47" y2="246" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
+    <line x1="52" y1="237" x2="52" y2="251" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
+    <line x1="57" y1="237" x2="57" y2="248" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
+    <line x1="61" y1="237" x2="61" y2="251" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
+    <!-- Animated pulse border -->
+    <rect x="17" y="57" width="366" height="206" rx="12" fill="none" stroke="#40c040" stroke-width="2" id="licPulse" opacity="0.4"/>
+  </svg>
+  <!-- Canvas only shown after capture -->
+  <canvas id="licCaptureCanvas"></canvas>
 
   <div class="lic-title-bar">
     <div class="lic-title">🎣 FISHING LICENSE</div>
@@ -440,11 +488,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 
 <!-- BOSS PHOTO SCREEN -->
 <div id="bossPhoto" class="screen" style="background:#000;position:relative;overflow:hidden;">
-  <video id="bpVid" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;"></video>
-  <canvas id="bpCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  <!-- Video element visible directly — the working pattern -->
+  <video id="bpVid" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);"></video>
+  <!-- Canvas only shown after capture -->
+  <canvas id="bpCanvas" style="display:none;position:absolute;inset:0;width:100%;height:100%;"></canvas>
+  <!-- HTML overlays on top of live video -->
   <div id="bpStats" style="position:absolute;top:0;left:0;right:0;padding:12px 16px;background:linear-gradient(180deg,rgba(0,0,0,.85),transparent);z-index:10;">
     <div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#ff80ff;letter-spacing:2px;text-shadow:0 0 12px #ff40ff;" id="bpName">BOSS FISH</div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#cce8ff;margin-top:2px;" id="bpSub">Size · Points · Cash</div>
+  </div>
+  <!-- Fish emoji overlay — animated, sits over the video -->
+  <div id="bpFishEmoji" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;pointer-events:none;">
+    <div id="bpFishIcon" style="font-size:80px;filter:drop-shadow(0 0 20px #ff40ff);animation:bossFloat 1.5s ease-in-out infinite;">🐟</div>
+    <div id="bpFishName" style="font-family:'Oswald',sans-serif;font-size:18px;color:#ff80ff;letter-spacing:2px;text-shadow:0 0 10px #ff40ff;margin-top:8px;"></div>
   </div>
   <div id="bpStatsBar" style="position:absolute;bottom:80px;left:0;right:0;padding:10px 16px;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);z-index:10;display:flex;justify-content:space-around;">
     <div style="text-align:center;"><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,200,255,.6);">WEIGHT</div><div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#ff80ff;" id="bpWeight">—</div></div>
@@ -806,189 +862,53 @@ function startTitleAnimation(){
    FISHING LICENSE CAMERA
 ═══════════════════════════════════════════ */
 let licStream=null;
-let licRAF=null;
 let licCaptured=null;
-let licAnimating=false;
 let licNumber='DH-'+Math.floor(100000+Math.random()*900000);
+let licPulseRAF=null;
 
 function openLicenseScreen(){
   licCaptured=null;
-  licAnimating=false;
   document.getElementById('licShutter').style.display='flex';
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
+  document.getElementById('licCaptureCanvas').style.display='none';
+  document.getElementById('licVid').style.display='block';
+  document.getElementById('licCardOverlay').style.display='block';
   document.getElementById('licHint').textContent='Hold still — smile for your license photo!';
+  // Set license number and date in SVG
+  document.getElementById('licNumSvg').textContent=licNumber;
+  document.getElementById('licDateSvg').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'});
   showScr('licenseScr');
-  // Size canvas
-  const cvs=document.getElementById('licCanvas');
-  const W=window.innerWidth,H=window.innerHeight;
-  const dpr=window.devicePixelRatio||1;
-  cvs.width=W*dpr;cvs.height=H*dpr;
-  cvs.style.width=W+'px';cvs.style.height=H+'px';
   startLicCamera();
+  startLicPulse();
+}
+
+function startLicPulse(){
+  // Animate the SVG pulse border
+  let t=0;
+  function pulse(){
+    const el=document.getElementById('licPulse');
+    if(el){const a=0.2+0.5*Math.abs(Math.sin(t));el.setAttribute('opacity',a.toFixed(2));t+=0.05;}
+    licPulseRAF=requestAnimationFrame(pulse);
+  }
+  if(licPulseRAF)cancelAnimationFrame(licPulseRAF);
+  pulse();
 }
 
 function startLicCamera(){
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    startLicOverlayOnly();return;
-  }
-  // Request front camera
-  const constraints={video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:false};
-  // iOS needs permission prompt
-  if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
-    navigator.mediaDevices.getUserMedia(constraints).then(gotLicStream).catch(()=>startLicOverlayOnly());
-  } else {
-    navigator.mediaDevices.getUserMedia(constraints).then(gotLicStream).catch(()=>startLicOverlayOnly());
-  }
-}
-
-function gotLicStream(stream){
-  licStream=stream;
-  const vid=document.getElementById('licVid');
-  vid.srcObject=stream;
-  vid.muted=true;
-  const onReady=()=>{
-    vid.removeEventListener('loadedmetadata',onReady);
-    vid.removeEventListener('canplay',onReady);
-    vid.play().then(()=>{licAnimating=true;licRAF=requestAnimationFrame(drawLicOverlay);}).catch(()=>startLicOverlayOnly());
-  };
-  vid.addEventListener('loadedmetadata',onReady);
-  vid.addEventListener('canplay',onReady);
-  if(vid.readyState>=2)onReady();
-}
-
-function startLicOverlayOnly(){
-  // No camera available — draw placeholder with dark bg
-  licAnimating=true;
-  licRAF=requestAnimationFrame(drawLicOverlay);
-}
-
-function drawLicOverlay(){
-  if(!licAnimating||!document.getElementById('licenseScr').classList.contains('active')){licRAF=null;return;}
-  const cvs=document.getElementById('licCanvas');
-  const dpr=window.devicePixelRatio||1;
-  const W=window.innerWidth,H=window.innerHeight;
-  if(cvs.width!==Math.round(W*dpr)||cvs.height!==Math.round(H*dpr)){
-    cvs.width=Math.round(W*dpr);cvs.height=Math.round(H*dpr);
-    cvs.style.width=W+'px';cvs.style.height=H+'px';
-  }
-  const ctx=cvs.getContext('2d');
-  ctx.clearRect(0,0,cvs.width,cvs.height);
-  ctx.save();ctx.scale(dpr,dpr);
-
-  const vid=document.getElementById('licVid');
-  const hasVideo=licStream&&vid.readyState>=2&&!vid.paused&&vid.videoWidth>0;
-
-  if(hasVideo){
-    // Draw mirrored camera feed
-    ctx.save();ctx.translate(W,0);ctx.scale(-1,1);
-    ctx.drawImage(vid,0,0,W,H);ctx.restore();
-  } else {
-    // Dark placeholder with silhouette
-    const bg=ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
-    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-    // Person silhouette
-    ctx.fillStyle='rgba(40,80,120,.5)';
-    ctx.beginPath();ctx.arc(W/2,H*0.38,55,0,6.28);ctx.fill();
-    ctx.fillStyle='rgba(40,80,120,.4)';
-    ctx.beginPath();ctx.ellipse(W/2,H*0.62,80,100,0,0,6.28);ctx.fill();
-    ctx.fillStyle='rgba(100,180,255,.2)';ctx.font='14px Share Tech Mono,monospace';
-    ctx.textAlign='center';ctx.fillText('No camera available',W/2,H*0.78);
-  }
-
-  // Draw license card overlay
-  drawLicenseCard(ctx,W,H,false);
-  ctx.restore();
-  licRAF=requestAnimationFrame(drawLicOverlay);
-}
-
-function drawLicenseCard(ctx,W,H,isCapture){
-  const T=Date.now()/1000;
-  const cardW=Math.min(W*0.88,340);
-  const cardH=cardW*0.62;
-  const cardX=(W-cardW)/2;
-  const cardY=H*0.18;
-
-  // Card shadow
-  ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=20;
-  // Card background — aged paper texture effect
-  const cardGrad=ctx.createLinearGradient(cardX,cardY,cardX+cardW,cardY+cardH);
-  cardGrad.addColorStop(0,'#1a3a1a');cardGrad.addColorStop(0.5,'#0f2a14');cardGrad.addColorStop(1,'#162b12');
-  ctx.fillStyle=cardGrad;
-  ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.fill();
-  ctx.shadowBlur=0;
-
-  // Card border — double line official style
-  ctx.strokeStyle='#40c040';ctx.lineWidth=2.5;
-  ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.stroke();
-  ctx.strokeStyle='rgba(64,192,64,.3)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.roundRect(cardX+5,cardY+5,cardW-10,cardH-10,7);ctx.stroke();
-
-  // State seal / emblem (left side)
-  const sealX=cardX+cardW*0.12,sealY=cardY+cardH*0.38;
-  ctx.fillStyle='rgba(64,192,64,.15)';
-  ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.fill();
-  ctx.strokeStyle='rgba(64,192,64,.4)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.stroke();
-  // Fish icon in seal
-  ctx.font=`${Math.round(cardH*0.28)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('🎣',sealX,sealY);
-
-  // Header
-  ctx.fillStyle='#f0c040';ctx.font=`bold ${Math.round(cardH*0.12)}px Oswald,sans-serif`;
-  ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.fillText('DEEP HOOK',cardX+cardW/2,cardY+cardH*0.07);
-  ctx.fillStyle='rgba(240,192,64,.7)';ctx.font=`${Math.round(cardH*0.075)}px Share Tech Mono,monospace`;
-  ctx.fillText('OFFICIAL FISHING LICENSE',cardX+cardW/2,cardY+cardH*0.21);
-
-  // Photo box (right side) — face crop guide
-  const photoW=cardW*0.22,photoH=cardH*0.55;
-  const photoX=cardX+cardW*0.73,photoY=cardY+cardH*0.22;
-  ctx.fillStyle='rgba(0,0,0,.4)';
-  ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.fill();
-  ctx.strokeStyle='rgba(240,192,64,.6)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.stroke();
-  if(!isCapture){
-    ctx.fillStyle='rgba(240,192,64,.3)';ctx.font=`${Math.round(photoH*0.12)}px Share Tech Mono,monospace`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('PHOTO',photoX+photoW/2,photoY+photoH/2-8);
-    ctx.fillText('HERE',photoX+photoW/2,photoY+photoH/2+8);
-  }
-
-  // Info lines
-  const infoX=cardX+cardW*0.28;
-  const lineH=cardH*0.14;
-  ctx.textAlign='left';ctx.textBaseline='middle';
-  const infoItems=[
-    {l:'LICENSE #',v:licNumber,col:'#a0c8e0'},
-    {l:'ISSUED',v:new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}),col:'#a0c8e0'},
-    {l:'EXPIRES',v:'DEC 31 2026',col:'#40e080'},
-    {l:'TYPE',v:'ALL WATERS',col:'#f0c040'},
-  ];
-  infoItems.forEach((item,i)=>{
-    const iy=cardY+cardH*0.28+i*lineH;
-    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font=`${Math.round(cardH*0.065)}px Share Tech Mono,monospace`;
-    ctx.fillText(item.l,infoX,iy);
-    ctx.fillStyle=item.col;ctx.font=`bold ${Math.round(cardH*0.08)}px Share Tech Mono,monospace`;
-    ctx.fillText(item.v,infoX+cardW*0.155,iy);
-  });
-
-  // Barcode-style bottom strip
-  const bcY=cardY+cardH*0.85;
-  ctx.fillStyle='rgba(64,192,64,.2)';ctx.fillRect(cardX+10,bcY,cardW-20,cardH*0.1);
-  ctx.strokeStyle='rgba(64,192,64,.5)';ctx.lineWidth=1;
-  for(let bx=cardX+15;bx<cardX+cardW-15;bx+=3.5){
-    const bh=Math.random()>0.5?cardH*0.08:cardH*0.05;
-    ctx.beginPath();ctx.moveTo(bx,bcY+1);ctx.lineTo(bx,bcY+bh);ctx.stroke();
-  }
-
-  // Pulse effect on card border when live (not capture)
-  if(!isCapture){
-    const pulse=0.5+0.5*Math.sin(T*2);
-    ctx.strokeStyle=`rgba(64,192,64,${0.3+pulse*0.4})`;ctx.lineWidth=2;
-    ctx.beginPath();ctx.roundRect(cardX-2,cardY-2,cardW+4,cardH+4,11);ctx.stroke();
-  }
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){return;}
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
+    .then(stream=>{
+      licStream=stream;
+      const vid=document.getElementById('licVid');
+      vid.srcObject=stream;
+      // play() is called automatically by autoplay attribute
+    })
+    .catch(err=>{
+      console.log('Camera not available:',err);
+      // No camera — hide video, show dark bg via CSS
+      document.getElementById('licVid').style.display='none';
+    });
 }
 
 function takeLicensePhoto(){
@@ -997,54 +917,112 @@ function takeLicensePhoto(){
   flash.style.opacity='0.95';
   setTimeout(()=>flash.style.opacity='0',200);
 
-  // Capture composite
+  const vid=document.getElementById('licVid');
   const W=window.innerWidth,H=window.innerHeight;
   const dpr=Math.min(window.devicePixelRatio||1,2);
-  const composite=document.createElement('canvas');
-  composite.width=W*dpr;composite.height=H*dpr;
-  const ctx=composite.getContext('2d');
+
+  // Use capture canvas — only now do we draw to canvas
+  const cvs=document.getElementById('licCaptureCanvas');
+  cvs.width=W*dpr;cvs.height=H*dpr;
+  cvs.style.width=W+'px';cvs.style.height=H+'px';
+  const ctx=cvs.getContext('2d');
   ctx.scale(dpr,dpr);
 
-  const vid=document.getElementById('licVid');
+  // Draw mirrored video frame
   const hasVideo=licStream&&vid.readyState>=2&&vid.videoWidth>0;
   if(hasVideo){
     ctx.save();ctx.translate(W,0);ctx.scale(-1,1);
-    ctx.drawImage(vid,0,0,W,H);ctx.restore();
+    ctx.drawImage(vid,0,0,W,H);
+    ctx.restore();
   } else {
     const bg=ctx.createLinearGradient(0,0,0,H);
     bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
     ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
   }
-  drawLicenseCard(ctx,W,H,true);
 
-  licCaptured=composite.toDataURL('image/jpeg',0.92);
+  // Draw license card onto capture canvas
+  drawLicenseCardOnCanvas(ctx,W,H);
+  licCaptured=cvs.toDataURL('image/jpeg',0.92);
 
-  // Stop live loop and show static capture
-  licAnimating=false;
-  if(licRAF){cancelAnimationFrame(licRAF);licRAF=null;}
+  // Stop live video, show frozen capture
+  if(licStream){licStream.getTracks().forEach(t=>t.stop());licStream=null;}
+  if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
+  vid.pause();
+  vid.style.display='none';
+  document.getElementById('licCardOverlay').style.display='none';
+  cvs.style.display='block';
 
-  // Draw the captured frame onto the canvas
-  const cvs=document.getElementById('licCanvas');
-  const ctx2=cvs.getContext('2d');
-  const img=new Image();
-  img.onload=()=>{ctx2.drawImage(img,0,0,cvs.width,cvs.height);};
-  img.src=licCaptured;
-
-  // Update UI
   document.getElementById('licShutter').style.display='none';
   document.getElementById('licRetakeBtn').style.display='block';
   document.getElementById('licProceedBtn').style.display='block';
   document.getElementById('licHint').textContent='License issued! 🎉 Ready to fish?';
 }
 
+function drawLicenseCardOnCanvas(ctx,W,H){
+  const cardW=Math.min(W*0.88,340);
+  const cardH=cardW*0.62;
+  const cardX=(W-cardW)/2;
+  const cardY=H*0.18;
+
+  ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=20;
+  const cardGrad=ctx.createLinearGradient(cardX,cardY,cardX+cardW,cardY+cardH);
+  cardGrad.addColorStop(0,'#1a3a1a');cardGrad.addColorStop(0.5,'#0f2a14');cardGrad.addColorStop(1,'#162b12');
+  ctx.fillStyle=cardGrad;
+  ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.fill();
+  ctx.shadowBlur=0;
+
+  ctx.strokeStyle='#40c040';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.stroke();
+  ctx.strokeStyle='rgba(64,192,64,.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect(cardX+5,cardY+5,cardW-10,cardH-10,7);ctx.stroke();
+
+  const sealX=cardX+cardW*0.12,sealY=cardY+cardH*0.38;
+  ctx.fillStyle='rgba(64,192,64,.15)';
+  ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.fill();
+  ctx.strokeStyle='rgba(64,192,64,.4)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.stroke();
+  ctx.font=`${Math.round(cardH*0.28)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='white';ctx.fillText('🎣',sealX,sealY);
+
+  ctx.fillStyle='#f0c040';ctx.font=`bold ${Math.round(cardH*0.12)}px Oswald,Arial`;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText('DEEP HOOK',cardX+cardW/2,cardY+cardH*0.07);
+  ctx.fillStyle='rgba(240,192,64,.7)';ctx.font=`${Math.round(cardH*0.075)}px monospace`;
+  ctx.fillText('OFFICIAL FISHING LICENSE',cardX+cardW/2,cardY+cardH*0.21);
+
+  const photoW=cardW*0.22,photoH=cardH*0.55;
+  const photoX=cardX+cardW*0.73,photoY=cardY+cardH*0.22;
+  ctx.fillStyle='rgba(0,0,0,.4)';
+  ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.fill();
+  ctx.strokeStyle='rgba(240,192,64,.6)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.stroke();
+
+  const infoX=cardX+cardW*0.28;const lineH=cardH*0.14;
+  ctx.textAlign='left';ctx.textBaseline='middle';
+  [{l:'LICENSE #',v:licNumber,col:'#a0c8e0'},
+   {l:'ISSUED',v:new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}),col:'#a0c8e0'},
+   {l:'EXPIRES',v:'DEC 31 2026',col:'#40e080'},
+   {l:'TYPE',v:'ALL WATERS',col:'#f0c040'},
+  ].forEach((item,i)=>{
+    const iy=cardY+cardH*0.28+i*lineH;
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font=`${Math.round(cardH*0.065)}px monospace`;
+    ctx.fillText(item.l,infoX,iy);
+    ctx.fillStyle=item.col;ctx.font=`bold ${Math.round(cardH*0.08)}px monospace`;
+    ctx.fillText(item.v,infoX+cardW*0.155,iy);
+  });
+}
+
 function retakeLicense(){
   licCaptured=null;
+  document.getElementById('licCaptureCanvas').style.display='none';
+  document.getElementById('licVid').style.display='block';
+  document.getElementById('licCardOverlay').style.display='block';
   document.getElementById('licShutter').style.display='flex';
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
   document.getElementById('licHint').textContent='Hold still — smile for your license photo!';
-  licAnimating=true;
-  licRAF=requestAnimationFrame(drawLicOverlay);
+  startLicCamera();
+  startLicPulse();
 }
 
 function skipLicense(){
@@ -1058,8 +1036,7 @@ function proceedFromLicense(){
 }
 
 function closeLicenseCamera(){
-  licAnimating=false;
-  if(licRAF){cancelAnimationFrame(licRAF);licRAF=null;}
+  if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
   if(licStream){
     try{licStream.getTracks().forEach(t=>t.stop());}catch(e){}
     licStream=null;
@@ -2241,104 +2218,148 @@ function endMoonFrenzy(){
 /* ═══════════════════════════════════════════
    BOSS PHOTO (existing, unchanged except camera draw fix)
 ═══════════════════════════════════════════ */
-let bpStream=null,bpCaptured=null,bpFishData=null,bpRAF=null,bpAnimating=false;
+let bpStream=null,bpCaptured=null,bpFishData=null;
+
 function openBossPhoto(fish,moneyEarned,pointsEarned){
-  bpFishData={fish,moneyEarned,pointsEarned};bpCaptured=null;bpAnimating=false;
+  bpFishData={fish,moneyEarned,pointsEarned};
+  bpCaptured=null;
+
+  // Populate HTML overlays
   document.getElementById('bpName').textContent=fish.e+' '+fish.name;
   document.getElementById('bpSub').textContent='LEGENDARY CATCH · DEEP HOOK';
   document.getElementById('bpWeight').textContent=fish.w||'???';
   document.getElementById('bpMoney').textContent='+$'+moneyEarned;
   document.getElementById('bpPoints').textContent='+'+pointsEarned+' pts';
-  document.getElementById('bpSave').style.display='none';document.getElementById('bpShutter').style.display='flex';
+  document.getElementById('bpFishIcon').textContent=fish.e;
+  document.getElementById('bpFishIcon').style.filter=`drop-shadow(0 0 20px ${fish.col||'#ff40ff'})`;
+  document.getElementById('bpFishName').textContent=fish.name;
+  document.getElementById('bpSave').style.display='none';
+  document.getElementById('bpShutter').style.display='flex';
+  document.getElementById('bpCanvas').style.display='none';
+
+  // Show video elements
+  const vid=document.getElementById('bpVid');
+  vid.style.display='block';
+  document.getElementById('bpFishEmoji').style.display='block';
+  document.getElementById('bpStats').style.display='block';
+  document.getElementById('bpStatsBar').style.display='flex';
+
   showScr('bossPhoto');
-  if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}if(bpRAF){cancelAnimationFrame(bpRAF);bpRAF=null;}
-  const cvs=document.getElementById('bpCanvas');const dpr=window.devicePixelRatio||1;
-  const W=window.innerWidth,H=window.innerHeight;
-  cvs.width=W*dpr;cvs.height=H*dpr;cvs.style.width=W+'px';cvs.style.height=H+'px';cvs.style.zIndex='5';
-  const vid=document.getElementById('bpVid');
-  const startOverlay=()=>{bpAnimating=true;bpRAF=requestAnimationFrame(drawBossPhotoOverlay);};
-  const tryCamera=()=>{
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){startFishOnlyLoop();return;}
-    navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:false})
+  if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
+
+  // Start camera — simple, just like Shark Boy
+  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
       .then(stream=>{
-        bpStream=stream;vid.srcObject=stream;vid.muted=true;
-        const onReady=()=>{vid.removeEventListener('loadedmetadata',onReady);vid.removeEventListener('canplay',onReady);vid.play().then(startOverlay).catch(startOverlay);};
-        vid.addEventListener('loadedmetadata',onReady);vid.addEventListener('canplay',onReady);
-        if(vid.readyState>=2)onReady();
-      }).catch(()=>startFishOnlyLoop());
-  };
-  setTimeout(tryCamera,250);
-}
-function startFishOnlyLoop(){bpAnimating=true;bpRAF=requestAnimationFrame(drawBossPhotoOverlay);}
-function drawBossPhotoOverlay(){
-  if(!bpAnimating||!document.getElementById('bossPhoto').classList.contains('active')){bpRAF=null;return;}
-  const cvs=document.getElementById('bpCanvas');const dpr=window.devicePixelRatio||1;
-  const W=window.innerWidth,H=window.innerHeight;
-  if(cvs.width!==Math.round(W*dpr)||cvs.height!==Math.round(H*dpr)){cvs.width=Math.round(W*dpr);cvs.height=Math.round(H*dpr);cvs.style.width=W+'px';cvs.style.height=H+'px';}
-  const ctx=cvs.getContext('2d');ctx.clearRect(0,0,cvs.width,cvs.height);
-  ctx.save();ctx.scale(dpr,dpr);
-  const vid=document.getElementById('bpVid');
-  const hasVideo=bpStream&&vid.readyState>=2&&!vid.paused&&vid.videoWidth>0;
-  if(hasVideo){
-    ctx.save();ctx.translate(W,0);ctx.scale(-1,1);ctx.drawImage(vid,0,0,W,H);ctx.restore();
+        bpStream=stream;
+        vid.srcObject=stream;
+      })
+      .catch(()=>{
+        vid.style.display='none'; // No camera, fallback to dark bg
+      });
   } else {
-    const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
+    vid.style.display='none';
+  }
+}
+
+function takeBossPhoto(){
+  const vid=document.getElementById('bpVid');
+  const flash=document.getElementById('bpFlash');
+  vib([30,20,60]);
+  flash.style.opacity='0.9';
+  setTimeout(()=>flash.style.opacity='0',200);
+
+  const W=window.innerWidth,H=window.innerHeight;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const cvs=document.getElementById('bpCanvas');
+  cvs.width=W*dpr;cvs.height=H*dpr;
+  cvs.style.width=W+'px';cvs.style.height=H+'px';
+  const ctx=cvs.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  // 1. Draw video frame (mirrored — front cam)
+  const hasVideo=bpStream&&vid.readyState>=2&&vid.videoWidth>0;
+  if(hasVideo){
+    ctx.save();ctx.translate(W,0);ctx.scale(-1,1);
+    ctx.drawImage(vid,0,0,W,H);
+    ctx.restore();
+  } else {
+    // Dark ocean fallback
+    const bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
     ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-    for(let i=0;i<40;i++){const sx=(i*137.5)%W,sy=(i*97.3)%H*0.5;const twinkle=0.2+0.6*Math.abs(Math.sin(Date.now()/1000*0.5+i));ctx.globalAlpha=twinkle;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(sx,sy,0.8,0,6.28);ctx.fill();}
+    // Stars
+    for(let i=0;i<40;i++){
+      ctx.globalAlpha=0.3+Math.random()*0.5;ctx.fillStyle='#fff';
+      ctx.beginPath();ctx.arc((i*137.5)%W,(i*97.3)%H*0.5,0.8,0,6.28);ctx.fill();
+    }
     ctx.globalAlpha=1;
   }
-  drawFishOverlay(ctx,W,H,false);
-  ctx.restore();
-  bpRAF=requestAnimationFrame(drawBossPhotoOverlay);
+
+  // 2. Draw fish emoji centered
+  const fish=bpFishData.fish;
+  const fishCol=fish.col||'#ff40ff';
+  ctx.shadowBlur=40;ctx.shadowColor=fishCol;
+  ctx.font=`${Math.round(Math.min(W,H)*0.2)}px serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(fish.e,W/2,H*0.42);
+  ctx.shadowBlur=0;
+
+  // 3. Top overlay — fish name
+  ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,W,68);
+  ctx.font='bold 22px Oswald,Arial';ctx.fillStyle=fishCol;
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText(fish.e+' '+fish.name,16,12);
+  ctx.font='11px monospace';ctx.fillStyle='rgba(200,232,255,0.85)';
+  ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,40);
+
+  // 4. Bottom stats bar
+  ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,H-80,W,80);
+  [{lbl:'WEIGHT',val:fish.w||'???',col:fishCol},
+   {lbl:'EARNED',val:'+$'+bpFishData.moneyEarned,col:'#40e080'},
+   {lbl:'POINTS',val:'+'+bpFishData.pointsEarned+' pts',col:'#f0c040'},
+  ].forEach((s,i)=>{
+    const sx=W/6+(i*W/3);
+    ctx.font='9px monospace';ctx.fillStyle='rgba(255,200,255,0.6)';ctx.textAlign='center';
+    ctx.fillText(s.lbl,sx,H-60);
+    ctx.font='bold 20px Oswald,Arial';ctx.fillStyle=s.col;
+    ctx.fillText(s.val,sx,H-36);
+  });
+  ctx.font='10px monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';
+  ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
+
+  bpCaptured=cvs.toDataURL('image/jpeg',0.90);
+
+  // Stop stream, hide live elements, show frozen canvas
+  if(bpStream){bpStream.getTracks().forEach(t=>t.stop());bpStream=null;}
+  vid.pause();vid.style.display='none';
+  document.getElementById('bpFishEmoji').style.display='none';
+  document.getElementById('bpStats').style.display='none';
+  document.getElementById('bpStatsBar').style.display='none';
+  cvs.style.display='block';
+
+  document.getElementById('bpShutter').style.display='none';
+  document.getElementById('bpSave').style.display='block';
 }
-function drawFishOverlay(ctx,W,H,staticMode){
-  if(!bpFishData)return;
-  const fish=bpFishData.fish;const T2=Date.now()/1000;
-  const cx=W*0.5,cy=H*0.42;const bob=staticMode?0:Math.sin(T2*1.2)*6;
-  const scale=Math.min(W,H)*0.0018;
-  ctx.save();ctx.translate(cx,cy+bob);ctx.scale(scale,scale);
-  const fishColor=fish.col||'#ff80ff';
-  ctx.shadowBlur=40;ctx.shadowColor=fishColor;
-  ctx.fillStyle=fishColor;ctx.globalAlpha=0.9;
-  ctx.beginPath();ctx.ellipse(0,0,90,35,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.globalAlpha=0.5;ctx.beginPath();ctx.ellipse(10,8,60,18,0.1,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=fishColor;ctx.globalAlpha=0.9;ctx.beginPath();ctx.moveTo(-90,0);ctx.lineTo(-130,-40);ctx.lineTo(-130,40);ctx.closePath();ctx.fill();
-  ctx.shadowBlur=0;ctx.globalAlpha=1;
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(65,-8,10,0,6.28);ctx.fill();
-  ctx.fillStyle='#000';ctx.beginPath();ctx.arc(67,-8,6,0,6.28);ctx.fill();
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(69,-10,2,0,6.28);ctx.fill();
-  ctx.fillStyle=fishColor;ctx.globalAlpha=0.7;
-  ctx.beginPath();ctx.moveTo(20,-35);ctx.lineTo(-10,-70);ctx.lineTo(-30,-35);ctx.closePath();ctx.fill();
-  ctx.beginPath();ctx.moveTo(10,35);ctx.lineTo(-10,60);ctx.lineTo(-25,35);ctx.closePath();ctx.fill();
-  ctx.globalAlpha=0.9;ctx.font='bold 42px serif';ctx.textAlign='center';ctx.fillText(fish.e,0,12);
-  ctx.restore();ctx.shadowBlur=0;ctx.globalAlpha=1;
-  ctx.font='bold 13px Oswald,sans-serif';ctx.fillStyle='rgba(255,200,255,0.5)';ctx.textAlign='center';ctx.fillText('DEEP HOOK FISHING',W/2,H-28);
+
+function saveBossPhoto(){
+  if(!bpCaptured)return;
+  const a=document.createElement('a');
+  a.href=bpCaptured;
+  a.download='DeepHook_Boss_'+Date.now()+'.jpg';
+  a.click();
+  vib([40,20,80]);
+  setTimeout(()=>closeBossPhoto(),400);
 }
-function takeBossPhoto(){
-  const vid=document.getElementById('bpVid');const flash=document.getElementById('bpFlash');
-  vib([30,20,60]);flash.style.opacity='0.9';setTimeout(()=>flash.style.opacity='0',200);
-  const W=window.innerWidth,H=window.innerHeight;const dpr=Math.min(window.devicePixelRatio||1,2);
-  const composite=document.createElement('canvas');composite.width=W*dpr;composite.height=H*dpr;
-  const ctx=composite.getContext('2d');ctx.scale(dpr,dpr);
-  const hasVideo=bpStream&&vid.readyState>=2&&vid.videoWidth>0;
-  if(hasVideo){ctx.save();ctx.translate(W,0);ctx.scale(-1,1);ctx.drawImage(vid,0,0,W,H);ctx.restore();}
-  else{const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);}
-  drawFishOverlay(ctx,W,H,true);
-  ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(0,0,W,72);
-  if(bpFishData){ctx.font='bold 24px Oswald,sans-serif';ctx.fillStyle='#ff80ff';ctx.textAlign='left';ctx.fillText(bpFishData.fish.e+' '+bpFishData.fish.name,16,34);ctx.font='11px "Share Tech Mono",monospace';ctx.fillStyle='rgba(200,232,255,0.85)';ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,52);}
-  ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(0,H-80,W,80);
-  if(bpFishData){const stats=[{lbl:'WEIGHT',val:bpFishData.fish.w||'???',col:'#ff80ff'},{lbl:'EARNED',val:'+$'+bpFishData.moneyEarned,col:'#40e080'},{lbl:'POINTS',val:'+'+bpFishData.pointsEarned+' pts',col:'#f0c040'}];stats.forEach((s,i)=>{const sx=W/6+(i*W/3);ctx.font='9px "Share Tech Mono",monospace';ctx.fillStyle='rgba(255,200,255,0.6)';ctx.textAlign='center';ctx.fillText(s.lbl,sx,H-58);ctx.font='bold 20px Oswald,sans-serif';ctx.fillStyle=s.col;ctx.fillText(s.val,sx,H-34);});}
-  ctx.font='bold 10px "Share Tech Mono",monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
-  bpCaptured=composite.toDataURL('image/jpeg',0.90);
-  document.getElementById('bpShutter').style.display='none';document.getElementById('bpSave').style.display='block';
-}
-function saveBossPhoto(){if(!bpCaptured)return;const a=document.createElement('a');a.href=bpCaptured;a.download='DeepHook_Boss_'+Date.now()+'.jpg';a.click();vib([40,20,80]);setTimeout(()=>closeBossPhoto(),400);}
+
 function skipBossPhoto(){closeBossPhoto();}
+
 function closeBossPhoto(){
-  bpAnimating=false;if(bpRAF){cancelAnimationFrame(bpRAF);bpRAF=null;}
   if(bpStream){try{bpStream.getTracks().forEach(t=>t.stop());}catch(e){}bpStream=null;}
-  const vid=document.getElementById('bpVid');try{vid.pause();vid.srcObject=null;}catch(e){}
-  bpFishData=null;bpCaptured=null;setTimeout(()=>openShop(),200);
+  const vid=document.getElementById('bpVid');
+  try{vid.pause();vid.srcObject=null;}catch(e){}
+  bpFishData=null;bpCaptured=null;
+  setTimeout(()=>openShop(),200);
 }
 
 /* ═══════════════════════════════════════════
