@@ -386,6 +386,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
     <div class="timebox" id="hTim">60</div>
     <div class="hs"><span class="hl">CASH</span><span class="hv" id="hMon" style="color:var(--grn)">$0</span></div>
     <div class="hud-gear" id="gearBtn" title="Options">⚙️</div>
+    <div class="hud-gear" id="licBtn" title="Fishing License" style="font-size:18px;">🪪</div>
   </div>
   <div class="boss-banner" id="bossBanner">👹 BOSS LEVEL — LEGENDARY CREATURE LURKS BELOW</div>
   <div class="castcol" id="castColSlider">
@@ -911,28 +912,24 @@ function clearBpAutoSkip(){
 let licNumber='DH-'+Math.floor(100000+Math.random()*900000);
 let licPulseRAF=null;
 
-async function openLicenseScreen(){
+function openLicenseScreen(){
+  // Pause game timer if mid-game
+  if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
+
   licCaptured=null;
   document.getElementById('licShutter').style.display='flex';
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
   document.getElementById('licCaptureCanvas').style.display='none';
-  document.getElementById('licVid').style.display='block';
+  document.getElementById('licVid').style.display='none';
   document.getElementById('licCardOverlay').style.display='block';
-  document.getElementById('licHint').textContent='Hold still — smile for your license photo!';
+  document.getElementById('licHint').textContent='Tap 📸 to take your license photo — or SKIP!';
   document.getElementById('licNumSvg').textContent=licNumber;
   document.getElementById('licDateSvg').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'});
   showScr('licenseScr');
   startLicPulse();
   startLicAutoSkip();
-  // Camera called directly here — must stay in user gesture context
-  try {
-    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-    document.getElementById('licVid').srcObject = licStream;
-  } catch(err) {
-    console.log('License camera error:', err);
-    document.getElementById('licVid').style.display='none';
-  }
+  // NO camera call here — camera only starts when user taps 📸
 }
 
 function startLicPulse(){
@@ -1017,36 +1014,41 @@ function drawFishermanHat(ctx, W, H){
 }
 
 async function takeLicensePhoto(){
-  clearLicAutoSkip();  // user acted — cancel auto-skip
+  clearLicAutoSkip();
   vib([30,15,50]);
-  const flash=document.getElementById('licFlash');
-  flash.style.opacity='0.95';
-  setTimeout(()=>flash.style.opacity='0',200);
 
   const vid=document.getElementById('licVid');
+  const hint=document.getElementById('licHint');
 
-  // If camera not yet started (e.g. permission was deferred), request it now on this tap
+  // First tap — start camera, show live feed, prompt second tap to capture
   if(!licStream){
+    hint.textContent='Starting camera...';
     try {
       licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
       vid.srcObject = licStream;
       vid.style.display='block';
-      await new Promise(resolve => setTimeout(resolve, 800));
+      hint.textContent='Looking good! Tap 📸 again to capture!';
     } catch(err) {
-      console.log('License camera error on capture:', err);
+      console.log('Camera denied:', err);
+      hint.textContent='No camera — tap 📸 to save without photo.';
+      captureWithoutCamera();
     }
+    return; // wait for second tap
   }
+
+  // Second tap — actually capture
+  const flash=document.getElementById('licFlash');
+  flash.style.opacity='0.95';
+  setTimeout(()=>flash.style.opacity='0',200);
+
   const W=window.innerWidth,H=window.innerHeight;
   const dpr=Math.min(window.devicePixelRatio||1,2);
-
-  // Use capture canvas — only now do we draw to canvas
   const cvs=document.getElementById('licCaptureCanvas');
   cvs.width=W*dpr;cvs.height=H*dpr;
   cvs.style.width=W+'px';cvs.style.height=H+'px';
   const ctx=cvs.getContext('2d');
   ctx.scale(dpr,dpr);
 
-  // Draw video frame — if stream exists, video is playing
   if(licStream){
     ctx.drawImage(vid,0,0,W,H);
   } else {
@@ -1055,14 +1057,10 @@ async function takeLicensePhoto(){
     ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
   }
 
-  // Fisherman's bucket hat on the person
-  drawFishermanHat(ctx, W, H);
-
-  // Draw license card onto capture canvas
+  drawFishermanHat(ctx,W,H);
   drawLicenseCardOnCanvas(ctx,W,H);
   licCaptured=cvs.toDataURL('image/jpeg',0.92);
 
-  // Stop live video, show frozen capture
   if(licStream){licStream.getTracks().forEach(t=>t.stop());licStream=null;}
   if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
   vid.pause();
@@ -1073,7 +1071,29 @@ async function takeLicensePhoto(){
   document.getElementById('licShutter').style.display='none';
   document.getElementById('licRetakeBtn').style.display='block';
   document.getElementById('licProceedBtn').style.display='block';
-  document.getElementById('licHint').textContent='License issued! 🎉 Ready to fish?';
+  hint.textContent='License issued! 🎉 Ready to fish?';
+}
+
+function captureWithoutCamera(){
+  const W=window.innerWidth,H=window.innerHeight;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const cvs=document.getElementById('licCaptureCanvas');
+  cvs.width=W*dpr;cvs.height=H*dpr;
+  cvs.style.width=W+'px';cvs.style.height=H+'px';
+  const ctx=cvs.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  drawFishermanHat(ctx,W,H);
+  drawLicenseCardOnCanvas(ctx,W,H);
+  licCaptured=cvs.toDataURL('image/jpeg',0.92);
+  if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
+  document.getElementById('licCardOverlay').style.display='none';
+  cvs.style.display='block';
+  document.getElementById('licShutter').style.display='none';
+  document.getElementById('licRetakeBtn').style.display='block';
+  document.getElementById('licProceedBtn').style.display='block';
 }
 
 function drawLicenseCardOnCanvas(ctx,W,H){
@@ -1146,13 +1166,24 @@ function retakeLicense(){
 function skipLicense(){
   clearLicAutoSkip();
   closeLicenseCamera();
-  startGame();
+  returnFromLicense();
 }
 
 function proceedFromLicense(){
   clearLicAutoSkip();
   closeLicenseCamera();
-  startGame();
+  returnFromLicense();
+}
+
+function returnFromLicense(){
+  // If game was running, go back to it and restart timer
+  const gameActive=document.getElementById('S1').classList.contains('active');
+  if(gameActive||G.st>0){
+    showScr('S1');
+    if(G.st>0&&G.ph!=='idle')startTimer();
+  } else {
+    startGame();
+  }
 }
 
 function closeLicenseCamera(){
@@ -2371,25 +2402,32 @@ async function openBossPhoto(fish,moneyEarned,pointsEarned){
 }
 
 async function takeBossPhoto(){
-  clearBpAutoSkip();  // user acted — cancel auto-skip
-  const vid=document.getElementById('bpVid');
-  const flash=document.getElementById('bpFlash');
+  clearBpAutoSkip();
   vib([30,20,60]);
-  flash.style.opacity='0.9';
-  setTimeout(()=>flash.style.opacity='0',200);
 
-  // Request camera RIGHT HERE in the user gesture — same as Shark Boy's capturePhoto()
+  const vid=document.getElementById('bpVid');
+  const sub=document.getElementById('bpSub');
+
+  // First tap — request camera (user gesture), show live feed
   if(!bpStream){
+    sub.textContent='Starting camera...';
     try {
       bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      vid.srcObject = bpStream;
+      vid.srcObject=bpStream;
       vid.style.display='block';
-      // Give video a moment to start playing before we capture
-      await new Promise(resolve => setTimeout(resolve, 800));
+      sub.textContent='Looking good! Tap 📸 again to capture!';
     } catch(err) {
-      console.log('Boss camera error:', err);
+      console.log('Boss camera error:',err);
+      sub.textContent='No camera — tap 📸 to save without photo.';
+      captureBossWithoutCamera();
     }
+    return; // wait for second tap
   }
+
+  // Second tap — capture
+  const flash=document.getElementById('bpFlash');
+  flash.style.opacity='0.9';
+  setTimeout(()=>flash.style.opacity='0',200);
 
   const W=window.innerWidth,H=window.innerHeight;
   const dpr=Math.min(window.devicePixelRatio||1,2);
@@ -2399,26 +2437,17 @@ async function takeBossPhoto(){
   const ctx=cvs.getContext('2d');
   ctx.scale(dpr,dpr);
 
-  // Draw video frame directly — if stream exists, video is playing
+  // Draw video or dark fallback
   if(bpStream){
     ctx.drawImage(vid,0,0,W,H);
   } else {
-    // Dark ocean fallback
     const bg=ctx.createLinearGradient(0,0,0,H);
     bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
     ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-    // Stars
-    for(let i=0;i<40;i++){
-      ctx.globalAlpha=0.3+Math.random()*0.5;ctx.fillStyle='#fff';
-      ctx.beginPath();ctx.arc((i*137.5)%W,(i*97.3)%H*0.5,0.8,0,6.28);ctx.fill();
-    }
-    ctx.globalAlpha=1;
   }
 
-  // Fisherman's bucket hat on the person
-  drawFishermanHat(ctx, W, H);
+  drawFishermanHat(ctx,W,H);
 
-  // 2. Draw fish emoji centered
   const fish=bpFishData.fish;
   const fishCol=fish.col||'#ff40ff';
   ctx.shadowBlur=40;ctx.shadowColor=fishCol;
@@ -2427,7 +2456,6 @@ async function takeBossPhoto(){
   ctx.fillText(fish.e,W/2,H*0.42);
   ctx.shadowBlur=0;
 
-  // 3. Top overlay — fish name
   ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,W,68);
   ctx.font='bold 22px Oswald,Arial';ctx.fillStyle=fishCol;
   ctx.textAlign='left';ctx.textBaseline='top';
@@ -2435,7 +2463,6 @@ async function takeBossPhoto(){
   ctx.font='11px monospace';ctx.fillStyle='rgba(200,232,255,0.85)';
   ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,40);
 
-  // 4. Bottom stats bar
   ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,H-80,W,80);
   [{lbl:'WEIGHT',val:fish.w||'???',col:fishCol},
    {lbl:'EARNED',val:'+$'+bpFishData.moneyEarned,col:'#40e080'},
@@ -2452,14 +2479,46 @@ async function takeBossPhoto(){
 
   bpCaptured=cvs.toDataURL('image/jpeg',0.90);
 
-  // Stop stream, hide live elements, show frozen canvas
   if(bpStream){bpStream.getTracks().forEach(t=>t.stop());bpStream=null;}
   vid.pause();vid.style.display='none';
   document.getElementById('bpFishEmoji').style.display='none';
   document.getElementById('bpStats').style.display='none';
   document.getElementById('bpStatsBar').style.display='none';
   cvs.style.display='block';
+  document.getElementById('bpShutter').style.display='none';
+  document.getElementById('bpSave').style.display='block';
+}
 
+function captureBossWithoutCamera(){
+  const W=window.innerWidth,H=window.innerHeight;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const cvs=document.getElementById('bpCanvas');
+  cvs.width=W*dpr;cvs.height=H*dpr;
+  cvs.style.width=W+'px';cvs.style.height=H+'px';
+  const ctx=cvs.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  drawFishermanHat(ctx,W,H);
+  if(bpFishData){
+    const fish=bpFishData.fish;const fishCol=fish.col||'#ff40ff';
+    ctx.shadowBlur=40;ctx.shadowColor=fishCol;
+    ctx.font=`${Math.round(Math.min(W,H)*0.2)}px serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(fish.e,W/2,H*0.42);ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,W,68);
+    ctx.font='bold 22px Oswald,Arial';ctx.fillStyle=fishCol;
+    ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.fillText(fish.e+' '+fish.name,16,12);
+    ctx.font='11px monospace';ctx.fillStyle='rgba(200,232,255,0.85)';
+    ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,40);
+  }
+  bpCaptured=cvs.toDataURL('image/jpeg',0.90);
+  document.getElementById('bpFishEmoji').style.display='none';
+  document.getElementById('bpStats').style.display='none';
+  document.getElementById('bpStatsBar').style.display='none';
+  cvs.style.display='block';
   document.getElementById('bpShutter').style.display='none';
   document.getElementById('bpSave').style.display='block';
 }
@@ -2513,23 +2572,24 @@ function wireTap(id,fn){
   el.addEventListener('click',fn);
 }
 
-// Title: CAST OFF → open license screen
+// Title: CAST OFF → straight into game, no camera blocking
 wireTap('startBtn',()=>{
   if(titleRAF){cancelAnimationFrame(titleRAF);titleRAF=null;}
-  openLicenseScreen();
+  startGame();
 });
 wireTap('titleGearBtn',openOptions);
 wireTap('gearBtn',openOptions);
+wireTap('licBtn',openLicenseScreen);
 wireTap('goFishBtn',goFish);
 
 document.getElementById('S1').addEventListener('touchend',e=>{
   if(G.ph!=='aiming')return;
-  if(e.target.closest('#gearBtn')||e.target.closest('#RW')||e.target.closest('.castcol')||e.target.closest('.swing-cast-col'))return;
+  if(e.target.closest('#gearBtn')||e.target.closest('#licBtn')||e.target.closest('#RW')||e.target.closest('.castcol')||e.target.closest('.swing-cast-col'))return;
   e.preventDefault();e.stopPropagation();onTapScreen();
 },{passive:false});
 document.getElementById('S1').addEventListener('click',e=>{
   if(G.ph!=='aiming')return;
-  if(e.target.closest('#gearBtn')||e.target.closest('#RW')||e.target.closest('.castcol')||e.target.closest('.swing-cast-col'))return;
+  if(e.target.closest('#gearBtn')||e.target.closest('#licBtn')||e.target.closest('#RW')||e.target.closest('.castcol')||e.target.closest('.swing-cast-col'))return;
   onTapScreen();
 });
 
