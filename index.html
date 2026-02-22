@@ -69,6 +69,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 .tinfo{font-family:var(--mono);font-size:10px;color:rgba(100,180,255,.35);text-align:center;line-height:2;}
 .title-gear{font-size:11px;font-family:var(--mono);color:rgba(100,180,255,.3);cursor:pointer;padding:6px;touch-action:manipulation;}
 
+/* ── CAST-OFF MODAL ── */
+#castOffModal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);}
+#castOffModal.show{display:flex;}
+.com-box{background:linear-gradient(160deg,#0a1e35,#020810);border:2px solid var(--acc);border-radius:18px;padding:28px 24px 24px;max-width:320px;width:90%;text-align:center;box-shadow:0 0 40px rgba(240,192,64,.25);}
+.com-badge{font-size:40px;margin-bottom:8px;}
+.com-title{font-family:var(--font);font-size:15px;color:var(--acc);letter-spacing:3px;margin-bottom:4px;}
+.com-sub{font-family:var(--mono);font-size:11px;color:rgba(200,220,255,.5);margin-bottom:22px;line-height:1.6;}
+.com-btn{width:100%;padding:15px 12px;border-radius:12px;border:none;font-family:var(--font);font-size:16px;font-weight:700;letter-spacing:2px;cursor:pointer;touch-action:manipulation;margin-bottom:10px;}
+.com-btn:active{transform:scale(.97);}
+.com-btn-lic{background:linear-gradient(135deg,#1a5a2a,#0d3018);border:2px solid #40e080;color:#40e080;box-shadow:0 0 16px rgba(64,224,128,.2);}
+.com-btn-go{background:linear-gradient(135deg,#1a5a9a,#0d3060);border:2px solid var(--acc);color:var(--acc);box-shadow:0 0 16px rgba(240,192,64,.2);}
+
 /* ── LICENSE SCREEN ── */
 #licenseScr{background:#000;position:relative;overflow:hidden;}
 #licVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
@@ -303,6 +315,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 <!-- ══════════════════════════════
      FISHING LICENSE SCREEN
 ════════════════════════════════ -->
+<!-- CAST OFF MODAL -->
+<div id="castOffModal">
+  <div class="com-box">
+    <div class="com-badge">🎣</div>
+    <div class="com-title">FISHING TOURNAMENT</div>
+    <div class="com-sub">A biplane was spotted over the lake!<br>"Get your fishing license before you cast!"</div>
+    <button class="com-btn com-btn-lic" id="comLicBtn">🪪 GET A FISHING LICENSE</button>
+    <button class="com-btn com-btn-go" id="comGoBtn">🎣 SKIP — GO FISHING!</button>
+  </div>
+</div>
+
 <div id="licenseScr" class="screen">
   <video id="licVid" autoplay playsinline muted></video>
   <!-- SVG license card drawn over live video -->
@@ -643,6 +666,7 @@ let titleRAF=null;
 let titleStars=[];
 let titleFish=[];   // jumping fish
 let titleCast={phase:'back',t:0,lineX:0,lineY:0,bobX:0,bobY:0,splash:false,splashT:0};
+let biplane={x:-300,y:0,active:false,nextAt:0,bannerOffsets:[]};
 
 function initTitleCanvas(){
   const cv=document.getElementById('titleCV');
@@ -659,6 +683,16 @@ function initTitleCanvas(){
   for(let i=0;i<3;i++){
     scheduleTitleFish(i,i*3000);
   }
+  // Init biplane — first flyover after 3s, then every 30s
+  const W2=window.innerWidth,H2=window.innerHeight;
+  biplane.x=W2+50;  // start off right edge
+  biplane.y=H2*0.14;
+  biplane.active=false;
+  biplane.nextAt=Date.now()+3000;  // first pass in 3s
+  // Pre-generate banner letter offsets for wavy rope effect
+  const msg='  FISHING TOURNAMENT TODAY - GET A FISHING LICENSE  ';
+  biplane.msg=msg;
+  biplane.bannerOffsets=msg.split('').map((_,i)=>Math.sin(i*0.4)*3);
 }
 
 function scheduleTitleFish(id,delay){
@@ -847,6 +881,123 @@ function drawTitle(){
         ctx.strokeStyle=`rgba(80,180,255,${alpha})`;ctx.lineWidth=1.5;
         ctx.beginPath();ctx.ellipse(f.x,waterY,r,r*0.3,0,0,6.28);ctx.stroke();
       }
+    }
+  }
+
+  // ── BIPLANE FLYOVER ──
+  const now=Date.now();
+  if(!biplane.active && now>=biplane.nextAt){
+    biplane.active=true;
+    biplane.x=W+60;   // start off right edge
+    biplane.y=H*0.14+Math.random()*H*0.06;
+  }
+  if(biplane.active){
+    biplane.x -= 1.8;  // fly right → left
+    const bx=biplane.x, by=biplane.y;
+
+    // ── Banner rope ──
+    const ropeStartX=bx-28, ropeStartY=by+6;
+    const bannerX=ropeStartX-18;
+    const msg=biplane.msg;
+    const charW=7.5;
+    const bannerW=msg.length*charW+12;
+
+    // Rope with gentle sag
+    ctx.strokeStyle='rgba(200,180,140,0.7)';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(ropeStartX,ropeStartY);
+    ctx.quadraticCurveTo(ropeStartX-9,ropeStartY+8,bannerX,ropeStartY+5);
+    ctx.stroke();
+
+    // Banner background — aged canvas look
+    ctx.save();
+    ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=6;ctx.shadowOffsetY=3;
+    ctx.fillStyle='rgba(255,248,210,0.94)';
+    ctx.strokeStyle='rgba(160,130,80,0.8)';ctx.lineWidth=1.5;
+    const bannerH=16;
+    ctx.beginPath();
+    ctx.moveTo(bannerX,ropeStartY);
+    ctx.lineTo(bannerX-bannerW,ropeStartY+3);
+    ctx.lineTo(bannerX-bannerW,ropeStartY+bannerH+3);
+    ctx.lineTo(bannerX,ropeStartY+bannerH);
+    ctx.closePath();
+    ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
+
+    // Banner text — wavy letter by letter
+    ctx.font='bold 8.5px Arial,sans-serif';
+    ctx.textAlign='left';ctx.textBaseline='middle';
+    msg.split('').forEach((ch,i)=>{
+      const lx=bannerX-11-(i*charW);
+      const ly=ropeStartY+bannerH/2+2+biplane.bannerOffsets[i]*0.5;
+      const hue=i%2===0?'#4a2800':'#6a3800';
+      ctx.fillStyle=hue;
+      ctx.fillText(ch,lx,ly);
+    });
+    ctx.restore();
+
+    // ── Plane body ──
+    ctx.save();
+    ctx.translate(bx,by);
+
+    // Engine glow
+    ctx.shadowColor='rgba(255,180,60,0.7)';ctx.shadowBlur=10;
+    ctx.fillStyle='#ff9020';
+    ctx.beginPath();ctx.ellipse(-22,1,5,4,0,0,6.28);ctx.fill();
+    ctx.shadowBlur=0;
+
+    // Fuselage
+    ctx.fillStyle='#d4c87a';
+    ctx.beginPath();
+    ctx.moveTo(18,0);
+    ctx.bezierCurveTo(10,-5,-10,-5,-22,-1);
+    ctx.bezierCurveTo(-10,5,10,5,18,0);
+    ctx.fill();
+    ctx.strokeStyle='#9a8a40';ctx.lineWidth=1;ctx.stroke();
+
+    // Tail fin
+    ctx.fillStyle='#c4b86a';
+    ctx.beginPath();ctx.moveTo(-20,-1);ctx.lineTo(-28,-10);ctx.lineTo(-22,-1);ctx.fill();
+    ctx.beginPath();ctx.moveTo(-20,1);ctx.lineTo(-26,8);ctx.lineTo(-22,1);ctx.fill();
+
+    // Top wing
+    ctx.fillStyle='rgba(220,208,100,0.92)';
+    ctx.strokeStyle='#8a7a30';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(2,-4);ctx.lineTo(-14,-4);ctx.lineTo(-16,-14);ctx.lineTo(0,-14);ctx.closePath();
+    ctx.fill();ctx.stroke();
+
+    // Bottom wing
+    ctx.beginPath();ctx.moveTo(2,4);ctx.lineTo(-12,4);ctx.lineTo(-14,12);ctx.lineTo(0,12);ctx.closePath();
+    ctx.fill();ctx.stroke();
+
+    // Wing struts
+    ctx.strokeStyle='rgba(140,120,40,0.7)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(-4,-4);ctx.lineTo(-5,4);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-12,-4);ctx.lineTo(-12,4);ctx.stroke();
+
+    // Propeller spin
+    const propA=T*15;
+    ctx.strokeStyle='rgba(60,40,10,0.6)';ctx.lineWidth=2.5;ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(20,Math.sin(propA)*10);ctx.lineTo(20,-Math.sin(propA)*10);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(20,Math.sin(propA+Math.PI/2)*10);ctx.lineTo(20,-Math.sin(propA+Math.PI/2)*10);
+    ctx.stroke();
+
+    // Cockpit
+    ctx.fillStyle='rgba(120,220,255,0.5)';ctx.strokeStyle='#9a8a40';ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.ellipse(5,-2,5,3.5,0.2,0,6.28);ctx.fill();ctx.stroke();
+
+    // Pilot hat
+    ctx.font='9px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('🎩',5,-6);
+
+    ctx.restore();
+
+    // Check if off left edge — reset for next loop
+    if(biplane.x < -bannerW-80){
+      biplane.active=false;
+      biplane.nextAt=Date.now()+30000;  // 30s until next pass
     }
   }
 
@@ -2572,8 +2723,17 @@ function wireTap(id,fn){
   el.addEventListener('click',fn);
 }
 
-// Title: CAST OFF → straight into game, no camera blocking
+// Title: CAST OFF → show choice modal
 wireTap('startBtn',()=>{
+  document.getElementById('castOffModal').classList.add('show');
+});
+wireTap('comLicBtn',()=>{
+  document.getElementById('castOffModal').classList.remove('show');
+  if(titleRAF){cancelAnimationFrame(titleRAF);titleRAF=null;}
+  openLicenseScreen();
+});
+wireTap('comGoBtn',()=>{
+  document.getElementById('castOffModal').classList.remove('show');
   if(titleRAF){cancelAnimationFrame(titleRAF);titleRAF=null;}
   startGame();
 });
