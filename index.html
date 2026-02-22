@@ -889,18 +889,18 @@ function drawTitle(){
   if(!biplane.active && now>=biplane.nextAt){
     biplane.active=true;
     biplane.x=-220;            // start off LEFT edge
-    biplane.y=H*0.12+Math.random()*H*0.06;
+    biplane.y=H*0.26+Math.random()*H*0.05;  // lower — well below the moon at H*0.12
   }
   if(biplane.active){
     biplane.x += 1.8;          // fly LEFT → RIGHT
     const bx=biplane.x, by=biplane.y;
-    const sc=1.5;
+    const sc=1.05;  // 30% smaller than 1.5
 
     // ── BANNER — trails behind (to the LEFT of the plane) ──
     const msg=biplane.msg;
-    const charW=7;
-    const bannerW=msg.length*charW+14;
-    const bannerH=17;
+    const charW=9.1;    // 30% bigger
+    const bannerW=msg.length*charW+18;
+    const bannerH=22;   // 30% bigger
     const tailX=bx+(-38)*sc;   // tail attachment point
     const tailY=by+2;
     const bannerEndX=tailX-20;
@@ -910,7 +910,7 @@ function drawTitle(){
     ctx.strokeStyle='rgba(160,140,80,0.85)';ctx.lineWidth=1.5;
     ctx.beginPath();
     ctx.moveTo(tailX,tailY);
-    ctx.quadraticCurveTo(tailX-14,tailY+12,bannerEndX,tailY+7);
+    ctx.quadraticCurveTo(tailX-14,tailY+14,bannerEndX,tailY+8);
     ctx.stroke();
 
     // Banner body
@@ -926,8 +926,8 @@ function drawTitle(){
     ctx.closePath();
     ctx.fill();ctx.stroke();
     ctx.shadowBlur=0;
-    // Banner text
-    ctx.font='bold 8px Arial,sans-serif';
+    // Banner text — 30% bigger font
+    ctx.font='bold 10px Arial,sans-serif';
     ctx.textAlign='left';ctx.textBaseline='middle';
     msg.split('').forEach((ch,i)=>{
       ctx.fillStyle='#3a1600';
@@ -1178,6 +1178,8 @@ function drawFishermanHat(ctx, W, H){
   ctx.restore();
 }
 
+// ── EXACT SHARK BOY PATTERN ──
+// Button click → getUserMedia immediately → show live feed → second tap captures
 async function takeLicensePhoto(){
   clearLicAutoSkip();
   vib([30,15,50]);
@@ -1185,23 +1187,29 @@ async function takeLicensePhoto(){
   const vid=document.getElementById('licVid');
   const hint=document.getElementById('licHint');
 
-  // First tap — start camera, show live feed, prompt second tap to capture
+  // No stream yet — start camera RIGHT NOW in this button handler (Shark Boy pattern)
   if(!licStream){
-    hint.textContent='Starting camera...';
     try {
       licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
       vid.srcObject = licStream;
       vid.style.display='block';
-      hint.textContent='Looking good! Tap 📸 again to capture!';
+      hint.textContent='Looking good! Tap 📸 again to snap!';
     } catch(err) {
-      console.log('Camera denied:', err);
       hint.textContent='No camera — tap 📸 to save without photo.';
       captureWithoutCamera();
     }
-    return; // wait for second tap
+    return;
   }
 
-  // Second tap — actually capture
+  // Stream running — capture now (second tap)
+  doLicenseCapture();
+}
+
+function doLicenseCapture(){
+  const vid=document.getElementById('licVid');
+  const hint=document.getElementById('licHint');
+
+  // Flash
   const flash=document.getElementById('licFlash');
   flash.style.opacity='0.95';
   setTimeout(()=>flash.style.opacity='0',200);
@@ -1214,7 +1222,8 @@ async function takeLicensePhoto(){
   const ctx=cvs.getContext('2d');
   ctx.scale(dpr,dpr);
 
-  if(licStream){
+  // Draw video frame (Shark Boy does this same way — ctx.drawImage(video,...))
+  if(licStream && vid.readyState>=2){
     ctx.drawImage(vid,0,0,W,H);
   } else {
     const bg=ctx.createLinearGradient(0,0,0,H);
@@ -1226,13 +1235,13 @@ async function takeLicensePhoto(){
   drawLicenseCardOnCanvas(ctx,W,H);
   licCaptured=cvs.toDataURL('image/jpeg',0.92);
 
+  // Stop stream exactly like Shark Boy: cameraStream.getTracks().forEach(track => track.stop())
   if(licStream){licStream.getTracks().forEach(t=>t.stop());licStream=null;}
   if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
   vid.pause();
   vid.style.display='none';
   document.getElementById('licCardOverlay').style.display='none';
   cvs.style.display='block';
-
   document.getElementById('licShutter').style.display='none';
   document.getElementById('licRetakeBtn').style.display='block';
   document.getElementById('licProceedBtn').style.display='block';
@@ -2573,23 +2582,26 @@ async function takeBossPhoto(){
   const vid=document.getElementById('bpVid');
   const sub=document.getElementById('bpSub');
 
-  // First tap — request camera (user gesture), show live feed
+  // No stream — start camera RIGHT NOW in this button handler (Shark Boy pattern)
   if(!bpStream){
-    sub.textContent='Starting camera...';
     try {
       bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
       vid.srcObject=bpStream;
       vid.style.display='block';
-      sub.textContent='Looking good! Tap 📸 again to capture!';
+      sub.textContent='Looking good! Tap 📸 again to snap!';
     } catch(err) {
-      console.log('Boss camera error:',err);
       sub.textContent='No camera — tap 📸 to save without photo.';
       captureBossWithoutCamera();
     }
-    return; // wait for second tap
+    return;
   }
 
-  // Second tap — capture
+  // Stream running — capture now
+  doBossCapture();
+}
+
+function doBossCapture(){
+  const vid=document.getElementById('bpVid');
   const flash=document.getElementById('bpFlash');
   flash.style.opacity='0.9';
   setTimeout(()=>flash.style.opacity='0',200);
@@ -2602,8 +2614,7 @@ async function takeBossPhoto(){
   const ctx=cvs.getContext('2d');
   ctx.scale(dpr,dpr);
 
-  // Draw video or dark fallback
-  if(bpStream){
+  if(bpStream && vid.readyState>=2){
     ctx.drawImage(vid,0,0,W,H);
   } else {
     const bg=ctx.createLinearGradient(0,0,0,H);
@@ -2639,6 +2650,20 @@ async function takeBossPhoto(){
     ctx.font='bold 20px Oswald,Arial';ctx.fillStyle=s.col;
     ctx.fillText(s.val,sx,H-36);
   });
+  ctx.font='10px monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';
+  ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
+
+  bpCaptured=cvs.toDataURL('image/jpeg',0.90);
+
+  // Stop stream — Shark Boy pattern
+  if(bpStream){bpStream.getTracks().forEach(t=>t.stop());bpStream=null;}
+  vid.pause();vid.style.display='none';
+  document.getElementById('bpFishEmoji').style.display='none';
+  document.getElementById('bpStats').style.display='none';
+  document.getElementById('bpStatsBar').style.display='none';
+  cvs.style.display='block';
+  document.getElementById('bpShutter').style.display='none';
+  document.getElementById('bpSave').style.display='block';
   ctx.font='10px monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';
   ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
 
