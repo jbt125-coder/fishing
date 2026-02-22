@@ -1178,31 +1178,31 @@ function drawFishermanHat(ctx, W, H){
   ctx.restore();
 }
 
-// ── CAMERA FIX: getUserMedia is the FIRST thing that happens on tap ──
-// No DOM changes, no function calls, no vibration before getUserMedia
+// ── EXACT SHARK BOY PATTERN ──
+// Button click → getUserMedia immediately → show live feed → second tap captures
 async function takeLicensePhoto(){
-  // If stream already running — this is second tap, just capture
-  if(licStream){ doLicenseCapture(); return; }
+  clearLicAutoSkip();
+  vib([30,15,50]);
 
-  // FIRST TAP: getUserMedia immediately — nothing before it
-  try {
-    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-  } catch(err) {
-    // Camera denied — capture without it
-    clearLicAutoSkip();
-    vib([30,15,50]);
-    document.getElementById('licHint').textContent='No camera — saving without photo.';
-    captureWithoutCamera();
+  const vid=document.getElementById('licVid');
+  const hint=document.getElementById('licHint');
+
+  // No stream yet — start camera RIGHT NOW in this button handler (Shark Boy pattern)
+  if(!licStream){
+    try {
+      licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      vid.srcObject = licStream;
+      vid.style.display='block';
+      hint.textContent='Looking good! Tap 📸 again to snap!';
+    } catch(err) {
+      hint.textContent='No camera — tap 📸 to save without photo.';
+      captureWithoutCamera();
+    }
     return;
   }
 
-  // Camera granted — now do the rest
-  clearLicAutoSkip();
-  vib([30,15,50]);
-  const vid=document.getElementById('licVid');
-  vid.srcObject = licStream;
-  vid.style.display='block';
-  document.getElementById('licHint').textContent='Looking good! Tap 📸 again to snap!';
+  // Stream running — capture now (second tap)
+  doLicenseCapture();
 }
 
 function doLicenseCapture(){
@@ -2755,29 +2755,28 @@ async function openBossPhoto(fish,moneyEarned,pointsEarned){
 }
 
 async function takeBossPhoto(){
-  // Second tap — stream already running, just capture
-  if(bpStream){ doBossCapture(); return; }
+  clearBpAutoSkip();
+  vib([30,20,60]);
 
-  // FIRST TAP: getUserMedia immediately — nothing before it
-  try {
-    bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-  } catch(err) {
-    clearBpAutoSkip();
-    vib([30,20,60]);
-    document.getElementById('bpSub').textContent='No camera — saving without photo.';
-    captureBossWithoutCamera();
+  const vid=document.getElementById('bpVid');
+  const sub=document.getElementById('bpSub');
+
+  // No stream — start camera RIGHT NOW in this button handler (Shark Boy pattern)
+  if(!bpStream){
+    try {
+      bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      vid.srcObject=bpStream;
+      vid.style.display='block';
+      sub.textContent='Looking good! Tap 📸 again to snap!';
+    } catch(err) {
+      sub.textContent='No camera — tap 📸 to save without photo.';
+      captureBossWithoutCamera();
+    }
     return;
   }
 
-  // Camera granted
-  clearBpAutoSkip();
-  vib([30,20,60]);
-  const vid=document.getElementById('bpVid');
-  vid.srcObject=bpStream;
-  vid.style.display='block';
-  document.getElementById('bpSub').textContent='Looking good! Tap 📸 again to snap!';
-}
-
+  // Stream running — capture now
+  doBossCapture();
 }
 
 function doBossCapture(){
