@@ -384,12 +384,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
   <div id="licFlash"></div>
 
   <div class="lic-ui">
-    <div class="lic-hint" id="licHint">Tap the camera button to get your license photo!</div>
+    <div class="lic-hint" id="licHint">Tap 📷 to start your camera!</div>
     <div class="lic-actions">
       <button class="lic-skip" id="licSkipBtn" onclick="skipLicense()">SKIP</button>
-      <button class="lic-shutter" id="licShutter" onclick="licCameraStep()">📷</button>
+      <button class="lic-shutter" id="licShutter" onclick="licStartCamera()">📷</button>
       <div style="width:52px;"></div>
     </div>
+    <button class="lic-shutter" id="licSnapBtn" onclick="doLicenseCapture()" style="display:none;width:80px;height:80px;font-size:32px;background:#e84040;border-color:#ff6060;">📸</button>
     <button class="lic-retake" id="licRetakeBtn" onclick="retakeLicense()">↩ RETAKE</button>
     <button class="lic-proceed" id="licProceedBtn" onclick="proceedFromLicense()">🎣 START FISHING!</button>
     <button class="lic-save" id="licSaveBtn" onclick="saveLicensePhoto()">💾 Save to Photos</button>
@@ -1083,16 +1084,14 @@ let licNumber='DH-'+Math.floor(100000+Math.random()*900000);
 let licPulseRAF=null;
 
 function openLicenseScreen(){
-  // Pause game timer if mid-game
   if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
-
   licCaptured=null;
   licStream=null;
   licCameraReady=false;
-  const shutter=document.getElementById('licShutter');
-  shutter.style.display='flex';
-  shutter.textContent='📷';
-  shutter.disabled=false;
+  document.getElementById('licShutter').style.display='flex';
+  document.getElementById('licShutter').textContent='📷';
+  document.getElementById('licShutter').disabled=false;
+  document.getElementById('licSnapBtn').style.display='none';
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
   document.getElementById('licSaveBtn').style.display='none';
@@ -1100,7 +1099,7 @@ function openLicenseScreen(){
   document.getElementById('licCaptureCanvas').style.display='none';
   document.getElementById('licVid').style.display='none';
   document.getElementById('licCardOverlay').style.display='block';
-  document.getElementById('licHint').textContent='Tap 📷 — we\'ll ask permission to use your camera!';
+  document.getElementById('licHint').textContent='Tap 📷 — we\'ll ask to use your camera!';
   document.getElementById('licNumSvg').textContent=licNumber;
   document.getElementById('licDateSvg').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'});
   showScr('licenseScr');
@@ -1261,35 +1260,17 @@ function drawFishermanHat(ctx, W, H){
   ctx.restore();
 }
 
-// ── TWO-STEP CAMERA: Step 1 = request permission, Step 2 = snap ──
-// licCameraStep is called by the button — no other code runs first
-async function licCameraStep(){
-  // Step 2: camera already running — just capture
-  if(licCameraReady && licStream){
-    doLicenseCapture();
-    return;
-  }
-  // Step 1: this IS the permission request — getUserMedia is the very first thing
-  const btn=document.getElementById('licShutter');
-  const hint=document.getElementById('licHint');
-  btn.textContent='⏳';
-  btn.disabled=true;
-  try {
-    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-    const vid=document.getElementById('licVid');
-    vid.srcObject=licStream;
-    vid.style.display='block';
-    licCameraReady=true;
-    btn.textContent='📸';
-    btn.disabled=false;
-    clearLicAutoSkip();
-    hint.textContent='Looking good! Tap 📸 to snap your photo!';
-  } catch(err) {
-    btn.textContent='📷';
-    btn.disabled=false;
-    hint.textContent='Camera denied — tap 📷 to save without photo.';
-    captureWithoutCamera();
-  }
+// ── CAMERA — Shark Boy pattern exactly ──
+// licStartCamera: one button, one job — just get the camera stream
+// doLicenseCapture: separate button, one job — just take the photo
+async function licStartCamera(){
+  licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+  document.getElementById('licVid').srcObject = licStream;
+  document.getElementById('licVid').style.display = 'block';
+  document.getElementById('licShutter').style.display = 'none';
+  document.getElementById('licSnapBtn').style.display = 'flex';
+  document.getElementById('licHint').textContent = 'Looking good! Tap 📸 to snap!';
+  clearLicAutoSkip();
 }
 
 function doLicenseCapture(){
@@ -1429,6 +1410,7 @@ function retakeLicense(){
   document.getElementById('licShutter').style.display='flex';
   document.getElementById('licShutter').textContent='📷';
   document.getElementById('licShutter').disabled=false;
+  document.getElementById('licSnapBtn').style.display='none';
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
   document.getElementById('licSaveBtn').style.display='none';
@@ -2886,28 +2868,15 @@ async function openBossPhoto(fish,moneyEarned,pointsEarned){
 }
 
 async function takeBossPhoto(){
-  clearBpAutoSkip();
-  vib([30,20,60]);
-
+  // Second tap — capture now
+  if(bpStream){ doBossCapture(); return; }
+  // Shark Boy pattern: getUserMedia is the FIRST line, no if/try before it
+  bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
   const vid=document.getElementById('bpVid');
-  const sub=document.getElementById('bpSub');
-
-  // No stream — start camera RIGHT NOW in this button handler (Shark Boy pattern)
-  if(!bpStream){
-    try {
-      bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      vid.srcObject=bpStream;
-      vid.style.display='block';
-      sub.textContent='Looking good! Tap 📸 again to snap!';
-    } catch(err) {
-      sub.textContent='No camera — tap 📸 to save without photo.';
-      captureBossWithoutCamera();
-    }
-    return;
-  }
-
-  // Stream running — capture now
-  doBossCapture();
+  vid.srcObject=bpStream;
+  vid.style.display='block';
+  clearBpAutoSkip();
+  document.getElementById('bpSub').textContent='Looking good! Tap 📸 to snap!';
 }
 
 function doBossCapture(){
