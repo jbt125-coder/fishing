@@ -888,121 +888,135 @@ function drawTitle(){
   const now=Date.now();
   if(!biplane.active && now>=biplane.nextAt){
     biplane.active=true;
-    biplane.x=W+60;   // start off right edge
-    biplane.y=H*0.14+Math.random()*H*0.06;
+    biplane.x=-220;            // start off LEFT edge
+    biplane.y=H*0.12+Math.random()*H*0.06;
   }
   if(biplane.active){
-    biplane.x -= 1.8;  // fly right → left
+    biplane.x += 1.8;          // fly LEFT → RIGHT
     const bx=biplane.x, by=biplane.y;
+    const sc=1.5;
 
-    // ── Banner rope ──
-    const ropeStartX=bx-28, ropeStartY=by+6;
-    const bannerX=ropeStartX-18;
+    // ── BANNER — trails behind (to the LEFT of the plane) ──
     const msg=biplane.msg;
-    const charW=7.5;
-    const bannerW=msg.length*charW+12;
+    const charW=7;
+    const bannerW=msg.length*charW+14;
+    const bannerH=17;
+    const tailX=bx+(-38)*sc;   // tail attachment point
+    const tailY=by+2;
+    const bannerEndX=tailX-20;
+    const bannerStartX=bannerEndX-bannerW;
 
-    // Rope with gentle sag
-    ctx.strokeStyle='rgba(200,180,140,0.7)';ctx.lineWidth=1.2;
-    ctx.beginPath();ctx.moveTo(ropeStartX,ropeStartY);
-    ctx.quadraticCurveTo(ropeStartX-9,ropeStartY+8,bannerX,ropeStartY+5);
+    // Rope sag from tail
+    ctx.strokeStyle='rgba(160,140,80,0.85)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(tailX,tailY);
+    ctx.quadraticCurveTo(tailX-14,tailY+12,bannerEndX,tailY+7);
     ctx.stroke();
 
-    // Banner background — aged canvas look
+    // Banner body
     ctx.save();
-    ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=6;ctx.shadowOffsetY=3;
-    ctx.fillStyle='rgba(255,248,210,0.94)';
-    ctx.strokeStyle='rgba(160,130,80,0.8)';ctx.lineWidth=1.5;
-    const bannerH=16;
+    ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=5;ctx.shadowOffsetY=3;
+    ctx.fillStyle='rgba(255,250,205,0.96)';
+    ctx.strokeStyle='rgba(140,110,50,0.9)';ctx.lineWidth=1.5;
     ctx.beginPath();
-    ctx.moveTo(bannerX,ropeStartY);
-    ctx.lineTo(bannerX-bannerW,ropeStartY+3);
-    ctx.lineTo(bannerX-bannerW,ropeStartY+bannerH+3);
-    ctx.lineTo(bannerX,ropeStartY+bannerH);
+    ctx.moveTo(bannerEndX,   tailY+5);
+    ctx.lineTo(bannerStartX, tailY+7);
+    ctx.lineTo(bannerStartX, tailY+7+bannerH);
+    ctx.lineTo(bannerEndX,   tailY+5+bannerH);
     ctx.closePath();
     ctx.fill();ctx.stroke();
     ctx.shadowBlur=0;
-
-    // Banner text — wavy letter by letter
-    ctx.font='bold 8.5px Arial,sans-serif';
+    // Banner text
+    ctx.font='bold 8px Arial,sans-serif';
     ctx.textAlign='left';ctx.textBaseline='middle';
     msg.split('').forEach((ch,i)=>{
-      const lx=bannerX-11-(i*charW);
-      const ly=ropeStartY+bannerH/2+2+biplane.bannerOffsets[i]*0.5;
-      const hue=i%2===0?'#4a2800':'#6a3800';
-      ctx.fillStyle=hue;
-      ctx.fillText(ch,lx,ly);
+      ctx.fillStyle='#3a1600';
+      ctx.fillText(ch, bannerStartX+8+(i*charW), tailY+7+bannerH/2+biplane.bannerOffsets[i]*0.35);
     });
     ctx.restore();
 
-    // ── Plane body ──
+    // ── PIXEL-ART BIPLANE (nose=RIGHT, tail=LEFT) ──
     ctx.save();
     ctx.translate(bx,by);
+    const B='#4a90d9',B2='#2a68aa',OR='#e0780a',OR2='#b85800',RD='#cc1a1a';
 
-    // Engine glow
-    ctx.shadowColor='rgba(255,180,60,0.7)';ctx.shadowBlur=10;
-    ctx.fillStyle='#ff9020';
-    ctx.beginPath();ctx.ellipse(-22,1,5,4,0,0,6.28);ctx.fill();
-    ctx.shadowBlur=0;
+    function pr(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x*sc,y*sc,w*sc,h*sc);}
 
     // Fuselage
-    ctx.fillStyle='#d4c87a';
-    ctx.beginPath();
-    ctx.moveTo(18,0);
-    ctx.bezierCurveTo(10,-5,-10,-5,-22,-1);
-    ctx.bezierCurveTo(-10,5,10,5,18,0);
-    ctx.fill();
-    ctx.strokeStyle='#9a8a40';ctx.lineWidth=1;ctx.stroke();
+    pr(-30,-6, 54,12, B);
+    pr(-30,-3, 54, 6, B2);        // shadow band
+    pr( 18,-8,  8,16, B);         // nose bulge
+    pr( 20,-5,  5,10,'#68b0f0');  // nose highlight
+    pr(-32,-3,  4, 6, B2);        // tail taper
 
-    // Tail fin
-    ctx.fillStyle='#c4b86a';
-    ctx.beginPath();ctx.moveTo(-20,-1);ctx.lineTo(-28,-10);ctx.lineTo(-22,-1);ctx.fill();
-    ctx.beginPath();ctx.moveTo(-20,1);ctx.lineTo(-26,8);ctx.lineTo(-22,1);ctx.fill();
+    // Cockpit opening
+    pr(  2,-10, 14, 6, OR);
+    pr(  2,  4, 14, 6, OR);
+    pr(  4, -8, 10,12,'#90d8f8'); // glass
+    pr(  5, -7,  4, 4,'#c8f0ff'); // glare
 
     // Top wing
-    ctx.fillStyle='rgba(220,208,100,0.92)';
-    ctx.strokeStyle='#8a7a30';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(2,-4);ctx.lineTo(-14,-4);ctx.lineTo(-16,-14);ctx.lineTo(0,-14);ctx.closePath();
-    ctx.fill();ctx.stroke();
+    pr(-24,-20, 52, 7, OR);
+    pr(-24,-20, 52, 2, OR2);
+    pr(-24,-13, 52, 1, OR2);
+    pr(  4,-20, 12, 2,'#f0a030');  // highlight
 
     // Bottom wing
-    ctx.beginPath();ctx.moveTo(2,4);ctx.lineTo(-12,4);ctx.lineTo(-14,12);ctx.lineTo(0,12);ctx.closePath();
-    ctx.fill();ctx.stroke();
+    pr(-18, 12, 44, 7, OR);
+    pr(-18, 17, 44, 2, OR2);
 
-    // Wing struts
-    ctx.strokeStyle='rgba(140,120,40,0.7)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(-4,-4);ctx.lineTo(-5,4);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(-12,-4);ctx.lineTo(-12,4);ctx.stroke();
+    // Red struts
+    pr(-14,-13,  4,25, RD);
+    pr( -2,-13,  4,25, RD);
+    pr( 10,-13,  4,25, RD);
 
-    // Propeller spin
-    const propA=T*15;
-    ctx.strokeStyle='rgba(60,40,10,0.6)';ctx.lineWidth=2.5;ctx.lineCap='round';
-    ctx.beginPath();
-    ctx.moveTo(20,Math.sin(propA)*10);ctx.lineTo(20,-Math.sin(propA)*10);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(20,Math.sin(propA+Math.PI/2)*10);ctx.lineTo(20,-Math.sin(propA+Math.PI/2)*10);
-    ctx.stroke();
+    // Tail fins
+    pr(-36,-14, 8, 8, OR);
+    pr(-36,  6, 8, 8, OR);
+    pr(-34, -6,12,12, B);
+    pr(-34, -6, 3,12, OR);
+    pr(-29, -6, 3,12, B2);
+    pr(-24, -6, 3,12, OR2);
 
-    // Cockpit
-    ctx.fillStyle='rgba(120,220,255,0.5)';ctx.strokeStyle='#9a8a40';ctx.lineWidth=0.8;
-    ctx.beginPath();ctx.ellipse(5,-2,5,3.5,0.2,0,6.28);ctx.fill();ctx.stroke();
+    // Landing gear
+    pr(4, 18, 2, 8,'#5090c8');
+    pr(-2,24,14, 2,'#5090c8');
+    ctx.fillStyle='#222232';
+    ctx.beginPath();ctx.arc(4*sc,30*sc,5*sc,0,6.28);ctx.fill();
+    ctx.fillStyle='#383848';
+    ctx.beginPath();ctx.arc(4*sc,30*sc,3*sc,0,6.28);ctx.fill();
+    ctx.fillStyle='#888';
+    ctx.beginPath();ctx.arc(4*sc,30*sc,1.5*sc,0,6.28);ctx.fill();
 
-    // Pilot hat
-    ctx.font='9px serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('🎩',5,-6);
+    // Propeller (front = right side)
+    const propA=T*14;
+    ctx.strokeStyle=OR2;ctx.lineWidth=3.5*sc;ctx.lineCap='round';
+    [[propA],[propA+Math.PI/2]].forEach(([a])=>{
+      ctx.beginPath();
+      ctx.moveTo(26*sc, Math.sin(a)*15*sc);
+      ctx.lineTo(26*sc,-Math.sin(a)*15*sc);
+      ctx.stroke();
+    });
+    ctx.fillStyle=OR;ctx.beginPath();ctx.arc(26*sc,0,4*sc,0,6.28);ctx.fill();
+    ctx.fillStyle=RD;ctx.beginPath();ctx.arc(26*sc,0,2.5*sc,0,6.28);ctx.fill();
+
+    // Pilot (🎩 in cockpit)
+    ctx.font=`${Math.round(11*sc)}px serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('🎩',9*sc,-10*sc);
 
     ctx.restore();
 
-    // Check if off left edge — reset for next loop
-    if(biplane.x < -bannerW-80){
+    // Off right edge — reset
+    if(biplane.x > W+bannerW+250){
       biplane.active=false;
-      biplane.nextAt=Date.now()+30000;  // 30s until next pass
+      biplane.nextAt=Date.now()+30000;
     }
   }
 
   titleRAF=requestAnimationFrame(drawTitle);
 }
+
 
 function startTitleAnimation(){
   if(titleRAF)cancelAnimationFrame(titleRAF);
