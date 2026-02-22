@@ -384,14 +384,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
   <div id="licFlash"></div>
 
   <div class="lic-ui">
-    <div class="lic-hint" id="licHint">Hold still — smile for your license photo!</div>
+    <div class="lic-hint" id="licHint">Tap the camera button to get your license photo!</div>
     <div class="lic-actions">
       <button class="lic-skip" id="licSkipBtn" onclick="skipLicense()">SKIP</button>
-      <button class="lic-shutter" id="licShutter" onclick="takeLicensePhoto()">📸</button>
+      <button class="lic-shutter" id="licShutter" onclick="licCameraStep()">📷</button>
       <div style="width:52px;"></div>
     </div>
     <button class="lic-retake" id="licRetakeBtn" onclick="retakeLicense()">↩ RETAKE</button>
     <button class="lic-proceed" id="licProceedBtn" onclick="proceedFromLicense()">🎣 START FISHING!</button>
+    <button class="lic-save" id="licSaveBtn" onclick="saveLicensePhoto()">💾 Save to Photos</button>
+    <div class="lic-hint" id="licSaveHint" style="display:none;font-size:11px;color:rgba(255,255,255,0.6);margin-top:6px;">Or take a screenshot to keep it!</div>
   </div>
 </div>
 
@@ -1029,6 +1031,7 @@ function startTitleAnimation(){
 ═══════════════════════════════════════════ */
 let licStream=null;
 let licCaptured=null;
+let licCameraReady=false;
 let licAutoSkipTimer=null;
 let bpAutoSkipTimer=null;
 
@@ -1084,19 +1087,25 @@ function openLicenseScreen(){
   if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
 
   licCaptured=null;
-  document.getElementById('licShutter').style.display='flex';
+  licStream=null;
+  licCameraReady=false;
+  const shutter=document.getElementById('licShutter');
+  shutter.style.display='flex';
+  shutter.textContent='📷';
+  shutter.disabled=false;
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
+  document.getElementById('licSaveBtn').style.display='none';
+  document.getElementById('licSaveHint').style.display='none';
   document.getElementById('licCaptureCanvas').style.display='none';
   document.getElementById('licVid').style.display='none';
   document.getElementById('licCardOverlay').style.display='block';
-  document.getElementById('licHint').textContent='Tap 📸 to take your license photo — or SKIP!';
+  document.getElementById('licHint').textContent='Tap 📷 — we\'ll ask permission to use your camera!';
   document.getElementById('licNumSvg').textContent=licNumber;
   document.getElementById('licDateSvg').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'});
   showScr('licenseScr');
   startLicPulse();
   startLicAutoSkip();
-  // NO camera call here — camera only starts when user taps 📸
 }
 
 function startLicPulse(){
@@ -1111,110 +1120,185 @@ function startLicPulse(){
 }
 
 function drawFishermanHat(ctx, W, H){
-  // Hat sits at top-center — roughly where a face would be on a selfie
+  // Bucket hat centered at top — sits where forehead/top of head would be in selfie
   const cx = W / 2;
-  const hatY = H * 0.18;  // top of hat
-  const brimW = W * 0.38;
-  const brimH = brimW * 0.12;
-  const crownW = brimW * 0.62;
-  const crownH = brimW * 0.45;
+  const hatTop = H * 0.10;
+  const crownW = W * 0.42;
+  const crownH = crownW * 0.38;   // low, round crown — not tall
+  const brimW  = crownW * 1.55;   // wide floppy brim
+  const brimH  = crownH * 0.28;   // brim thickness (viewed from slight angle)
+  const brimDroop = crownH * 0.18; // how much the brim droops at edges
+
+  // Khaki canvas colors
+  const KHAKI      = '#c8a96e';
+  const KHAKI_DARK = '#a8894e';
+  const KHAKI_LT   = '#dfc080';
+  const KHAKI_SHADE= '#987848';
+  const NAVY       = '#1a2a5a';
+  const RED        = '#cc2222';
 
   ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 16;
+  ctx.shadowOffsetY = 8;
 
-  // Drop shadow
-  ctx.shadowColor = 'rgba(0,0,0,0.55)';
-  ctx.shadowBlur = 14;
-  ctx.shadowOffsetY = 6;
+  // ── BRIM — wide, droops at edges ──
+  // Draw as a flat ellipse with the front edge drooping
+  const brimY = hatTop + crownH;
+  const brimGrad = ctx.createLinearGradient(cx, brimY - brimH, cx, brimY + brimDroop + brimH);
+  brimGrad.addColorStop(0, KHAKI_DARK);
+  brimGrad.addColorStop(0.4, KHAKI);
+  brimGrad.addColorStop(1, KHAKI_SHADE);
+  ctx.fillStyle = brimGrad;
 
-  // Crown — rounded bucket shape, slightly wider at top
-  const crownGrad = ctx.createLinearGradient(cx - crownW/2, hatY, cx + crownW/2, hatY + crownH);
-  crownGrad.addColorStop(0, '#4a7c2a');
-  crownGrad.addColorStop(0.4, '#3a6a1e');
-  crownGrad.addColorStop(1, '#2a4e12');
-  ctx.fillStyle = crownGrad;
   ctx.beginPath();
-  ctx.moveTo(cx - crownW * 0.44, hatY + crownH);       // bottom-left
-  ctx.lineTo(cx - crownW * 0.5,  hatY + crownH * 0.3); // upper-left
-  ctx.quadraticCurveTo(cx - crownW * 0.48, hatY, cx, hatY); // top-left curve
-  ctx.quadraticCurveTo(cx + crownW * 0.48, hatY, cx + crownW * 0.5, hatY + crownH * 0.3); // top-right curve
-  ctx.lineTo(cx + crownW * 0.44, hatY + crownH);       // bottom-right
+  // Top of brim (meets crown base)
+  ctx.ellipse(cx, brimY, crownW * 0.52, brimH * 0.6, 0, Math.PI, 0);
+  // Right edge droops down
+  ctx.quadraticCurveTo(cx + brimW * 0.52, brimY + brimDroop * 0.5, cx + brimW * 0.5, brimY + brimDroop);
+  // Bottom of brim — wide ellipse
+  ctx.ellipse(cx, brimY + brimDroop, brimW * 0.5, brimH, 0, 0, Math.PI);
+  // Left edge droops down
+  ctx.quadraticCurveTo(cx - brimW * 0.52, brimY + brimDroop * 0.5, cx - crownW * 0.52, brimY);
   ctx.closePath();
   ctx.fill();
 
-  // Brim
-  const brimGrad = ctx.createLinearGradient(cx, hatY + crownH, cx, hatY + crownH + brimH);
-  brimGrad.addColorStop(0, '#3a6a1e');
-  brimGrad.addColorStop(1, '#2a4e12');
-  ctx.fillStyle = brimGrad;
+  // Brim underside shadow (subtle)
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
   ctx.beginPath();
-  ctx.ellipse(cx, hatY + crownH, brimW / 2, brimH / 2, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, brimY + brimDroop, brimW * 0.5, brimH * 0.5, 0, 0, Math.PI);
   ctx.fill();
 
-  // Brim highlight
-  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.ellipse(cx, hatY + crownH - 1, brimW / 2, brimH / 2, 0, Math.PI, Math.PI * 2);
-  ctx.stroke();
-
-  // Hat band — orange/tan stripe
-  ctx.fillStyle = '#c87820';
-  ctx.fillRect(cx - crownW * 0.44, hatY + crownH * 0.72, crownW * 0.88, crownH * 0.14);
-
-  // Lure/hook pin on the band
   ctx.shadowBlur = 0;
-  ctx.font = `${Math.round(crownH * 0.28)}px serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🪝', cx + crownW * 0.18, hatY + crownH * 0.79);
+  ctx.shadowOffsetY = 0;
 
-  // Crown highlight sheen
-  ctx.globalAlpha = 0.18;
-  ctx.fillStyle = '#ffffff';
+  // ── CROWN — low, round bucket shape ──
+  const crownGrad = ctx.createLinearGradient(cx - crownW/2, hatTop, cx + crownW * 0.3, hatTop + crownH);
+  crownGrad.addColorStop(0, KHAKI_LT);
+  crownGrad.addColorStop(0.35, KHAKI);
+  crownGrad.addColorStop(0.75, KHAKI_DARK);
+  crownGrad.addColorStop(1, KHAKI_SHADE);
+  ctx.fillStyle = crownGrad;
+
   ctx.beginPath();
-  ctx.ellipse(cx - crownW * 0.1, hatY + crownH * 0.2, crownW * 0.18, crownH * 0.1, -0.3, 0, Math.PI * 2);
+  // Crown: rounded top, slightly wider at base — bucket silhouette
+  ctx.moveTo(cx - crownW * 0.44, hatTop + crownH);
+  ctx.bezierCurveTo(
+    cx - crownW * 0.5,  hatTop + crownH * 0.55,
+    cx - crownW * 0.46, hatTop + crownH * 0.08,
+    cx - crownW * 0.1,  hatTop + crownH * 0.01
+  );
+  ctx.bezierCurveTo(
+    cx + crownW * 0.02, hatTop - crownH * 0.04,
+    cx + crownW * 0.38, hatTop + crownH * 0.04,
+    cx + crownW * 0.46, hatTop + crownH * 0.12
+  );
+  ctx.bezierCurveTo(
+    cx + crownW * 0.5,  hatTop + crownH * 0.55,
+    cx + crownW * 0.44, hatTop + crownH,
+    cx + crownW * 0.44, hatTop + crownH
+  );
+  ctx.ellipse(cx, hatTop + crownH, crownW * 0.44, brimH * 0.55, 0, 0, Math.PI);
+  ctx.closePath();
   ctx.fill();
+
+  // Crown right-side shadow panel
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  ctx.beginPath();
+  ctx.moveTo(cx + crownW * 0.15, hatTop + crownH * 0.05);
+  ctx.bezierCurveTo(cx + crownW * 0.38, hatTop + crownH * 0.1, cx + crownW * 0.5, hatTop + crownH * 0.55, cx + crownW * 0.44, hatTop + crownH);
+  ctx.ellipse(cx + crownW * 0.2, hatTop + crownH, crownW * 0.24, brimH * 0.4, 0, 0, Math.PI);
+  ctx.closePath();
+  ctx.fill();
+
+  // Crown top highlight (canvas texture sheen)
+  ctx.fillStyle = 'rgba(255,255,255,0.13)';
+  ctx.beginPath();
+  ctx.ellipse(cx - crownW * 0.08, hatTop + crownH * 0.22, crownW * 0.2, crownH * 0.1, -0.25, 0, Math.PI * 2);
+  ctx.fill();
+
+  // ── GROSGRAIN BAND — navy / red / navy ──
+  const bandY = hatTop + crownH * 0.73;
+  const bandH = crownH * 0.18;
+  const bandW = crownW * 0.86;
+
+  // Navy outer stripe (full band)
+  ctx.fillStyle = NAVY;
+  ctx.fillRect(cx - bandW/2, bandY, bandW, bandH);
+
+  // Red center stripe
+  ctx.fillStyle = RED;
+  ctx.fillRect(cx - bandW/2, bandY + bandH * 0.28, bandW, bandH * 0.44);
+
+  // Tiny navy inner lines on red for grosgrain texture
+  ctx.strokeStyle = 'rgba(20,30,80,0.3)';
+  ctx.lineWidth = 0.8;
+  for(let x = cx - bandW/2 + 4; x < cx + bandW/2; x += 5){
+    ctx.beginPath(); ctx.moveTo(x, bandY + bandH * 0.28); ctx.lineTo(x, bandY + bandH * 0.72); ctx.stroke();
+  }
+
+  // Band buckle / tab on right side
+  const buckX = cx + bandW * 0.38;
+  ctx.fillStyle = NAVY;
+  ctx.fillRect(buckX, bandY, bandW * 0.08, bandH);
+  ctx.fillStyle = RED;
+  ctx.fillRect(buckX, bandY + bandH * 0.28, bandW * 0.08, bandH * 0.44);
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(buckX, bandY, bandW * 0.08, bandH);
+
+  // ── EYELET / VENTILATION HOLE on right crown ──
+  const eyeX = cx + crownW * 0.32;
+  const eyeY = hatTop + crownH * 0.52;
+  ctx.fillStyle = KHAKI_SHADE;
+  ctx.beginPath(); ctx.arc(eyeX, eyeY, 3.5, 0, 6.28); ctx.fill();
+  ctx.strokeStyle = 'rgba(80,60,30,0.7)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(eyeX, eyeY, 3.5, 0, 6.28); ctx.stroke();
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath(); ctx.arc(eyeX, eyeY, 2, 0, 6.28); ctx.fill();
 
   ctx.globalAlpha = 1;
-  ctx.shadowBlur = 0;
   ctx.restore();
 }
 
-// ── EXACT SHARK BOY PATTERN ──
-// Button click → getUserMedia immediately → show live feed → second tap captures
-async function takeLicensePhoto(){
-  clearLicAutoSkip();
-  vib([30,15,50]);
-
-  const vid=document.getElementById('licVid');
-  const hint=document.getElementById('licHint');
-
-  // No stream yet — start camera RIGHT NOW in this button handler (Shark Boy pattern)
-  if(!licStream){
-    try {
-      licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      vid.srcObject = licStream;
-      vid.style.display='block';
-      hint.textContent='Looking good! Tap 📸 again to snap!';
-    } catch(err) {
-      hint.textContent='No camera — tap 📸 to save without photo.';
-      captureWithoutCamera();
-    }
+// ── TWO-STEP CAMERA: Step 1 = request permission, Step 2 = snap ──
+// licCameraStep is called by the button — no other code runs first
+async function licCameraStep(){
+  // Step 2: camera already running — just capture
+  if(licCameraReady && licStream){
+    doLicenseCapture();
     return;
   }
-
-  // Stream running — capture now (second tap)
-  doLicenseCapture();
+  // Step 1: this IS the permission request — getUserMedia is the very first thing
+  const btn=document.getElementById('licShutter');
+  const hint=document.getElementById('licHint');
+  btn.textContent='⏳';
+  btn.disabled=true;
+  try {
+    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    const vid=document.getElementById('licVid');
+    vid.srcObject=licStream;
+    vid.style.display='block';
+    licCameraReady=true;
+    btn.textContent='📸';
+    btn.disabled=false;
+    clearLicAutoSkip();
+    hint.textContent='Looking good! Tap 📸 to snap your photo!';
+  } catch(err) {
+    btn.textContent='📷';
+    btn.disabled=false;
+    hint.textContent='Camera denied — tap 📷 to save without photo.';
+    captureWithoutCamera();
+  }
 }
 
 function doLicenseCapture(){
   const vid=document.getElementById('licVid');
   const hint=document.getElementById('licHint');
-
-  // Flash
   const flash=document.getElementById('licFlash');
   flash.style.opacity='0.95';
   setTimeout(()=>flash.style.opacity='0',200);
+  vib([30,15,50]);
 
   const W=window.innerWidth,H=window.innerHeight;
   const dpr=Math.min(window.devicePixelRatio||1,2);
@@ -1224,7 +1308,6 @@ function doLicenseCapture(){
   const ctx=cvs.getContext('2d');
   ctx.scale(dpr,dpr);
 
-  // Draw video frame (Shark Boy does this same way — ctx.drawImage(video,...))
   if(licStream && vid.readyState>=2){
     ctx.drawImage(vid,0,0,W,H);
   } else {
@@ -1237,8 +1320,8 @@ function doLicenseCapture(){
   drawLicenseCardOnCanvas(ctx,W,H);
   licCaptured=cvs.toDataURL('image/jpeg',0.92);
 
-  // Stop stream exactly like Shark Boy: cameraStream.getTracks().forEach(track => track.stop())
   if(licStream){licStream.getTracks().forEach(t=>t.stop());licStream=null;}
+  licCameraReady=false;
   if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
   vid.pause();
   vid.style.display='none';
@@ -1247,7 +1330,17 @@ function doLicenseCapture(){
   document.getElementById('licShutter').style.display='none';
   document.getElementById('licRetakeBtn').style.display='block';
   document.getElementById('licProceedBtn').style.display='block';
-  hint.textContent='License issued! 🎉 Ready to fish?';
+  document.getElementById('licSaveBtn').style.display='block';
+  document.getElementById('licSaveHint').style.display='block';
+  hint.textContent='License issued! 🎉 Save it or screenshot it!';
+}
+
+function saveLicensePhoto(){
+  if(!licCaptured)return;
+  const a=document.createElement('a');
+  a.href=licCaptured;
+  a.download='deep-hook-fishing-license.jpg';
+  a.click();
 }
 
 function captureWithoutCamera(){
@@ -1329,13 +1422,18 @@ function drawLicenseCardOnCanvas(ctx,W,H){
 function retakeLicense(){
   licCaptured=null;
   licStream=null;
+  licCameraReady=false;
   document.getElementById('licCaptureCanvas').style.display='none';
   document.getElementById('licVid').style.display='none';
   document.getElementById('licCardOverlay').style.display='block';
   document.getElementById('licShutter').style.display='flex';
+  document.getElementById('licShutter').textContent='📷';
+  document.getElementById('licShutter').disabled=false;
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
-  document.getElementById('licHint').textContent='Tap 📸 to take your license photo!';
+  document.getElementById('licSaveBtn').style.display='none';
+  document.getElementById('licSaveHint').style.display='none';
+  document.getElementById('licHint').textContent='Tap 📷 to take your license photo!';
   startLicPulse();
 }
 
@@ -2021,23 +2119,21 @@ function draw(){
   CX.strokeStyle='#5a3a1a';CX.lineWidth=2;CX.beginPath();CX.moveTo(W*.01,WY-12);CX.lineTo(W*.28,WY-12);CX.stroke();
   [W*.04,W*.09,W*.14,W*.19,W*.24].forEach(rx=>{CX.beginPath();CX.moveTo(rx,WY-12);CX.lineTo(rx,WY-4);CX.stroke();});
 
-  // ── SURFER — right side, drifts down with wiggle then resets ──
+  // ── SURFER — right side, drifts from waterline all the way off bottom then resets ──
   const SFX=W*0.78;
-  const sfDriftCycle=8;
+  const sfDriftCycle=10; // 10 seconds to drift off screen
   const sfDriftPhase=(T%sfDriftCycle)/sfDriftCycle;
-  const sfDriftY=sfDriftPhase*H*0.08;
-  const sfBob=Math.sin(T*1.1)*2.5+Math.cos(T*0.7)*1.2;
+  const sfDriftY=sfDriftPhase*(H-WY+60); // drifts from waterline to past bottom edge
+  const sfBob=Math.sin(T*1.4)*2.2;
   const SFY=WY+sfDriftY;
-  CX.fillStyle='rgba(255,120,20,0.9)';
-  CX.beginPath();CX.ellipse(SFX,SFY+2+sfBob,18,4,Math.sin(T*0.3)*0.08,0,6.28);CX.fill();
-  CX.strokeStyle='rgba(255,180,60,0.6)';CX.lineWidth=1;CX.stroke();
-  CX.font=`${Math.round(W*0.045)}px serif`;
-  CX.textAlign='center';CX.textBaseline='bottom';
-  CX.save();CX.translate(SFX,SFY+sfBob);CX.rotate(Math.sin(T*0.9)*0.07);
-  CX.fillText(surferEmoji,0,2);
-  CX.restore();
-  CX.strokeStyle='rgba(100,180,255,0.12)';CX.lineWidth=1.5;
-  for(let r=1;r<=2;r++){CX.beginPath();CX.ellipse(SFX+r*14,SFY+3+sfBob,r*12,r*3,0,0,6.28);CX.stroke();}
+  // Only draw surfer while still visible on screen
+  if(SFY < H+20){
+    CX.font=`${Math.round(W*0.055)}px serif`;
+    CX.textAlign='center';CX.textBaseline='middle';
+    CX.save();CX.translate(SFX,SFY+sfBob);CX.rotate(Math.sin(T*0.9)*0.06);
+    CX.fillText(surferEmoji,0,0);
+    CX.restore();
+  }
 
   // ── DOLPHIN — arcs out of water, nose faces direction of travel ──
   const dnow=Date.now();
