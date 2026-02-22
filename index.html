@@ -1487,6 +1487,7 @@ let dolphin={active:false,nextAt:0,x:0,y:0,phase:0,arcProgress:0,inWater:false,s
 // Surfer state
 const SURFERS=['🏄','🏄‍♂️','🏄‍♀️'];
 let surferEmoji='🏄';
+let surferMidCycle=false;
 let surferBob=0;
 
 const EVENTS={
@@ -2119,18 +2120,57 @@ function draw(){
   CX.strokeStyle='#5a3a1a';CX.lineWidth=2;CX.beginPath();CX.moveTo(W*.01,WY-12);CX.lineTo(W*.28,WY-12);CX.stroke();
   [W*.04,W*.09,W*.14,W*.19,W*.24].forEach(rx=>{CX.beginPath();CX.moveTo(rx,WY-12);CX.lineTo(rx,WY-4);CX.stroke();});
 
-  // ── SURFER — right side, drifts from waterline all the way off bottom then resets ──
-  const SFX=W*0.78;
-  const sfDriftCycle=10; // 10 seconds to drift off screen
-  const sfDriftPhase=(T%sfDriftCycle)/sfDriftCycle;
-  const sfDriftY=sfDriftPhase*(H-WY+60); // drifts from waterline to past bottom edge
-  const sfBob=Math.sin(T*1.4)*2.2;
-  const SFY=WY+sfDriftY;
-  // Only draw surfer while still visible on screen
-  if(SFY < H+20){
+  // ── SURFER — 3-phase surf path, resets with new random emoji each cycle ──
+  // Phase 0-0.2: surf straight down from waterline (y=0 in surf coords)
+  // Phase 0.2-0.4: carve diagonally toward pier (left + down)
+  // Phase 0.4-1.0: switch direction, carve down-right off bottom of screen
+  const sfCycle=12; // seconds per full run
+  const sfP=(T%sfCycle)/sfCycle; // 0→1
+
+  // Pick new surfer emoji each cycle
+  if(sfP < 0.02 && !surferMidCycle){
+    surferMidCycle=true;
+    surferEmoji=SURFERS[Math.floor(Math.random()*SURFERS.length)];
+  }
+  if(sfP > 0.05) surferMidCycle=false;
+
+  // Starting position — right side of screen, at waterline
+  const sfStartX=W*0.76;
+  const sfStartY=WY;
+  const screenH=H-WY; // height of water area
+
+  let sfX, sfY, sfLean;
+  if(sfP < 0.2){
+    // Phase 1: straight down 20% of screen height, slight left drift
+    const t=sfP/0.2;
+    sfX=sfStartX - W*0.02*t;
+    sfY=sfStartY + screenH*0.20*t;
+    sfLean=0.04*Math.sin(T*1.8); // small wobble upright
+  } else if(sfP < 0.4){
+    // Phase 2: carve toward pier (left + down), leaning into turn
+    const t=(sfP-0.2)/0.2;
+    const eased=t*t; // ease in
+    sfX=(sfStartX - W*0.02) - W*0.28*eased; // sweep left toward pier
+    sfY=(sfStartY + screenH*0.20) + screenH*0.18*t;
+    sfLean=-0.22*eased; // lean left into carve
+  } else {
+    // Phase 3: switch, carve right and down off screen
+    const t=(sfP-0.4)/0.6;
+    const eased=1-Math.pow(1-t,2); // ease out
+    const phase2EndX=sfStartX - W*0.02 - W*0.28;
+    const phase2EndY=sfStartY + screenH*0.20 + screenH*0.18;
+    sfX=phase2EndX + W*0.38*eased; // sweep right
+    sfY=phase2EndY + (screenH*0.65)*eased; // down off screen
+    sfLean=0.20*eased; // lean right into carve
+  }
+
+  const sfBob=Math.sin(T*1.8)*1.8;
+  if(sfY < H+30){
     CX.font=`${Math.round(W*0.055)}px serif`;
     CX.textAlign='center';CX.textBaseline='middle';
-    CX.save();CX.translate(SFX,SFY+sfBob);CX.rotate(Math.sin(T*0.9)*0.06);
+    CX.save();
+    CX.translate(sfX, sfY+sfBob);
+    CX.rotate(sfLean);
     CX.fillText(surferEmoji,0,0);
     CX.restore();
   }
