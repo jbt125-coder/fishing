@@ -888,45 +888,44 @@ function drawTitle(){
   const now=Date.now();
   if(!biplane.active && now>=biplane.nextAt){
     biplane.active=true;
-    biplane.x=-220;            // start off LEFT edge
-    biplane.y=H*0.26+Math.random()*H*0.05;  // lower — well below the moon at H*0.12
+    biplane.x=window.innerWidth+220;   // start off RIGHT edge
+    biplane.y=H*0.26+Math.random()*H*0.05;
   }
   if(biplane.active){
-    biplane.x += 1.8;          // fly LEFT → RIGHT
+    biplane.x -= 1.8;          // fly RIGHT → LEFT
     const bx=biplane.x, by=biplane.y;
-    const sc=1.05;  // 30% smaller than 1.5
+    const sc=1.05;
 
-    // ── BANNER — trails behind (to the LEFT of the plane) ──
+    // ── BANNER — trails behind to the RIGHT of the plane ──
     const msg=biplane.msg;
-    const charW=9.1;    // 30% bigger
+    const charW=9.1;
     const bannerW=msg.length*charW+18;
-    const bannerH=22;   // 30% bigger
-    const tailX=bx+(-38)*sc;   // tail attachment point
+    const bannerH=22;
+    const tailX=bx+(38)*sc;    // tail now on RIGHT side (plane flipped)
     const tailY=by+2;
-    const bannerEndX=tailX-20;
-    const bannerStartX=bannerEndX-bannerW;
+    const bannerStartX=tailX+20;
+    const bannerEndX=bannerStartX+bannerW;
 
-    // Rope sag from tail
+    // Rope sag from tail to banner
     ctx.strokeStyle='rgba(160,140,80,0.85)';ctx.lineWidth=1.5;
     ctx.beginPath();
     ctx.moveTo(tailX,tailY);
-    ctx.quadraticCurveTo(tailX-14,tailY+14,bannerEndX,tailY+8);
+    ctx.quadraticCurveTo(tailX+14,tailY+14,bannerStartX,tailY+8);
     ctx.stroke();
 
-    // Banner body
+    // Banner body — flows right from tail
     ctx.save();
     ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=5;ctx.shadowOffsetY=3;
     ctx.fillStyle='rgba(255,250,205,0.96)';
     ctx.strokeStyle='rgba(140,110,50,0.9)';ctx.lineWidth=1.5;
     ctx.beginPath();
-    ctx.moveTo(bannerEndX,   tailY+5);
-    ctx.lineTo(bannerStartX, tailY+7);
-    ctx.lineTo(bannerStartX, tailY+7+bannerH);
-    ctx.lineTo(bannerEndX,   tailY+5+bannerH);
+    ctx.moveTo(bannerStartX, tailY+5);
+    ctx.lineTo(bannerEndX,   tailY+7);
+    ctx.lineTo(bannerEndX,   tailY+7+bannerH);
+    ctx.lineTo(bannerStartX, tailY+5+bannerH);
     ctx.closePath();
     ctx.fill();ctx.stroke();
     ctx.shadowBlur=0;
-    // Banner text — 30% bigger font
     ctx.font='bold 10px Arial,sans-serif';
     ctx.textAlign='left';ctx.textBaseline='middle';
     msg.split('').forEach((ch,i)=>{
@@ -935,9 +934,10 @@ function drawTitle(){
     });
     ctx.restore();
 
-    // ── PIXEL-ART BIPLANE (nose=RIGHT, tail=LEFT) ──
+    // ── PIXEL-ART BIPLANE flipped: nose=LEFT, tail=RIGHT ──
     ctx.save();
     ctx.translate(bx,by);
+    ctx.scale(-1,1);  // flip horizontally so nose faces left (direction of travel)
     const B='#4a90d9',B2='#2a68aa',OR='#e0780a',OR2='#b85800',RD='#cc1a1a';
 
     function pr(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x*sc,y*sc,w*sc,h*sc);}
@@ -1007,8 +1007,8 @@ function drawTitle(){
 
     ctx.restore();
 
-    // Off right edge — reset
-    if(biplane.x > W+bannerW+250){
+    // Off left edge — reset
+    if(biplane.x < -bannerW-250){
       biplane.active=false;
       biplane.nextAt=Date.now()+30000;
     }
@@ -1178,31 +1178,31 @@ function drawFishermanHat(ctx, W, H){
   ctx.restore();
 }
 
-// ── EXACT SHARK BOY PATTERN ──
-// Button click → getUserMedia immediately → show live feed → second tap captures
+// ── CAMERA FIX: getUserMedia is the FIRST thing that happens on tap ──
+// No DOM changes, no function calls, no vibration before getUserMedia
 async function takeLicensePhoto(){
-  clearLicAutoSkip();
-  vib([30,15,50]);
+  // If stream already running — this is second tap, just capture
+  if(licStream){ doLicenseCapture(); return; }
 
-  const vid=document.getElementById('licVid');
-  const hint=document.getElementById('licHint');
-
-  // No stream yet — start camera RIGHT NOW in this button handler (Shark Boy pattern)
-  if(!licStream){
-    try {
-      licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      vid.srcObject = licStream;
-      vid.style.display='block';
-      hint.textContent='Looking good! Tap 📸 again to snap!';
-    } catch(err) {
-      hint.textContent='No camera — tap 📸 to save without photo.';
-      captureWithoutCamera();
-    }
+  // FIRST TAP: getUserMedia immediately — nothing before it
+  try {
+    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+  } catch(err) {
+    // Camera denied — capture without it
+    clearLicAutoSkip();
+    vib([30,15,50]);
+    document.getElementById('licHint').textContent='No camera — saving without photo.';
+    captureWithoutCamera();
     return;
   }
 
-  // Stream running — capture now (second tap)
-  doLicenseCapture();
+  // Camera granted — now do the rest
+  clearLicAutoSkip();
+  vib([30,15,50]);
+  const vid=document.getElementById('licVid');
+  vid.srcObject = licStream;
+  vid.style.display='block';
+  document.getElementById('licHint').textContent='Looking good! Tap 📸 again to snap!';
 }
 
 function doLicenseCapture(){
@@ -1376,6 +1376,18 @@ function closeLicenseCamera(){
 let STARS=[];
 let shootingStar={active:false,x:0,y:0,vx:0,vy:0,life:0,maxLife:0,nextAt:0};
 let moonFrenzy={active:false,endAt:0,moonDark:false,flashT:0};
+
+// Background themes — cycle per level
+const BG_THEMES=['night','lighthouse','volcano','sunny','stormy'];
+let currentBgTheme='night';
+
+// Dolphin state
+let dolphin={active:false,nextAt:0,x:0,y:0,phase:0,arcProgress:0,inWater:false,splashT:-1,splashX:0,splashY:0};
+
+// Surfer state
+const SURFERS=['🏄','🏄‍♂️','🏄‍♀️'];
+let surferEmoji='🏄';
+let surferBob=0;
 
 const EVENTS={
   gull:{active:false,birds:[],nextAt:0},
@@ -1843,80 +1855,160 @@ function draw(){
   const W=CV.width/DPR,H=CV.height/DPR;
   CX.clearRect(0,0,W,H);
   const WY=H*0.52,T=Date.now()/1000;
+  const theme=currentBgTheme;
 
+  // ── SKY GRADIENT by theme ──
   const sk=CX.createLinearGradient(0,0,0,WY);
-  sk.addColorStop(0,'#020810');sk.addColorStop(.5,'#0d2240');sk.addColorStop(1,'#1a4060');
+  if(theme==='sunny'){
+    sk.addColorStop(0,'#1a6fc4');sk.addColorStop(.5,'#3a9ae8');sk.addColorStop(1,'#6abcf0');
+  } else if(theme==='stormy'){
+    sk.addColorStop(0,'#0a0a12');sk.addColorStop(.4,'#1a1a2e');sk.addColorStop(1,'#2a2a40');
+  } else if(theme==='volcano'){
+    sk.addColorStop(0,'#100408');sk.addColorStop(.4,'#2a0c10');sk.addColorStop(1,'#3a1820');
+  } else {
+    sk.addColorStop(0,'#020810');sk.addColorStop(.5,'#0d2240');sk.addColorStop(1,'#1a4060');
+  }
   CX.fillStyle=sk;CX.fillRect(0,0,W,WY);
 
-  const now2=Date.now();
-  for(const s of STARS){
-    CX.globalAlpha=0.25+0.45*Math.abs(Math.sin(T*s.speed+s.phase));
-    CX.fillStyle='#fff';CX.beginPath();CX.arc(s.x,s.y,s.r,0,6.28);CX.fill();
+  // ── STORMY: rain + dark clouds + lightning ──
+  if(theme==='stormy'){
+    CX.strokeStyle='rgba(160,180,220,0.14)';CX.lineWidth=1;
+    for(let i=0;i<30;i++){const rx=(i*137.5+T*40)%W;const ry=(i*97.3+T*120)%WY;CX.beginPath();CX.moveTo(rx,ry);CX.lineTo(rx-4,ry+14);CX.stroke();}
+    [[W*0.15,WY*0.2,70],[W*0.45,WY*0.1,90],[W*0.75,WY*0.25,60],[W*0.6,WY*0.38,80]].forEach(([cx2,cy,r])=>{
+      const g=CX.createRadialGradient(cx2,cy,r*0.2,cx2,cy,r);
+      g.addColorStop(0,'rgba(50,50,70,0.92)');g.addColorStop(1,'rgba(20,20,35,0)');
+      CX.fillStyle=g;CX.beginPath();CX.ellipse(cx2,cy,r,r*0.5,0,0,6.28);CX.fill();
+    });
+    if(Math.sin(T*0.7)*Math.sin(T*3.1)>0.85){
+      const lx=W*0.3+Math.sin(T*5)*W*0.3;
+      CX.strokeStyle='rgba(200,220,255,0.9)';CX.lineWidth=2;
+      CX.beginPath();CX.moveTo(lx,0);CX.lineTo(lx-8,WY*0.3);CX.lineTo(lx+5,WY*0.3);CX.lineTo(lx-3,WY*0.65);CX.stroke();
+      CX.fillStyle='rgba(200,220,255,0.08)';CX.fillRect(0,0,W,WY);
+    }
   }
-  CX.globalAlpha=1;
 
-  // Shooting star
+  // ── SUNNY: sun + clouds ──
+  if(theme==='sunny'){
+    const SX=W*0.82,SY=H*0.09;
+    CX.fillStyle='#ffe840';CX.shadowColor='#ffe840';CX.shadowBlur=30;
+    CX.beginPath();CX.arc(SX,SY,18,0,6.28);CX.fill();CX.shadowBlur=0;
+    CX.strokeStyle='rgba(255,232,64,0.45)';CX.lineWidth=2;
+    for(let i=0;i<8;i++){const a=i/8*6.28+T*0.3;CX.beginPath();CX.moveTo(SX+Math.cos(a)*22,SY+Math.sin(a)*22);CX.lineTo(SX+Math.cos(a)*32,SY+Math.sin(a)*32);CX.stroke();}
+    [[W*0.2,WY*0.2,50],[W*0.55,WY*0.15,65],[W*0.75,WY*0.3,40]].forEach(([cx2,cy,r])=>{
+      CX.fillStyle='rgba(255,255,255,0.82)';
+      CX.beginPath();CX.ellipse(cx2,cy,r,r*0.45,0,0,6.28);CX.fill();
+      CX.beginPath();CX.ellipse(cx2-r*0.3,cy+4,r*0.6,r*0.35,0,0,6.28);CX.fill();
+      CX.beginPath();CX.ellipse(cx2+r*0.35,cy+3,r*0.55,r*0.3,0,0,6.28);CX.fill();
+    });
+  }
+
+  // ── STARS (night + lighthouse) ──
+  if(theme==='night'||theme==='lighthouse'){
+    const now2=Date.now();
+    for(const s of STARS){CX.globalAlpha=0.25+0.45*Math.abs(Math.sin(T*s.speed+s.phase));CX.fillStyle='#fff';CX.beginPath();CX.arc(s.x,s.y,s.r,0,6.28);CX.fill();}
+    CX.globalAlpha=1;
+    if(theme==='night'){
+      if(!shootingStar.active&&now2>=shootingStar.nextAt){
+        const skyH2=WY*0.85;shootingStar.active=true;
+        const aimMoon=!moonFrenzy.active&&Math.random()<0.20;shootingStar.aimsMoon=aimMoon;
+        const MX2=W*.82,MY2=H*.09;
+        if(aimMoon){shootingStar.x=rnd(0,W*0.2);shootingStar.y=rnd(WY*0.05,WY*0.15);const dx=MX2-shootingStar.x,dy=MY2-shootingStar.y;shootingStar.vx=dx/0.9;shootingStar.vy=dy/0.9;shootingStar.maxLife=0.95;}
+        else{shootingStar.x=Math.random()*W*0.6;shootingStar.y=Math.random()*skyH2*0.4;const angle=Math.PI/6+Math.random()*Math.PI/6;const spd=220+Math.random()*120;shootingStar.vx=Math.cos(angle)*spd;shootingStar.vy=Math.sin(angle)*spd;shootingStar.maxLife=0.6+Math.random()*0.4;}
+        shootingStar.life=shootingStar.maxLife;shootingStar.nextAt=now2+(8000+Math.random()*12000);
+      }
+      if(shootingStar.active){
+        const dt2=1/60;shootingStar.x+=shootingStar.vx*dt2;shootingStar.y+=shootingStar.vy*dt2;shootingStar.life-=dt2;
+        const MX2=W*.82,MY2=H*.09;
+        if(shootingStar.aimsMoon){const dx=shootingStar.x-MX2,dy=shootingStar.y-MY2;if(Math.sqrt(dx*dx+dy*dy)<22){shootingStar.active=false;startMoonFrenzy();}}
+        if(shootingStar.life<=0||shootingStar.x>W+40||shootingStar.y>WY){shootingStar.active=false;}
+        else{
+          const alpha=shootingStar.life/shootingStar.maxLife;const tailLen=40+(1-alpha)*30;
+          const tx=shootingStar.x-Math.cos(Math.atan2(shootingStar.vy,shootingStar.vx))*tailLen;
+          const ty=shootingStar.y-Math.sin(Math.atan2(shootingStar.vy,shootingStar.vx))*tailLen;
+          const grad=CX.createLinearGradient(tx,ty,shootingStar.x,shootingStar.y);
+          grad.addColorStop(0,'rgba(255,255,255,0)');grad.addColorStop(1,`rgba(255,255,220,${alpha})`);
+          CX.strokeStyle=grad;CX.lineWidth=1.5;CX.lineCap='round';
+          CX.beginPath();CX.moveTo(tx,ty);CX.lineTo(shootingStar.x,shootingStar.y);CX.stroke();
+          CX.fillStyle=`rgba(255,255,220,${alpha})`;CX.beginPath();CX.arc(shootingStar.x,shootingStar.y,2,0,6.28);CX.fill();
+        }
+      }
+    }
+  }
+
+  // ── MOON (night/lighthouse/volcano) ──
   const MX=W*.82,MY=H*.09;
-  if(!shootingStar.active&&now2>=shootingStar.nextAt){
-    const skyH2=WY*0.85;
-    shootingStar.active=true;
-    const aimMoon=!moonFrenzy.active&&Math.random()<0.20;
-    shootingStar.aimsMoon=aimMoon;
-    if(aimMoon){
-      shootingStar.x=rnd(0,W*0.2);shootingStar.y=rnd(WY*0.05,WY*0.15);
-      const dx=MX-shootingStar.x,dy=MY-shootingStar.y;
-      shootingStar.vx=dx/0.9;shootingStar.vy=dy/0.9;shootingStar.maxLife=0.95;
-    } else {
-      shootingStar.x=Math.random()*W*0.6;shootingStar.y=Math.random()*skyH2*0.4;
-      const angle=Math.PI/6+Math.random()*Math.PI/6;const spd=220+Math.random()*120;
-      shootingStar.vx=Math.cos(angle)*spd;shootingStar.vy=Math.sin(angle)*spd;
-      shootingStar.maxLife=0.6+Math.random()*0.4;
+  if(theme==='night'||theme==='lighthouse'||theme==='volcano'){
+    const frenzyActive=moonFrenzy.active;
+    const moonFlicker=frenzyActive?0.3+Math.sin(T*18)*0.25:1;
+    CX.fillStyle=frenzyActive?`rgba(40,40,50,${moonFlicker})`:(G.isBossLevel?'#ff80ff':'#ffe890');
+    CX.shadowColor=frenzyActive?'#8888aa':(G.isBossLevel?'#ff40ff':'#ffe890');
+    CX.shadowBlur=frenzyActive?4:22;
+    CX.beginPath();CX.arc(MX,MY,17,0,6.28);CX.fill();
+    if(frenzyActive){
+      CX.strokeStyle='rgba(200,200,255,0.4)';CX.lineWidth=1;
+      CX.beginPath();CX.moveTo(MX-8,MY-6);CX.lineTo(MX+4,MY+8);CX.stroke();
+      CX.beginPath();CX.moveTo(MX+6,MY-8);CX.lineTo(MX-3,MY+6);CX.stroke();
+      const now2=Date.now();const rem=Math.max(0,(moonFrenzy.endAt-now2)/10000);
+      CX.strokeStyle=`rgba(255,200,50,${0.6+Math.sin(T*8)*0.3})`;CX.lineWidth=3;
+      CX.beginPath();CX.arc(MX,MY,21,-Math.PI/2,-Math.PI/2+rem*Math.PI*2);CX.stroke();
     }
-    shootingStar.life=shootingStar.maxLife;
-    shootingStar.nextAt=now2+(8000+Math.random()*12000);
+    CX.shadowBlur=0;
   }
-  if(shootingStar.active){
-    const dt2=1/60;
-    shootingStar.x+=shootingStar.vx*dt2;shootingStar.y+=shootingStar.vy*dt2;shootingStar.life-=dt2;
-    if(shootingStar.aimsMoon){const dx=shootingStar.x-MX,dy=shootingStar.y-MY;if(Math.sqrt(dx*dx+dy*dy)<22){shootingStar.active=false;startMoonFrenzy();}}
-    if(shootingStar.life<=0||shootingStar.x>CV.width/DPR+40||shootingStar.y>WY){shootingStar.active=false;}
-    else{
-      const progress=1-(shootingStar.life/shootingStar.maxLife);
-      const alpha=shootingStar.life/shootingStar.maxLife;
-      const tailLen=40+progress*30;
-      const tx=shootingStar.x-Math.cos(Math.atan2(shootingStar.vy,shootingStar.vx))*tailLen;
-      const ty=shootingStar.y-Math.sin(Math.atan2(shootingStar.vy,shootingStar.vx))*tailLen;
-      const grad=CX.createLinearGradient(tx,ty,shootingStar.x,shootingStar.y);
-      grad.addColorStop(0,'rgba(255,255,255,0)');grad.addColorStop(1,`rgba(255,255,220,${alpha})`);
-      CX.strokeStyle=grad;CX.lineWidth=shootingStar.aimsMoon?2.5:1.5;CX.lineCap='round';
-      CX.beginPath();CX.moveTo(tx,ty);CX.lineTo(shootingStar.x,shootingStar.y);CX.stroke();
-      CX.fillStyle=`rgba(255,255,220,${alpha})`;CX.beginPath();CX.arc(shootingStar.x,shootingStar.y,shootingStar.aimsMoon?3:2,0,6.28);CX.fill();
+
+  // ── VOLCANO: silhouette + lava glow + smoke ──
+  if(theme==='volcano'){
+    const VX=W*0.72,VY=WY;
+    CX.fillStyle='#1a0808';
+    CX.beginPath();CX.moveTo(VX-60,VY);CX.lineTo(VX,VY-55);CX.lineTo(VX+60,VY);CX.closePath();CX.fill();
+    const glowPulse=0.6+Math.sin(T*1.8)*0.3;
+    CX.shadowColor='#ff4400';CX.shadowBlur=28*glowPulse;
+    CX.fillStyle=`rgba(255,80,0,${0.45*glowPulse})`;
+    CX.beginPath();CX.ellipse(VX,VY-54,12,5,0,0,6.28);CX.fill();CX.shadowBlur=0;
+    const lavGrad=CX.createLinearGradient(VX-80,WY-10,VX+80,WY-10);
+    lavGrad.addColorStop(0,'rgba(255,60,0,0)');lavGrad.addColorStop(0.5,`rgba(255,80,10,${0.22*glowPulse})`);lavGrad.addColorStop(1,'rgba(255,60,0,0)');
+    CX.fillStyle=lavGrad;CX.fillRect(VX-80,WY-18,160,18);
+    for(let i=0;i<3;i++){
+      const age=(T*0.4+i*0.33)%1;const sy=VY-54-age*50;const sw=8+age*20;const sa=0.4*(1-age);
+      CX.fillStyle=`rgba(80,60,60,${sa})`;CX.beginPath();CX.ellipse(VX+(i-1)*6,sy,sw,sw*0.6,0,0,6.28);CX.fill();
     }
   }
 
-  // Moon
-  const frenzyActive=moonFrenzy.active;
-  const moonFlicker=frenzyActive?0.3+Math.sin(T*18)*0.25:1;
-  CX.fillStyle=frenzyActive?`rgba(40,40,50,${moonFlicker})`:(G.isBossLevel?'#ff80ff':'#ffe890');
-  CX.shadowColor=frenzyActive?'#8888aa':(G.isBossLevel?'#ff40ff':'#ffe890');
-  CX.shadowBlur=frenzyActive?4:22;
-  CX.beginPath();CX.arc(MX,MY,17,0,6.28);CX.fill();
-  if(frenzyActive){
-    CX.strokeStyle='rgba(200,200,255,0.4)';CX.lineWidth=1;
-    CX.beginPath();CX.moveTo(MX-8,MY-6);CX.lineTo(MX+4,MY+8);CX.stroke();
-    CX.beginPath();CX.moveTo(MX+6,MY-8);CX.lineTo(MX-3,MY+6);CX.stroke();
-    const rem=Math.max(0,(moonFrenzy.endAt-now2)/10000);
-    CX.strokeStyle=`rgba(255,200,50,${0.6+Math.sin(T*8)*0.3})`;CX.lineWidth=3;
-    CX.beginPath();CX.arc(MX,MY,21,-Math.PI/2,-Math.PI/2+rem*Math.PI*2);CX.stroke();
+  // ── LIGHTHOUSE ──
+  if(theme==='lighthouse'){
+    const LX=W*0.76,LY=WY;
+    CX.fillStyle='#2a3a2a';
+    CX.beginPath();CX.moveTo(LX-40,LY);CX.quadraticCurveTo(LX,LY-28,LX+40,LY);CX.closePath();CX.fill();
+    const tH=46,tW=10;
+    CX.fillStyle='#eeeeff';CX.fillRect(LX-tW/2,LY-28-tH,tW,tH);
+    CX.fillStyle='#cc2020';
+    [0.2,0.5,0.8].forEach(p=>CX.fillRect(LX-tW/2,LY-28-tH+p*tH,tW,tH*0.12));
+    CX.fillStyle='#333';CX.fillRect(LX-7,LY-28-tH-8,14,8);
+    CX.shadowColor='rgba(255,240,100,0.8)';CX.shadowBlur=10;
+    CX.fillStyle='rgba(255,240,100,0.9)';CX.beginPath();CX.arc(LX,LY-28-tH-4,5,0,6.28);CX.fill();CX.shadowBlur=0;
+    const beamAngle=(T*0.8)%(Math.PI*2);
+    CX.save();CX.translate(LX,LY-28-tH-4);CX.rotate(beamAngle);
+    const beam=CX.createLinearGradient(0,0,100,0);
+    beam.addColorStop(0,'rgba(255,240,100,0.32)');beam.addColorStop(1,'rgba(255,240,100,0)');
+    CX.fillStyle=beam;CX.beginPath();CX.moveTo(0,0);CX.lineTo(100,-18);CX.lineTo(100,18);CX.closePath();CX.fill();
+    CX.restore();
+    CX.fillStyle='#555566';CX.fillRect(LX-8,LY-30,16,6);
   }
-  CX.shadowBlur=0;
 
-  // Water
+  // ── WATER ──
+  let waterColor1=G.isBossLevel?'#1a0d2a':'#0d2d4a';
+  if(theme==='sunny') waterColor1='#1a6090';
+  if(theme==='stormy') waterColor1='#0a1520';
+  if(theme==='volcano') waterColor1='#150a0a';
   const wg=CX.createLinearGradient(0,WY,0,H);
-  wg.addColorStop(0,G.isBossLevel?'#1a0d2a':'#0d2d4a');wg.addColorStop(.4,'#081828');wg.addColorStop(1,'#030810');
+  wg.addColorStop(0,waterColor1);wg.addColorStop(.4,'#081828');wg.addColorStop(1,'#030810');
   CX.fillStyle=wg;CX.fillRect(0,WY,W,H-WY);
-  CX.strokeStyle='rgba(60,160,240,.06)';CX.lineWidth=1;
-  for(let i=0;i<5;i++){const wy=WY+12+i*16+Math.sin(T+i*1.3)*2;CX.beginPath();CX.moveTo(0,wy);CX.lineTo(W,wy);CX.stroke();}
+  if(theme==='stormy'){
+    CX.strokeStyle='rgba(120,180,240,0.14)';CX.lineWidth=2;
+    for(let i=0;i<6;i++){const wy=WY+8+i*14+Math.sin(T*2+i*0.9)*4;CX.beginPath();CX.moveTo(0,wy);for(let x=0;x<W;x+=20){CX.lineTo(x,wy+Math.sin(x*0.08+T*3+i)*4);}CX.stroke();}
+  } else {
+    CX.strokeStyle='rgba(60,160,240,.06)';CX.lineWidth=1;
+    for(let i=0;i<5;i++){const wy=WY+12+i*16+Math.sin(T+i*1.3)*2;CX.beginPath();CX.moveTo(0,wy);CX.lineTo(W,wy);CX.stroke();}
+  }
 
   // Pier
   CX.fillStyle='#3d2814';CX.fillRect(0,WY-4,W*.3,9);
@@ -1926,6 +2018,87 @@ function draw(){
   CX.strokeStyle='rgba(255,200,100,.15)';CX.lineWidth=2;CX.beginPath();CX.moveTo(0,WY-4);CX.lineTo(W*.3,WY-4);CX.stroke();
   CX.strokeStyle='#5a3a1a';CX.lineWidth=2;CX.beginPath();CX.moveTo(W*.01,WY-12);CX.lineTo(W*.28,WY-12);CX.stroke();
   [W*.04,W*.09,W*.14,W*.19,W*.24].forEach(rx=>{CX.beginPath();CX.moveTo(rx,WY-12);CX.lineTo(rx,WY-4);CX.stroke();});
+
+  // ── SURFER — right side of screen, bobbing on water ──
+  const SFX=W*0.78,SFY=WY;
+  const sfBob=Math.sin(T*1.1)*2.5+Math.cos(T*0.7)*1.2;
+  // Board
+  CX.fillStyle='rgba(255,120,20,0.9)';
+  CX.beginPath();CX.ellipse(SFX,SFY+2+sfBob,18,4,Math.sin(T*0.3)*0.08,0,6.28);CX.fill();
+  CX.strokeStyle='rgba(255,180,60,0.6)';CX.lineWidth=1;CX.stroke();
+  // Surfer emoji
+  CX.font=`${Math.round(W*0.045)}px serif`;
+  CX.textAlign='center';CX.textBaseline='bottom';
+  // Slight wiggle
+  CX.save();CX.translate(SFX,SFY+sfBob);CX.rotate(Math.sin(T*0.9)*0.06);
+  CX.fillText(surferEmoji,0,2);
+  CX.restore();
+  // Wake ripple behind surfer
+  CX.strokeStyle='rgba(100,180,255,0.12)';CX.lineWidth=1.5;
+  for(let r=1;r<=2;r++){CX.beginPath();CX.ellipse(SFX+r*14,SFY+3+sfBob,r*12,r*3,0,0,6.28);CX.stroke();}
+
+  // ── DOLPHIN — arcs out of water and back in, right side ──
+  const dnow=Date.now();
+  if(!dolphin.active&&dnow>=dolphin.nextAt){
+    dolphin.active=true;
+    dolphin.arcProgress=0;
+    dolphin.x=W*0.65+Math.random()*W*0.2;  // right side, never near pier
+    dolphin.splashT=-1;
+  }
+  if(dolphin.active){
+    const arcDur=2.2; // seconds for full arc
+    dolphin.arcProgress+=1/60/arcDur;
+    if(dolphin.arcProgress>=1){
+      dolphin.active=false;
+      dolphin.nextAt=Date.now()+15000+Math.random()*20000;
+    } else {
+      const p=dolphin.arcProgress;
+      // Arc: rises out of water at p=0, peaks at p=0.5, re-enters at p=1
+      const arcHeight=WY*0.28;
+      const dy=WY-arcHeight*Math.sin(p*Math.PI); // below waterline at 0 and 1, above at 0.5
+      const dx=dolphin.x+(p-0.5)*W*0.12; // slight horizontal drift
+
+      // Splash on entry (when re-entering water)
+      if(p>0.88&&dolphin.splashT<0){
+        dolphin.splashT=dnow;
+        dolphin.splashX=dx;
+        dolphin.splashY=WY;
+      }
+
+      // Only draw dolphin when above waterline
+      if(dy<WY){
+        const angle=Math.atan2(-(arcHeight*Math.PI*Math.cos(p*Math.PI)),W*0.12);
+        CX.save();CX.translate(dx,dy);CX.rotate(angle);
+        CX.font=`${Math.round(W*0.055)}px serif`;
+        CX.textAlign='center';CX.textBaseline='middle';
+        CX.fillText('🐬',0,0);
+        CX.restore();
+      }
+
+      // Entry splash — at the point where dolphin goes back into water
+      if(dolphin.splashT>0){
+        const sAge=(dnow-dolphin.splashT)/1000;
+        if(sAge<1.2){
+          for(let ring=1;ring<=3;ring++){
+            const rr=sAge*50+ring*8;
+            const alpha=Math.max(0,0.5-sAge*0.42)/ring;
+            CX.strokeStyle=`rgba(100,200,255,${alpha})`;CX.lineWidth=1.5;
+            CX.beginPath();CX.ellipse(dolphin.splashX,WY,rr,rr*0.32,0,0,6.28);CX.stroke();
+          }
+          // Water droplets spraying up at splash point
+          for(let d=0;d<5;d++){
+            const da=(d/5)*Math.PI;const dr=sAge*(28+d*6);
+            const dropX=dolphin.splashX+Math.cos(da+Math.PI)*dr*0.6;
+            const dropY=WY-Math.abs(Math.sin(da))*dr*0.7+sAge*15;
+            CX.globalAlpha=Math.max(0,0.7-sAge*0.6);
+            CX.fillStyle='rgba(150,220,255,0.8)';
+            CX.beginPath();CX.arc(dropX,dropY,1.5,0,6.28);CX.fill();
+          }
+          CX.globalAlpha=1;
+        }
+      }
+    }
+  }
 
   // Fisherman
   const PX=W*.14,PY=WY-6,bob=Math.sin(T*.9)*1.2;
@@ -2470,6 +2643,12 @@ function renderStats(el){
 
 function goFish(){
   G.lv++;G.st=60;G.sf=0;G.ss=0;G.ph='idle';G.fish=null;G.nib=false;G.canim=false;G.cmd=null;
+  // Rotate background theme and random surfer each level
+  currentBgTheme=BG_THEMES[(G.lv-1)%BG_THEMES.length];
+  surferEmoji=SURFERS[Math.floor(Math.random()*SURFERS.length)];
+  // Reset dolphin for new level
+  dolphin.active=false;
+  dolphin.nextAt=Date.now()+5000+Math.random()*10000;
   G.prog=0;G.ten=25;G.stam=100;G.wheelDown=false;
   perfectStreak=0;perfectMult=1;perfectCastActive=false;
   if(G.fInt){clearInterval(G.fInt);G.fInt=null;}if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
@@ -2576,28 +2755,29 @@ async function openBossPhoto(fish,moneyEarned,pointsEarned){
 }
 
 async function takeBossPhoto(){
-  clearBpAutoSkip();
-  vib([30,20,60]);
+  // Second tap — stream already running, just capture
+  if(bpStream){ doBossCapture(); return; }
 
-  const vid=document.getElementById('bpVid');
-  const sub=document.getElementById('bpSub');
-
-  // No stream — start camera RIGHT NOW in this button handler (Shark Boy pattern)
-  if(!bpStream){
-    try {
-      bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      vid.srcObject=bpStream;
-      vid.style.display='block';
-      sub.textContent='Looking good! Tap 📸 again to snap!';
-    } catch(err) {
-      sub.textContent='No camera — tap 📸 to save without photo.';
-      captureBossWithoutCamera();
-    }
+  // FIRST TAP: getUserMedia immediately — nothing before it
+  try {
+    bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+  } catch(err) {
+    clearBpAutoSkip();
+    vib([30,20,60]);
+    document.getElementById('bpSub').textContent='No camera — saving without photo.';
+    captureBossWithoutCamera();
     return;
   }
 
-  // Stream running — capture now
-  doBossCapture();
+  // Camera granted
+  clearBpAutoSkip();
+  vib([30,20,60]);
+  const vid=document.getElementById('bpVid');
+  vid.srcObject=bpStream;
+  vid.style.display='block';
+  document.getElementById('bpSub').textContent='Looking good! Tap 📸 again to snap!';
+}
+
 }
 
 function doBossCapture(){
@@ -2748,6 +2928,11 @@ function startGame(){
   document.getElementById('gmini').textContent=RODS[G.ri].name;
   document.getElementById('bossBanner').classList.remove('show');
   updateCastModeUI();initGyro();
+  // Init theme + surfer for level 1
+  currentBgTheme=BG_THEMES[0];
+  surferEmoji=SURFERS[Math.floor(Math.random()*SURFERS.length)];
+  dolphin.active=false;
+  dolphin.nextAt=Date.now()+8000+Math.random()*10000;
   showScr('S1');
   if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
   draw();startTimer();setTimeout(()=>launchAimer(),200);
