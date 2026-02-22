@@ -298,9 +298,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
   <button class="obtn" onclick="closeTraining()" style="width:100%;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2);color:#a0c8e0;">✗ CANCEL</button>
 </div>
 
-<!-- ══════════════════════════════
-     TITLE SCREEN (animated canvas)
-════════════════════════════════ -->
+<!-- TITLE SCREEN -->
 <div id="S0" class="screen active">
   <canvas id="titleCV"></canvas>
   <div class="title-ui">
@@ -312,9 +310,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
   </div>
 </div>
 
-<!-- ══════════════════════════════
-     FISHING LICENSE SCREEN
-════════════════════════════════ -->
 <!-- CAST OFF MODAL -->
 <div id="castOffModal">
   <div class="com-box">
@@ -326,9 +321,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
   </div>
 </div>
 
+<!-- LICENSE SCREEN -->
 <div id="licenseScr" class="screen">
   <video id="licVid" autoplay playsinline muted></video>
-  <!-- SVG license card drawn over live video -->
   <svg id="licCardOverlay" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid meet">
     <defs>
       <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -337,18 +332,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
         <stop offset="100%" style="stop-color:#162b12"/>
       </linearGradient>
     </defs>
-    <!-- Card body -->
     <rect x="20" y="60" width="360" height="200" rx="10" fill="url(#cardGrad)" opacity="0.88"/>
-    <!-- Card borders -->
     <rect x="20" y="60" width="360" height="200" rx="10" fill="none" stroke="#40c040" stroke-width="2.5"/>
     <rect x="26" y="66" width="348" height="188" rx="7" fill="none" stroke="rgba(64,192,64,0.3)" stroke-width="1"/>
-    <!-- Seal circle -->
     <circle cx="72" cy="168" r="52" fill="rgba(64,192,64,0.12)" stroke="rgba(64,192,64,0.4)" stroke-width="1.5"/>
     <text x="72" y="178" text-anchor="middle" font-size="38">🎣</text>
-    <!-- Header -->
     <text x="200" y="88" text-anchor="middle" font-family="Oswald,Arial" font-weight="700" font-size="20" fill="#f0c040">DEEP HOOK</text>
     <text x="200" y="104" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="11" fill="rgba(240,192,64,0.7)">OFFICIAL FISHING LICENSE</text>
-    <!-- Info lines -->
     <text x="136" y="132" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(255,255,255,0.4)">LICENSE #</text>
     <text x="200" y="132" font-family="'Share Tech Mono',monospace" font-size="10" font-weight="700" fill="#a0c8e0" id="licNumSvg">DH-000000</text>
     <text x="136" y="152" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(255,255,255,0.4)">ISSUED</text>
@@ -357,11 +347,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
     <text x="200" y="172" font-family="'Share Tech Mono',monospace" font-size="10" font-weight="700" fill="#40e080">DEC 31 2026</text>
     <text x="136" y="192" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(255,255,255,0.4)">TYPE</text>
     <text x="200" y="192" font-family="'Share Tech Mono',monospace" font-size="10" font-weight="700" fill="#f0c040">ALL WATERS</text>
-    <!-- Photo box -->
     <rect x="308" y="110" width="58" height="126" rx="4" fill="rgba(0,0,0,0.4)" stroke="rgba(240,192,64,0.6)" stroke-width="1.5"/>
     <text x="337" y="170" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(240,192,64,0.4)" id="licPhotoLabel">PHOTO</text>
     <text x="337" y="182" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="9" fill="rgba(240,192,64,0.4)" id="licPhotoLabel2">HERE</text>
-    <!-- Barcode strip -->
     <rect x="30" y="236" width="340" height="16" fill="rgba(64,192,64,0.15)"/>
     <line x1="35" y1="237" x2="35" y2="251" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
     <line x1="40" y1="237" x2="40" y2="248" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
@@ -370,30 +358,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
     <line x1="52" y1="237" x2="52" y2="251" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
     <line x1="57" y1="237" x2="57" y2="248" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
     <line x1="61" y1="237" x2="61" y2="251" stroke="rgba(64,192,64,0.5)" stroke-width="1"/>
-    <!-- Animated pulse border -->
     <rect x="17" y="57" width="366" height="206" rx="12" fill="none" stroke="#40c040" stroke-width="2" id="licPulse" opacity="0.4"/>
   </svg>
-  <!-- Canvas only shown after capture -->
   <canvas id="licCaptureCanvas"></canvas>
-
   <div class="lic-title-bar">
     <div class="lic-title">🎣 FISHING LICENSE</div>
     <div class="lic-sub">DEEP HOOK OFFICIAL · TAP 📸 TO CAPTURE</div>
   </div>
-
   <div id="licFlash"></div>
-
   <div class="lic-ui">
-    <div class="lic-hint" id="licHint">Tap 📷 to start your camera!</div>
+    <div class="lic-hint" id="licHint">Tap the camera button to take your license photo!</div>
     <div class="lic-actions">
-      <button class="lic-skip" id="licSkipBtn" onclick="skipLicense()">SKIP</button>
-      <button class="lic-shutter" id="licShutter" onclick="licStartCamera()">📷</button>
+      <button class="lic-skip" id="licSkipBtn">SKIP</button>
+      <button class="lic-shutter" id="licCameraBtn">📷</button>
       <div style="width:52px;"></div>
     </div>
-    <button class="lic-shutter" id="licSnapBtn" onclick="doLicenseCapture()" style="display:none;width:80px;height:80px;font-size:32px;background:#e84040;border-color:#ff6060;">📸</button>
-    <button class="lic-retake" id="licRetakeBtn" onclick="retakeLicense()">↩ RETAKE</button>
-    <button class="lic-proceed" id="licProceedBtn" onclick="proceedFromLicense()">🎣 START FISHING!</button>
-    <button class="lic-save" id="licSaveBtn" onclick="saveLicensePhoto()">💾 Save to Photos</button>
+    <button class="lic-shutter" id="licSnapBtn" style="display:none;width:80px;height:80px;font-size:32px;background:#e84040;border-color:#ff6060;">📸</button>
+    <button class="lic-retake" id="licRetakeBtn">↩ RETAKE</button>
+    <button class="lic-proceed" id="licProceedBtn">🎣 START FISHING!</button>
+    <button class="lic-save" id="licSaveBtn">💾 Save to Photos</button>
     <div class="lic-hint" id="licSaveHint" style="display:none;font-size:11px;color:rgba(255,255,255,0.6);margin-top:6px;">Or take a screenshot to keep it!</div>
   </div>
 </div>
@@ -515,16 +498,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
 
 <!-- BOSS PHOTO SCREEN -->
 <div id="bossPhoto" class="screen" style="background:#000;position:relative;overflow:hidden;">
-  <!-- Video element visible directly — the working pattern -->
-  <video id="bpVid" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>
-  <!-- Canvas only shown after capture -->
+  <video id="bpVid" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;"></video>
   <canvas id="bpCanvas" style="display:none;position:absolute;inset:0;width:100%;height:100%;"></canvas>
-  <!-- HTML overlays on top of live video -->
   <div id="bpStats" style="position:absolute;top:0;left:0;right:0;padding:12px 16px;background:linear-gradient(180deg,rgba(0,0,0,.85),transparent);z-index:10;">
     <div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#ff80ff;letter-spacing:2px;text-shadow:0 0 12px #ff40ff;" id="bpName">BOSS FISH</div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#cce8ff;margin-top:2px;" id="bpSub">Size · Points · Cash</div>
   </div>
-  <!-- Fish emoji overlay — animated, sits over the video -->
   <div id="bpFishEmoji" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;pointer-events:none;">
     <div id="bpFishIcon" style="font-size:80px;filter:drop-shadow(0 0 20px #ff40ff);animation:bossFloat 1.5s ease-in-out infinite;">🐟</div>
     <div id="bpFishName" style="font-family:'Oswald',sans-serif;font-size:18px;color:#ff80ff;letter-spacing:2px;text-shadow:0 0 10px #ff40ff;margin-top:8px;"></div>
@@ -535,9 +514,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-fam
     <div style="text-align:center;"><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,200,255,.6);">POINTS</div><div style="font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#f0c040;" id="bpPoints">0</div></div>
   </div>
   <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 16px 20px;display:flex;align-items:center;justify-content:space-between;z-index:20;background:rgba(0,0,0,.6);">
-    <button onclick="skipBossPhoto()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);border-radius:20px;color:#cce8ff;font-family:'Oswald',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;touch-action:manipulation;">SKIP</button>
-    <button id="bpShutter" onclick="takeBossPhoto()" style="width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.5);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-size:26px;">📸</button>
-    <button id="bpSave" onclick="saveBossPhoto()" style="display:none;background:linear-gradient(135deg,#1a6a2a,#0d4018);border:2px solid #40e080;border-radius:20px;color:#40e080;font-family:'Oswald',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;touch-action:manipulation;">SAVE 📥</button>
+    <button id="bpSkipBtn" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);border-radius:20px;color:#cce8ff;font-family:'Oswald',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;touch-action:manipulation;">SKIP</button>
+    <button id="bpShutter" style="width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.5);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-size:26px;">📸</button>
+    <button id="bpSave" style="display:none;background:linear-gradient(135deg,#1a6a2a,#0d4018);border:2px solid #40e080;border-radius:20px;color:#40e080;font-family:'Oswald',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;touch-action:manipulation;">SAVE 📥</button>
     <div style="width:52px;"></div>
   </div>
   <div id="bpFlash" style="position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:30;transition:opacity .15s;"></div>
@@ -667,7 +646,7 @@ const BUD={
 ═══════════════════════════════════════════ */
 let titleRAF=null;
 let titleStars=[];
-let titleFish=[];   // jumping fish
+let titleFish=[];
 let titleCast={phase:'back',t:0,lineX:0,lineY:0,bobX:0,bobY:0,splash:false,splashT:0};
 let biplane={x:-300,y:0,active:false,nextAt:0,bannerOffsets:[]};
 
@@ -676,23 +655,16 @@ function initTitleCanvas(){
   const W=window.innerWidth,H=window.innerHeight;
   cv.width=W;cv.height=H;
   cv.style.width=W+'px';cv.style.height=H+'px';
-  // Seed stars
   titleStars=[];
   for(let i=0;i<60;i++){
     titleStars.push({x:Math.random()*W,y:Math.random()*H*0.55,r:Math.random()<0.15?1.8:Math.random()<0.4?1.1:0.6,phase:Math.random()*Math.PI*2,spd:0.2+Math.random()*0.5});
   }
-  // Seed fish
   titleFish=[];
-  for(let i=0;i<3;i++){
-    scheduleTitleFish(i,i*3000);
-  }
-  // Init biplane — first flyover after 3s, then every 30s
-  const W2=window.innerWidth,H2=window.innerHeight;
-  biplane.x=W2+50;  // start off right edge
-  biplane.y=H2*0.14;
+  for(let i=0;i<3;i++){scheduleTitleFish(i,i*3000);}
+  biplane.x=window.innerWidth+220;
+  biplane.y=H*0.14;
   biplane.active=false;
-  biplane.nextAt=Date.now()+3000;  // first pass in 3s
-  // Pre-generate banner letter offsets for wavy rope effect
+  biplane.nextAt=Date.now()+3000;
   const msg='  FISHING TOURNAMENT TODAY - GET A FISHING LICENSE  ';
   biplane.msg=msg;
   biplane.bannerOffsets=msg.split('').map((_,i)=>Math.sin(i*0.4)*3);
@@ -704,18 +676,11 @@ function scheduleTitleFish(id,delay){
     const W=window.innerWidth,H=window.innerHeight;
     const waterY=H*0.62;
     titleFish[id]={
-      x:W*0.25+Math.random()*W*0.5,
-      startY:waterY+8,
-      peakY:waterY-(50+Math.random()*80),
-      t:0,dur:0.9+Math.random()*0.4,
-      active:true,
-      splashT:-1,
-      e:['🐟','🐠','🐡'][Math.floor(Math.random()*3)],
-      scale:0.8+Math.random()*0.6,
+      x:W*0.25+Math.random()*W*0.5,startY:waterY+8,peakY:waterY-(50+Math.random()*80),
+      t:0,dur:0.9+Math.random()*0.4,active:true,splashT:-1,
+      e:['🐟','🐠','🐡'][Math.floor(Math.random()*3)],scale:0.8+Math.random()*0.6,
     };
-    // reschedule
-    const reDelay=4000+Math.random()*5000;
-    setTimeout(()=>scheduleTitleFish(id,0),reDelay);
+    setTimeout(()=>scheduleTitleFish(id,0),4000+Math.random()*5000);
   },delay);
 }
 
@@ -727,57 +692,33 @@ function drawTitle(){
   const W=cv.width,H=cv.height;
   const T=Date.now()/1000;
   ctx.clearRect(0,0,W,H);
-
   const waterY=H*0.62;
-
-  // Sky gradient
   const sk=ctx.createLinearGradient(0,0,0,waterY);
   sk.addColorStop(0,'#020810');sk.addColorStop(0.5,'#0a1e35');sk.addColorStop(1,'#123050');
   ctx.fillStyle=sk;ctx.fillRect(0,0,W,waterY);
-
-  // Stars
   for(const s of titleStars){
     const a=0.2+0.5*Math.abs(Math.sin(T*s.spd+s.phase));
-    ctx.globalAlpha=a;ctx.fillStyle='#fff';
-    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.28);ctx.fill();
+    ctx.globalAlpha=a;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.28);ctx.fill();
   }
   ctx.globalAlpha=1;
-
-  // Moon
   const MX=W*0.78,MY=H*0.12;
   ctx.fillStyle='#ffe890';ctx.shadowColor='#ffe890';ctx.shadowBlur=28;
-  ctx.beginPath();ctx.arc(MX,MY,22,0,6.28);ctx.fill();
-  ctx.shadowBlur=0;
-  // Moon reflection
+  ctx.beginPath();ctx.arc(MX,MY,22,0,6.28);ctx.fill();ctx.shadowBlur=0;
   ctx.save();ctx.globalAlpha=0.12;
   const refG=ctx.createLinearGradient(MX-15,waterY,MX+15,waterY+H*0.15);
   refG.addColorStop(0,'#ffe890');refG.addColorStop(1,'transparent');
-  ctx.fillStyle=refG;
-  ctx.beginPath();ctx.ellipse(MX,waterY+H*0.07,12+Math.sin(T*0.8)*3,H*0.12,0,0,6.28);ctx.fill();
-  ctx.restore();
-
-  // Water
+  ctx.fillStyle=refG;ctx.beginPath();ctx.ellipse(MX,waterY+H*0.07,12+Math.sin(T*0.8)*3,H*0.12,0,0,6.28);ctx.fill();ctx.restore();
   const wg=ctx.createLinearGradient(0,waterY,0,H);
   wg.addColorStop(0,'#0d2d4a');wg.addColorStop(0.4,'#081828');wg.addColorStop(1,'#030810');
   ctx.fillStyle=wg;ctx.fillRect(0,waterY,W,H-waterY);
-  // Water shimmer lines
   ctx.strokeStyle='rgba(60,160,240,.05)';ctx.lineWidth=1;
-  for(let i=0;i<6;i++){
-    const wy=waterY+10+i*18+Math.sin(T+i*1.3)*2;
-    ctx.beginPath();ctx.moveTo(0,wy);ctx.lineTo(W,wy);ctx.stroke();
-  }
-
-  // Pier
+  for(let i=0;i<6;i++){const wy=waterY+10+i*18+Math.sin(T+i*1.3)*2;ctx.beginPath();ctx.moveTo(0,wy);ctx.lineTo(W,wy);ctx.stroke();}
   ctx.fillStyle='#3d2814';ctx.fillRect(0,waterY-4,W*0.28,9);
   ctx.strokeStyle='#2a1a0a';ctx.lineWidth=1;
   for(let x=8;x<W*0.28;x+=11){ctx.beginPath();ctx.moveTo(x,waterY-4);ctx.lineTo(x,waterY+5);ctx.stroke();}
   ctx.fillStyle='#2a1608';
   [W*.06,W*.13,W*.20,W*.27].forEach(px=>ctx.fillRect(px-3,waterY+5,6,H-waterY-5));
-
-  // === FISHERMAN with animated rod cast ===
-  const PX=W*0.14,PY=waterY-6;
-  const bob=Math.sin(T*0.9)*1.1;
-  // Body
+  const PX=W*0.14,PY=waterY-6;const bob=Math.sin(T*0.9)*1.1;
   ctx.fillStyle='#3a2208';ctx.fillRect(PX-8,PY+14+bob,16,8);
   ctx.strokeStyle='#1a0e04';ctx.lineWidth=4;ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(PX-4,PY+14+bob);ctx.lineTo(PX-6,PY+24+bob);ctx.stroke();
@@ -785,250 +726,86 @@ function drawTitle(){
   ctx.fillStyle='#1a3a5a';ctx.beginPath();ctx.ellipse(PX,PY+7+bob,8,11,0,0,6.28);ctx.fill();
   ctx.fillStyle='#c8956a';ctx.beginPath();ctx.arc(PX,PY-3+bob,7,0,6.28);ctx.fill();
   ctx.fillStyle='#4a3010';ctx.beginPath();ctx.ellipse(PX,PY-9+bob,9,3,0,0,6.28);ctx.fill();
-  ctx.fillRect(PX-5,PY-18+bob,10,10);
-  ctx.fillStyle='#e08040';ctx.fillRect(PX-5,PY-12+bob,10,2);
-
-  // Animated rod cast — cycles: back → forward → wait → back
-  const castCycle=5.5; // seconds per full cycle
-  const ct=(T%castCycle)/castCycle; // 0..1
-  let rodAngle; // angle from vertical, positive = forward
-  let lineLen;
-  if(ct<0.15){
-    // Pull back fast
-    rodAngle=-40*Math.sin(ct/0.15*Math.PI*0.5); // 0 → -40°
-    lineLen=30;
-  } else if(ct<0.25){
-    // Cast forward fast
-    const p=(ct-0.15)/0.10;
-    rodAngle=-40+95*p; // -40° → +55°
-    lineLen=30+70*p;
-  } else if(ct<0.85){
-    // Hold forward with slight bob, line is out
-    rodAngle=55-Math.sin((ct-0.25)/0.6*Math.PI)*8;
-    lineLen=95+Math.sin(T*1.2)*4;
-    // Bobber splash at cast moment (first tick)
-    if(ct<0.27&&!titleCast.splash){
-      titleCast.splash=true;titleCast.splashT=T;
-    }
-  } else {
-    // Return to rest
-    titleCast.splash=false;
-    const p=(ct-0.85)/0.15;
-    rodAngle=55-55*p;
-    lineLen=95-30*p;
-  }
-
-  const armX=PX+14,armY=PY-2+bob;
-  const radA=rodAngle*Math.PI/180;
-  const rodLen=52;
-  const rodTX=armX+Math.sin(radA)*rodLen;
-  const rodTY=armY-Math.cos(radA)*rodLen;
-
-  // Rod
+  ctx.fillRect(PX-5,PY-18+bob,10,10);ctx.fillStyle='#e08040';ctx.fillRect(PX-5,PY-12+bob,10,2);
+  const castCycle=5.5;const ct=(T%castCycle)/castCycle;
+  let rodAngle,lineLen;
+  if(ct<0.15){rodAngle=-40*Math.sin(ct/0.15*Math.PI*0.5);lineLen=30;}
+  else if(ct<0.25){const p=(ct-0.15)/0.10;rodAngle=-40+95*p;lineLen=30+70*p;}
+  else if(ct<0.85){rodAngle=55-Math.sin((ct-0.25)/0.6*Math.PI)*8;lineLen=95+Math.sin(T*1.2)*4;if(ct<0.27&&!titleCast.splash){titleCast.splash=true;titleCast.splashT=T;}}
+  else{titleCast.splash=false;const p=(ct-0.85)/0.15;rodAngle=55-55*p;lineLen=95-30*p;}
+  const armX=PX+14,armY=PY-2+bob;const radA=rodAngle*Math.PI/180;const rodLen=52;
+  const rodTX=armX+Math.sin(radA)*rodLen;const rodTY=armY-Math.cos(radA)*rodLen;
   ctx.strokeStyle='#8B6914';ctx.lineWidth=3;ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(armX,armY);ctx.lineTo(rodTX,rodTY);ctx.stroke();
-
-  // Arm
   ctx.strokeStyle='#1a3a5a';ctx.lineWidth=5;
   ctx.beginPath();ctx.moveTo(PX+6,PY+4+bob);ctx.lineTo(armX,armY);ctx.stroke();
-  ctx.strokeStyle='#1a3a5a';ctx.lineWidth=5;
   ctx.beginPath();ctx.moveTo(PX-6,PY+6+bob);ctx.lineTo(PX-10,PY+13+bob);ctx.stroke();
-
-  // Fishing line & bobber (only when cast is out)
   if(ct>=0.20&&ct<=0.88){
-    // Line curves down from rod tip toward water
-    const bobberX=rodTX+lineLen*0.85;
-    const bobberY=Math.min(waterY-2,rodTY+lineLen*0.6+Math.sin(T*0.9)*3);
+    const bobberX=rodTX+lineLen*0.85;const bobberY=Math.min(waterY-2,rodTY+lineLen*0.6+Math.sin(T*0.9)*3);
     ctx.strokeStyle='rgba(180,210,255,.6)';ctx.lineWidth=1.2;ctx.setLineDash([]);
     ctx.beginPath();ctx.moveTo(rodTX,rodTY);ctx.quadraticCurveTo((rodTX+bobberX)/2,rodTY+20,bobberX,bobberY);ctx.stroke();
-    // Bobber
     const bwob=(ct>0.25&&ct<0.85)?Math.sin(T*1.1)*2.5:0;
-    ctx.strokeStyle='#777';ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.moveTo(bobberX,bobberY-6+bwob);ctx.lineTo(bobberX,bobberY+1+bwob);ctx.stroke();
+    ctx.strokeStyle='#777';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(bobberX,bobberY-6+bwob);ctx.lineTo(bobberX,bobberY+1+bwob);ctx.stroke();
     ctx.fillStyle='#e84040';ctx.beginPath();ctx.arc(bobberX,bobberY-3+bwob,5,Math.PI,0);ctx.fill();
     ctx.fillStyle='#f2f2f2';ctx.beginPath();ctx.arc(bobberX,bobberY-3+bwob,5,0,Math.PI);ctx.fill();
-    // Splash ripple when cast lands
-    if(titleCast.splash){
-      const age=T-titleCast.splashT;
-      if(age<1.5){
-        for(let ring=1;ring<=2;ring++){
-          const rr=age*45+ring*12;
-          const alpha=Math.max(0,0.4-age*0.28)/ring;
-          ctx.strokeStyle=`rgba(80,180,255,${alpha})`;ctx.lineWidth=1.5;
-          ctx.beginPath();ctx.ellipse(bobberX,waterY,rr,rr*0.35,0,0,6.28);ctx.stroke();
-        }
-      }
-    }
+    if(titleCast.splash){const age=T-titleCast.splashT;if(age<1.5){for(let ring=1;ring<=2;ring++){const rr=age*45+ring*12;const alpha=Math.max(0,0.4-age*0.28)/ring;ctx.strokeStyle=`rgba(80,180,255,${alpha})`;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(bobberX,waterY,rr,rr*0.35,0,0,6.28);ctx.stroke();}}}
   }
-
-  // Jumping fish
   const DT=1/60;
   for(const f of titleFish){
-    if(!f||!f.active)continue;
-    f.t+=DT;
-    const progress=f.t/f.dur;
-    if(progress>=1){f.active=false;continue;}
-    // Parabolic arc
-    const fy=f.startY+(f.peakY-f.startY)*4*progress*(1-progress);
-    const angle=Math.PI*(progress-0.5); // rotate fish through arc
+    if(!f||!f.active)continue;f.t+=DT;const progress=f.t/f.dur;if(progress>=1){f.active=false;continue;}
+    const fy=f.startY+(f.peakY-f.startY)*4*progress*(1-progress);const angle=Math.PI*(progress-0.5);
     ctx.save();ctx.translate(f.x,fy);ctx.rotate(angle*0.4);ctx.font=`${Math.round(22*f.scale)}px serif`;
     ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(f.e,0,0);ctx.restore();
-    // Splash when fish re-enters water
-    if(progress>0.85&&f.splashT<0){
-      f.splashT=T;
-    }
-    if(f.splashT>0){
-      const sAge=T-f.splashT;
-      if(sAge<0.8){
-        const r=sAge*35;const alpha=Math.max(0,0.5-sAge*0.65);
-        ctx.strokeStyle=`rgba(80,180,255,${alpha})`;ctx.lineWidth=1.5;
-        ctx.beginPath();ctx.ellipse(f.x,waterY,r,r*0.3,0,0,6.28);ctx.stroke();
-      }
-    }
+    if(progress>0.85&&f.splashT<0){f.splashT=T;}
+    if(f.splashT>0){const sAge=T-f.splashT;if(sAge<0.8){const r=sAge*35;const alpha=Math.max(0,0.5-sAge*0.65);ctx.strokeStyle=`rgba(80,180,255,${alpha})`;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(f.x,waterY,r,r*0.3,0,0,6.28);ctx.stroke();}}
   }
-
-  // ── BIPLANE FLYOVER ──
   const now=Date.now();
-  if(!biplane.active && now>=biplane.nextAt){
-    biplane.active=true;
-    biplane.x=window.innerWidth+220;   // start off RIGHT edge
-    biplane.y=H*0.26+Math.random()*H*0.05;
-  }
+  if(!biplane.active&&now>=biplane.nextAt){biplane.active=true;biplane.x=window.innerWidth+220;biplane.y=H*0.26+Math.random()*H*0.05;}
   if(biplane.active){
-    biplane.x -= 1.8;          // fly RIGHT → LEFT
-    const bx=biplane.x, by=biplane.y;
-    const sc=1.05;
-
-    // ── BANNER — trails behind to the RIGHT of the plane ──
-    const msg=biplane.msg;
-    const charW=9.1;
-    const bannerW=msg.length*charW+18;
-    const bannerH=22;
-    const tailX=bx+(38)*sc;    // tail now on RIGHT side (plane flipped)
-    const tailY=by+2;
-    const bannerStartX=tailX+20;
-    const bannerEndX=bannerStartX+bannerW;
-
-    // Rope sag from tail to banner
-    ctx.strokeStyle='rgba(160,140,80,0.85)';ctx.lineWidth=1.5;
-    ctx.beginPath();
-    ctx.moveTo(tailX,tailY);
-    ctx.quadraticCurveTo(tailX+14,tailY+14,bannerStartX,tailY+8);
-    ctx.stroke();
-
-    // Banner body — flows right from tail
-    ctx.save();
-    ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=5;ctx.shadowOffsetY=3;
-    ctx.fillStyle='rgba(255,250,205,0.96)';
-    ctx.strokeStyle='rgba(140,110,50,0.9)';ctx.lineWidth=1.5;
-    ctx.beginPath();
-    ctx.moveTo(bannerStartX, tailY+5);
-    ctx.lineTo(bannerEndX,   tailY+7);
-    ctx.lineTo(bannerEndX,   tailY+7+bannerH);
-    ctx.lineTo(bannerStartX, tailY+5+bannerH);
-    ctx.closePath();
-    ctx.fill();ctx.stroke();
-    ctx.shadowBlur=0;
-    ctx.font='bold 10px Arial,sans-serif';
-    ctx.textAlign='left';ctx.textBaseline='middle';
-    msg.split('').forEach((ch,i)=>{
-      ctx.fillStyle='#3a1600';
-      ctx.fillText(ch, bannerStartX+8+(i*charW), tailY+7+bannerH/2+biplane.bannerOffsets[i]*0.35);
-    });
+    biplane.x-=1.8;const bx=biplane.x,by=biplane.y;const sc=1.05;
+    const msg=biplane.msg;const charW=9.1;const bannerW=msg.length*charW+18;const bannerH=22;
+    const tailX=bx+(38)*sc;const tailY=by+2;const bannerStartX=tailX+20;const bannerEndX=bannerStartX+bannerW;
+    ctx.strokeStyle='rgba(160,140,80,0.85)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(tailX,tailY);ctx.quadraticCurveTo(tailX+14,tailY+14,bannerStartX,tailY+8);ctx.stroke();
+    ctx.save();ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=5;ctx.shadowOffsetY=3;
+    ctx.fillStyle='rgba(255,250,205,0.96)';ctx.strokeStyle='rgba(140,110,50,0.9)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(bannerStartX,tailY+5);ctx.lineTo(bannerEndX,tailY+7);ctx.lineTo(bannerEndX,tailY+7+bannerH);ctx.lineTo(bannerStartX,tailY+5+bannerH);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;ctx.font='bold 10px Arial,sans-serif';ctx.textAlign='left';ctx.textBaseline='middle';
+    msg.split('').forEach((ch,i)=>{ctx.fillStyle='#3a1600';ctx.fillText(ch,bannerStartX+8+(i*charW),tailY+7+bannerH/2+biplane.bannerOffsets[i]*0.35);});
     ctx.restore();
-
-    // ── PIXEL-ART BIPLANE flipped: nose=LEFT, tail=RIGHT ──
-    ctx.save();
-    ctx.translate(bx,by);
-    ctx.scale(-1,1);  // flip horizontally so nose faces left (direction of travel)
-    const B='#4a90d9',B2='#2a68aa',OR='#e0780a',OR2='#b85800',RD='#cc1a1a';
-
+    ctx.save();ctx.translate(bx,by);ctx.scale(-1,1);const B='#4a90d9',B2='#2a68aa',OR='#e0780a',OR2='#b85800',RD='#cc1a1a';
     function pr(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x*sc,y*sc,w*sc,h*sc);}
-
-    // Fuselage
-    pr(-30,-6, 54,12, B);
-    pr(-30,-3, 54, 6, B2);        // shadow band
-    pr( 18,-8,  8,16, B);         // nose bulge
-    pr( 20,-5,  5,10,'#68b0f0');  // nose highlight
-    pr(-32,-3,  4, 6, B2);        // tail taper
-
-    // Cockpit opening
-    pr(  2,-10, 14, 6, OR);
-    pr(  2,  4, 14, 6, OR);
-    pr(  4, -8, 10,12,'#90d8f8'); // glass
-    pr(  5, -7,  4, 4,'#c8f0ff'); // glare
-
-    // Top wing
-    pr(-24,-20, 52, 7, OR);
-    pr(-24,-20, 52, 2, OR2);
-    pr(-24,-13, 52, 1, OR2);
-    pr(  4,-20, 12, 2,'#f0a030');  // highlight
-
-    // Bottom wing
-    pr(-18, 12, 44, 7, OR);
-    pr(-18, 17, 44, 2, OR2);
-
-    // Red struts
-    pr(-14,-13,  4,25, RD);
-    pr( -2,-13,  4,25, RD);
-    pr( 10,-13,  4,25, RD);
-
-    // Tail fins
-    pr(-36,-14, 8, 8, OR);
-    pr(-36,  6, 8, 8, OR);
-    pr(-34, -6,12,12, B);
-    pr(-34, -6, 3,12, OR);
-    pr(-29, -6, 3,12, B2);
-    pr(-24, -6, 3,12, OR2);
-
-    // Landing gear
-    pr(4, 18, 2, 8,'#5090c8');
-    pr(-2,24,14, 2,'#5090c8');
-    ctx.fillStyle='#222232';
-    ctx.beginPath();ctx.arc(4*sc,30*sc,5*sc,0,6.28);ctx.fill();
-    ctx.fillStyle='#383848';
-    ctx.beginPath();ctx.arc(4*sc,30*sc,3*sc,0,6.28);ctx.fill();
-    ctx.fillStyle='#888';
-    ctx.beginPath();ctx.arc(4*sc,30*sc,1.5*sc,0,6.28);ctx.fill();
-
-    // Propeller (front = right side)
+    pr(-30,-6,54,12,B);pr(-30,-3,54,6,B2);pr(18,-8,8,16,B);pr(20,-5,5,10,'#68b0f0');pr(-32,-3,4,6,B2);
+    pr(2,-10,14,6,OR);pr(2,4,14,6,OR);pr(4,-8,10,12,'#90d8f8');pr(5,-7,4,4,'#c8f0ff');
+    pr(-24,-20,52,7,OR);pr(-24,-20,52,2,OR2);pr(-24,-13,52,1,OR2);pr(4,-20,12,2,'#f0a030');
+    pr(-18,12,44,7,OR);pr(-18,17,44,2,OR2);
+    pr(-14,-13,4,25,RD);pr(-2,-13,4,25,RD);pr(10,-13,4,25,RD);
+    pr(-36,-14,8,8,OR);pr(-36,6,8,8,OR);pr(-34,-6,12,12,B);pr(-34,-6,3,12,OR);pr(-29,-6,3,12,B2);pr(-24,-6,3,12,OR2);
+    pr(4,18,2,8,'#5090c8');pr(-2,24,14,2,'#5090c8');
+    ctx.fillStyle='#222232';ctx.beginPath();ctx.arc(4*sc,30*sc,5*sc,0,6.28);ctx.fill();
+    ctx.fillStyle='#383848';ctx.beginPath();ctx.arc(4*sc,30*sc,3*sc,0,6.28);ctx.fill();
+    ctx.fillStyle='#888';ctx.beginPath();ctx.arc(4*sc,30*sc,1.5*sc,0,6.28);ctx.fill();
     const propA=T*14;
     ctx.strokeStyle=OR2;ctx.lineWidth=3.5*sc;ctx.lineCap='round';
-    [[propA],[propA+Math.PI/2]].forEach(([a])=>{
-      ctx.beginPath();
-      ctx.moveTo(26*sc, Math.sin(a)*15*sc);
-      ctx.lineTo(26*sc,-Math.sin(a)*15*sc);
-      ctx.stroke();
-    });
+    [[propA],[propA+Math.PI/2]].forEach(([a])=>{ctx.beginPath();ctx.moveTo(26*sc,Math.sin(a)*15*sc);ctx.lineTo(26*sc,-Math.sin(a)*15*sc);ctx.stroke();});
     ctx.fillStyle=OR;ctx.beginPath();ctx.arc(26*sc,0,4*sc,0,6.28);ctx.fill();
     ctx.fillStyle=RD;ctx.beginPath();ctx.arc(26*sc,0,2.5*sc,0,6.28);ctx.fill();
-
-    // Pilot (🎩 in cockpit)
-    ctx.font=`${Math.round(11*sc)}px serif`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('🎩',9*sc,-10*sc);
-
+    ctx.font=`${Math.round(11*sc)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🎩',9*sc,-10*sc);
     ctx.restore();
-
-    // Off left edge — reset
-    if(biplane.x < -bannerW-250){
-      biplane.active=false;
-      biplane.nextAt=Date.now()+30000;
-    }
+    if(biplane.x<-bannerW-250){biplane.active=false;biplane.nextAt=Date.now()+30000;}
   }
-
   titleRAF=requestAnimationFrame(drawTitle);
 }
 
-
 function startTitleAnimation(){
   if(titleRAF)cancelAnimationFrame(titleRAF);
-  initTitleCanvas();
-  drawTitle();
+  initTitleCanvas();drawTitle();
 }
 
 /* ═══════════════════════════════════════════
-   FISHING LICENSE CAMERA
+   FISHING LICENSE CAMERA — iOS Safari Fix
+   Key: getUserMedia MUST be called synchronously
+   from a direct user gesture handler (touchend/click).
+   No async wrappers between the gesture and the call.
 ═══════════════════════════════════════════ */
 let licStream=null;
 let licCaptured=null;
@@ -1042,19 +819,13 @@ function startLicAutoSkip(){
   const hint=document.getElementById('licHint');
   licAutoSkipTimer=setInterval(()=>{
     secs--;
-    if(secs>0){
-      hint.textContent=`Hold still — smile for your license photo! (auto-skip in ${secs}s)`;
-    } else {
-      clearInterval(licAutoSkipTimer);licAutoSkipTimer=null;
-      hint.textContent='Auto-skipping...';
-      skipLicense();
-    }
+    if(secs>0){hint.textContent=`Tap 📷 to start camera! (auto-skip in ${secs}s)`;}
+    else{clearInterval(licAutoSkipTimer);licAutoSkipTimer=null;skipLicense();}
   },1000);
 }
 
 function clearLicAutoSkip(){
   clearInterval(licAutoSkipTimer);licAutoSkipTimer=null;
-  // Reset hint if still on screen
   const hint=document.getElementById('licHint');
   if(hint)hint.textContent='Hold still — smile for your license photo!';
 }
@@ -1065,12 +836,8 @@ function startBpAutoSkip(){
   const sub=document.getElementById('bpSub');
   bpAutoSkipTimer=setInterval(()=>{
     secs--;
-    if(secs>0){
-      if(sub)sub.textContent=`LEGENDARY CATCH · auto-skip in ${secs}s`;
-    } else {
-      clearInterval(bpAutoSkipTimer);bpAutoSkipTimer=null;
-      skipBossPhoto();
-    }
+    if(secs>0){if(sub)sub.textContent=`LEGENDARY CATCH · auto-skip in ${secs}s`;}
+    else{clearInterval(bpAutoSkipTimer);bpAutoSkipTimer=null;skipBossPhoto();}
   },1000);
 }
 
@@ -1084,13 +851,11 @@ let licNumber='DH-'+Math.floor(100000+Math.random()*900000);
 let licPulseRAF=null;
 
 function openLicenseScreen(){
-  if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
-  licCaptured=null;
-  licStream=null;
-  licCameraReady=false;
-  document.getElementById('licShutter').style.display='flex';
-  document.getElementById('licShutter').textContent='📷';
-  document.getElementById('licShutter').disabled=false;
+  if(G&&G.tInt){clearInterval(G.tInt);G.tInt=null;}
+  licCaptured=null;licStream=null;licCameraReady=false;
+  document.getElementById('licCameraBtn').style.display='flex';
+  document.getElementById('licCameraBtn').textContent='📷';
+  document.getElementById('licCameraBtn').disabled=false;
   document.getElementById('licSnapBtn').style.display='none';
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
@@ -1099,7 +864,7 @@ function openLicenseScreen(){
   document.getElementById('licCaptureCanvas').style.display='none';
   document.getElementById('licVid').style.display='none';
   document.getElementById('licCardOverlay').style.display='block';
-  document.getElementById('licHint').textContent='Tap 📷 — we\'ll ask to use your camera!';
+  document.getElementById('licHint').textContent='Tap 📷 — your camera will be requested!';
   document.getElementById('licNumSvg').textContent=licNumber;
   document.getElementById('licDateSvg').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'});
   showScr('licenseScr');
@@ -1118,201 +883,104 @@ function startLicPulse(){
   pulse();
 }
 
-function drawFishermanHat(ctx, W, H){
-  // Bucket hat centered at top — sits where forehead/top of head would be in selfie
-  const cx = W / 2;
-  const hatTop = H * 0.10;
-  const crownW = W * 0.42;
-  const crownH = crownW * 0.38;   // low, round crown — not tall
-  const brimW  = crownW * 1.55;   // wide floppy brim
-  const brimH  = crownH * 0.28;   // brim thickness (viewed from slight angle)
-  const brimDroop = crownH * 0.18; // how much the brim droops at edges
-
-  // Khaki canvas colors
-  const KHAKI      = '#c8a96e';
-  const KHAKI_DARK = '#a8894e';
-  const KHAKI_LT   = '#dfc080';
-  const KHAKI_SHADE= '#987848';
-  const NAVY       = '#1a2a5a';
-  const RED        = '#cc2222';
-
-  ctx.save();
-  ctx.shadowColor = 'rgba(0,0,0,0.5)';
-  ctx.shadowBlur = 16;
-  ctx.shadowOffsetY = 8;
-
-  // ── BRIM — wide, droops at edges ──
-  // Draw as a flat ellipse with the front edge drooping
-  const brimY = hatTop + crownH;
-  const brimGrad = ctx.createLinearGradient(cx, brimY - brimH, cx, brimY + brimDroop + brimH);
-  brimGrad.addColorStop(0, KHAKI_DARK);
-  brimGrad.addColorStop(0.4, KHAKI);
-  brimGrad.addColorStop(1, KHAKI_SHADE);
-  ctx.fillStyle = brimGrad;
-
-  ctx.beginPath();
-  // Top of brim (meets crown base)
-  ctx.ellipse(cx, brimY, crownW * 0.52, brimH * 0.6, 0, Math.PI, 0);
-  // Right edge droops down
-  ctx.quadraticCurveTo(cx + brimW * 0.52, brimY + brimDroop * 0.5, cx + brimW * 0.5, brimY + brimDroop);
-  // Bottom of brim — wide ellipse
-  ctx.ellipse(cx, brimY + brimDroop, brimW * 0.5, brimH, 0, 0, Math.PI);
-  // Left edge droops down
-  ctx.quadraticCurveTo(cx - brimW * 0.52, brimY + brimDroop * 0.5, cx - crownW * 0.52, brimY);
-  ctx.closePath();
-  ctx.fill();
-
-  // Brim underside shadow (subtle)
-  ctx.fillStyle = 'rgba(0,0,0,0.18)';
-  ctx.beginPath();
-  ctx.ellipse(cx, brimY + brimDroop, brimW * 0.5, brimH * 0.5, 0, 0, Math.PI);
-  ctx.fill();
-
-  ctx.shadowBlur = 0;
-  ctx.shadowOffsetY = 0;
-
-  // ── CROWN — low, round bucket shape ──
-  const crownGrad = ctx.createLinearGradient(cx - crownW/2, hatTop, cx + crownW * 0.3, hatTop + crownH);
-  crownGrad.addColorStop(0, KHAKI_LT);
-  crownGrad.addColorStop(0.35, KHAKI);
-  crownGrad.addColorStop(0.75, KHAKI_DARK);
-  crownGrad.addColorStop(1, KHAKI_SHADE);
-  ctx.fillStyle = crownGrad;
-
-  ctx.beginPath();
-  // Crown: rounded top, slightly wider at base — bucket silhouette
-  ctx.moveTo(cx - crownW * 0.44, hatTop + crownH);
-  ctx.bezierCurveTo(
-    cx - crownW * 0.5,  hatTop + crownH * 0.55,
-    cx - crownW * 0.46, hatTop + crownH * 0.08,
-    cx - crownW * 0.1,  hatTop + crownH * 0.01
-  );
-  ctx.bezierCurveTo(
-    cx + crownW * 0.02, hatTop - crownH * 0.04,
-    cx + crownW * 0.38, hatTop + crownH * 0.04,
-    cx + crownW * 0.46, hatTop + crownH * 0.12
-  );
-  ctx.bezierCurveTo(
-    cx + crownW * 0.5,  hatTop + crownH * 0.55,
-    cx + crownW * 0.44, hatTop + crownH,
-    cx + crownW * 0.44, hatTop + crownH
-  );
-  ctx.ellipse(cx, hatTop + crownH, crownW * 0.44, brimH * 0.55, 0, 0, Math.PI);
-  ctx.closePath();
-  ctx.fill();
-
-  // Crown right-side shadow panel
-  ctx.fillStyle = 'rgba(0,0,0,0.12)';
-  ctx.beginPath();
-  ctx.moveTo(cx + crownW * 0.15, hatTop + crownH * 0.05);
-  ctx.bezierCurveTo(cx + crownW * 0.38, hatTop + crownH * 0.1, cx + crownW * 0.5, hatTop + crownH * 0.55, cx + crownW * 0.44, hatTop + crownH);
-  ctx.ellipse(cx + crownW * 0.2, hatTop + crownH, crownW * 0.24, brimH * 0.4, 0, 0, Math.PI);
-  ctx.closePath();
-  ctx.fill();
-
-  // Crown top highlight (canvas texture sheen)
-  ctx.fillStyle = 'rgba(255,255,255,0.13)';
-  ctx.beginPath();
-  ctx.ellipse(cx - crownW * 0.08, hatTop + crownH * 0.22, crownW * 0.2, crownH * 0.1, -0.25, 0, Math.PI * 2);
-  ctx.fill();
-
-  // ── GROSGRAIN BAND — navy / red / navy ──
-  const bandY = hatTop + crownH * 0.73;
-  const bandH = crownH * 0.18;
-  const bandW = crownW * 0.86;
-
-  // Navy outer stripe (full band)
-  ctx.fillStyle = NAVY;
-  ctx.fillRect(cx - bandW/2, bandY, bandW, bandH);
-
-  // Red center stripe
-  ctx.fillStyle = RED;
-  ctx.fillRect(cx - bandW/2, bandY + bandH * 0.28, bandW, bandH * 0.44);
-
-  // Tiny navy inner lines on red for grosgrain texture
-  ctx.strokeStyle = 'rgba(20,30,80,0.3)';
-  ctx.lineWidth = 0.8;
-  for(let x = cx - bandW/2 + 4; x < cx + bandW/2; x += 5){
-    ctx.beginPath(); ctx.moveTo(x, bandY + bandH * 0.28); ctx.lineTo(x, bandY + bandH * 0.72); ctx.stroke();
-  }
-
-  // Band buckle / tab on right side
-  const buckX = cx + bandW * 0.38;
-  ctx.fillStyle = NAVY;
-  ctx.fillRect(buckX, bandY, bandW * 0.08, bandH);
-  ctx.fillStyle = RED;
-  ctx.fillRect(buckX, bandY + bandH * 0.28, bandW * 0.08, bandH * 0.44);
-  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(buckX, bandY, bandW * 0.08, bandH);
-
-  // ── EYELET / VENTILATION HOLE on right crown ──
-  const eyeX = cx + crownW * 0.32;
-  const eyeY = hatTop + crownH * 0.52;
-  ctx.fillStyle = KHAKI_SHADE;
-  ctx.beginPath(); ctx.arc(eyeX, eyeY, 3.5, 0, 6.28); ctx.fill();
-  ctx.strokeStyle = 'rgba(80,60,30,0.7)'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.arc(eyeX, eyeY, 3.5, 0, 6.28); ctx.stroke();
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath(); ctx.arc(eyeX, eyeY, 2, 0, 6.28); ctx.fill();
-
-  ctx.globalAlpha = 1;
-  ctx.restore();
+function drawFishermanHat(ctx,W,H){
+  const cx=W/2;const hatTop=H*0.10;const crownW=W*0.42;const crownH=crownW*0.38;
+  const brimW=crownW*1.55;const brimH=crownH*0.28;const brimDroop=crownH*0.18;
+  const KHAKI='#c8a96e',KHAKI_DARK='#a8894e',KHAKI_LT='#dfc080',KHAKI_SHADE='#987848',NAVY='#1a2a5a',RED='#cc2222';
+  ctx.save();ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=16;ctx.shadowOffsetY=8;
+  const brimY=hatTop+crownH;
+  const brimGrad=ctx.createLinearGradient(cx,brimY-brimH,cx,brimY+brimDroop+brimH);
+  brimGrad.addColorStop(0,KHAKI_DARK);brimGrad.addColorStop(0.4,KHAKI);brimGrad.addColorStop(1,KHAKI_SHADE);
+  ctx.fillStyle=brimGrad;
+  ctx.beginPath();ctx.ellipse(cx,brimY,crownW*0.52,brimH*0.6,0,Math.PI,0);
+  ctx.quadraticCurveTo(cx+brimW*0.52,brimY+brimDroop*0.5,cx+brimW*0.5,brimY+brimDroop);
+  ctx.ellipse(cx,brimY+brimDroop,brimW*0.5,brimH,0,0,Math.PI);
+  ctx.quadraticCurveTo(cx-brimW*0.52,brimY+brimDroop*0.5,cx-crownW*0.52,brimY);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.18)';ctx.beginPath();ctx.ellipse(cx,brimY+brimDroop,brimW*0.5,brimH*0.5,0,0,Math.PI);ctx.fill();
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  const crownGrad=ctx.createLinearGradient(cx-crownW/2,hatTop,cx+crownW*0.3,hatTop+crownH);
+  crownGrad.addColorStop(0,KHAKI_LT);crownGrad.addColorStop(0.35,KHAKI);crownGrad.addColorStop(0.75,KHAKI_DARK);crownGrad.addColorStop(1,KHAKI_SHADE);
+  ctx.fillStyle=crownGrad;
+  ctx.beginPath();ctx.moveTo(cx-crownW*0.44,hatTop+crownH);
+  ctx.bezierCurveTo(cx-crownW*0.5,hatTop+crownH*0.55,cx-crownW*0.46,hatTop+crownH*0.08,cx-crownW*0.1,hatTop+crownH*0.01);
+  ctx.bezierCurveTo(cx+crownW*0.02,hatTop-crownH*0.04,cx+crownW*0.38,hatTop+crownH*0.04,cx+crownW*0.46,hatTop+crownH*0.12);
+  ctx.bezierCurveTo(cx+crownW*0.5,hatTop+crownH*0.55,cx+crownW*0.44,hatTop+crownH,cx+crownW*0.44,hatTop+crownH);
+  ctx.ellipse(cx,hatTop+crownH,crownW*0.44,brimH*0.55,0,0,Math.PI);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.12)';ctx.beginPath();ctx.moveTo(cx+crownW*0.15,hatTop+crownH*0.05);
+  ctx.bezierCurveTo(cx+crownW*0.38,hatTop+crownH*0.1,cx+crownW*0.5,hatTop+crownH*0.55,cx+crownW*0.44,hatTop+crownH);
+  ctx.ellipse(cx+crownW*0.2,hatTop+crownH,crownW*0.24,brimH*0.4,0,0,Math.PI);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.13)';ctx.beginPath();ctx.ellipse(cx-crownW*0.08,hatTop+crownH*0.22,crownW*0.2,crownH*0.1,-0.25,0,Math.PI*2);ctx.fill();
+  const bandY=hatTop+crownH*0.73;const bandH=crownH*0.18;const bandW=crownW*0.86;
+  ctx.fillStyle=NAVY;ctx.fillRect(cx-bandW/2,bandY,bandW,bandH);
+  ctx.fillStyle=RED;ctx.fillRect(cx-bandW/2,bandY+bandH*0.28,bandW,bandH*0.44);
+  ctx.strokeStyle='rgba(20,30,80,0.3)';ctx.lineWidth=0.8;
+  for(let x=cx-bandW/2+4;x<cx+bandW/2;x+=5){ctx.beginPath();ctx.moveTo(x,bandY+bandH*0.28);ctx.lineTo(x,bandY+bandH*0.72);ctx.stroke();}
+  const buckX=cx+bandW*0.38;ctx.fillStyle=NAVY;ctx.fillRect(buckX,bandY,bandW*0.08,bandH);
+  ctx.fillStyle=RED;ctx.fillRect(buckX,bandY+bandH*0.28,bandW*0.08,bandH*0.44);
+  ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1;ctx.strokeRect(buckX,bandY,bandW*0.08,bandH);
+  const eyeX=cx+crownW*0.32;const eyeY=hatTop+crownH*0.52;
+  ctx.fillStyle=KHAKI_SHADE;ctx.beginPath();ctx.arc(eyeX,eyeY,3.5,0,6.28);ctx.fill();
+  ctx.strokeStyle='rgba(80,60,30,0.7)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(eyeX,eyeY,3.5,0,6.28);ctx.stroke();
+  ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.arc(eyeX,eyeY,2,0,6.28);ctx.fill();
+  ctx.globalAlpha=1;ctx.restore();
 }
 
-// ── CAMERA — getUserMedia with error handling to prevent strict mode crash ──
-async function licStartCamera(){
-  try {
-    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-    document.getElementById('licVid').srcObject = licStream;
-    document.getElementById('licVid').style.display = 'block';
-    document.getElementById('licShutter').style.display = 'none';
-    document.getElementById('licSnapBtn').style.display = 'flex';
-    document.getElementById('licHint').textContent = 'Looking good! Tap 📸 to snap!';
-    clearLicAutoSkip();
-  } catch(err) {
-    // Show exact error so we can diagnose — this is what was silently crashing
-    document.getElementById('licHint').textContent = 'Camera error: ' + (err.name || err.message || String(err));
-    document.getElementById('licShutter').textContent = '📷';
+// ── LICENSE CAMERA — called directly from button event handler ──
+// getUserMedia must be triggered synchronously from touch/click gesture on iOS
+function licStartCameraFromGesture(){
+  // Immediately request camera — this IS the user gesture
+  const hint=document.getElementById('licHint');
+  hint.textContent='Requesting camera access...';
+  clearLicAutoSkip();
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    hint.textContent='Camera not available on this device/browser.';
+    return;
   }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}}})
+    .then(function(stream){
+      licStream=stream;
+      licCameraReady=true;
+      const vid=document.getElementById('licVid');
+      vid.srcObject=stream;
+      vid.style.display='block';
+      document.getElementById('licCameraBtn').style.display='none';
+      document.getElementById('licSnapBtn').style.display='flex';
+      hint.textContent='Looking good! Tap 📸 to snap your photo!';
+    })
+    .catch(function(err){
+      const msg=err.name==='NotAllowedError'?'Camera permission denied. Tap SKIP to continue.':
+                err.name==='NotFoundError'?'No camera found. Tap SKIP to continue.':
+                'Camera error: '+(err.name||err.message)+'. Tap SKIP.';
+      hint.textContent=msg;
+      document.getElementById('licCameraBtn').textContent='📷 Retry';
+    });
 }
 
 function doLicenseCapture(){
   const vid=document.getElementById('licVid');
   const hint=document.getElementById('licHint');
   const flash=document.getElementById('licFlash');
-  flash.style.opacity='0.95';
-  setTimeout(()=>flash.style.opacity='0',200);
+  flash.style.opacity='0.95';setTimeout(()=>flash.style.opacity='0',200);
   vib([30,15,50]);
-
   const W=window.innerWidth,H=window.innerHeight;
   const dpr=Math.min(window.devicePixelRatio||1,2);
   const cvs=document.getElementById('licCaptureCanvas');
-  cvs.width=W*dpr;cvs.height=H*dpr;
-  cvs.style.width=W+'px';cvs.style.height=H+'px';
-  const ctx=cvs.getContext('2d');
-  ctx.scale(dpr,dpr);
-
-  if(licStream && vid.readyState>=2){
-    ctx.drawImage(vid,0,0,W,H);
-  } else {
-    const bg=ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
-    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  }
-
+  cvs.width=W*dpr;cvs.height=H*dpr;cvs.style.width=W+'px';cvs.style.height=H+'px';
+  const ctx=cvs.getContext('2d');ctx.scale(dpr,dpr);
+  if(licStream&&vid.readyState>=2){ctx.drawImage(vid,0,0,W,H);}
+  else{const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);}
   drawFishermanHat(ctx,W,H);
   drawLicenseCardOnCanvas(ctx,W,H);
   licCaptured=cvs.toDataURL('image/jpeg',0.92);
-
   if(licStream){licStream.getTracks().forEach(t=>t.stop());licStream=null;}
   licCameraReady=false;
   if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
-  vid.pause();
-  vid.style.display='none';
+  vid.pause();vid.style.display='none';
   document.getElementById('licCardOverlay').style.display='none';
   cvs.style.display='block';
-  document.getElementById('licShutter').style.display='none';
+  document.getElementById('licCameraBtn').style.display='none';
+  document.getElementById('licSnapBtn').style.display='none';
   document.getElementById('licRetakeBtn').style.display='block';
   document.getElementById('licProceedBtn').style.display='block';
   document.getElementById('licSaveBtn').style.display='block';
@@ -1322,98 +990,44 @@ function doLicenseCapture(){
 
 function saveLicensePhoto(){
   if(!licCaptured)return;
-  const a=document.createElement('a');
-  a.href=licCaptured;
-  a.download='deep-hook-fishing-license.jpg';
-  a.click();
-}
-
-function captureWithoutCamera(){
-  const W=window.innerWidth,H=window.innerHeight;
-  const dpr=Math.min(window.devicePixelRatio||1,2);
-  const cvs=document.getElementById('licCaptureCanvas');
-  cvs.width=W*dpr;cvs.height=H*dpr;
-  cvs.style.width=W+'px';cvs.style.height=H+'px';
-  const ctx=cvs.getContext('2d');
-  ctx.scale(dpr,dpr);
-  const bg=ctx.createLinearGradient(0,0,0,H);
-  bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  drawFishermanHat(ctx,W,H);
-  drawLicenseCardOnCanvas(ctx,W,H);
-  licCaptured=cvs.toDataURL('image/jpeg',0.92);
-  if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
-  document.getElementById('licCardOverlay').style.display='none';
-  cvs.style.display='block';
-  document.getElementById('licShutter').style.display='none';
-  document.getElementById('licRetakeBtn').style.display='block';
-  document.getElementById('licProceedBtn').style.display='block';
+  const a=document.createElement('a');a.href=licCaptured;a.download='deep-hook-fishing-license.jpg';a.click();
 }
 
 function drawLicenseCardOnCanvas(ctx,W,H){
-  const cardW=Math.min(W*0.88,340);
-  const cardH=cardW*0.62;
-  const cardX=(W-cardW)/2;
-  const cardY=H*0.18;
-
+  const cardW=Math.min(W*0.88,340);const cardH=cardW*0.62;
+  const cardX=(W-cardW)/2;const cardY=H*0.18;
   ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=20;
   const cardGrad=ctx.createLinearGradient(cardX,cardY,cardX+cardW,cardY+cardH);
   cardGrad.addColorStop(0,'#1a3a1a');cardGrad.addColorStop(0.5,'#0f2a14');cardGrad.addColorStop(1,'#162b12');
-  ctx.fillStyle=cardGrad;
-  ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.fill();
-  ctx.shadowBlur=0;
-
-  ctx.strokeStyle='#40c040';ctx.lineWidth=2.5;
-  ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.stroke();
-  ctx.strokeStyle='rgba(64,192,64,.3)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.roundRect(cardX+5,cardY+5,cardW-10,cardH-10,7);ctx.stroke();
-
+  ctx.fillStyle=cardGrad;ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.fill();ctx.shadowBlur=0;
+  ctx.strokeStyle='#40c040';ctx.lineWidth=2.5;ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.stroke();
+  ctx.strokeStyle='rgba(64,192,64,.3)';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(cardX+5,cardY+5,cardW-10,cardH-10,7);ctx.stroke();
   const sealX=cardX+cardW*0.12,sealY=cardY+cardH*0.38;
-  ctx.fillStyle='rgba(64,192,64,.15)';
-  ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.fill();
-  ctx.strokeStyle='rgba(64,192,64,.4)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.stroke();
-  ctx.font=`${Math.round(cardH*0.28)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillStyle='white';ctx.fillText('🎣',sealX,sealY);
-
-  ctx.fillStyle='#f0c040';ctx.font=`bold ${Math.round(cardH*0.12)}px Oswald,Arial`;
-  ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.fillText('DEEP HOOK',cardX+cardW/2,cardY+cardH*0.07);
-  ctx.fillStyle='rgba(240,192,64,.7)';ctx.font=`${Math.round(cardH*0.075)}px monospace`;
-  ctx.fillText('OFFICIAL FISHING LICENSE',cardX+cardW/2,cardY+cardH*0.21);
-
-  const photoW=cardW*0.22,photoH=cardH*0.55;
-  const photoX=cardX+cardW*0.73,photoY=cardY+cardH*0.22;
-  ctx.fillStyle='rgba(0,0,0,.4)';
-  ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.fill();
-  ctx.strokeStyle='rgba(240,192,64,.6)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.stroke();
-
+  ctx.fillStyle='rgba(64,192,64,.15)';ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.fill();
+  ctx.strokeStyle='rgba(64,192,64,.4)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.stroke();
+  ctx.font=`${Math.round(cardH*0.28)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='white';ctx.fillText('🎣',sealX,sealY);
+  ctx.fillStyle='#f0c040';ctx.font=`bold ${Math.round(cardH*0.12)}px Oswald,Arial`;ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('DEEP HOOK',cardX+cardW/2,cardY+cardH*0.07);
+  ctx.fillStyle='rgba(240,192,64,.7)';ctx.font=`${Math.round(cardH*0.075)}px monospace`;ctx.fillText('OFFICIAL FISHING LICENSE',cardX+cardW/2,cardY+cardH*0.21);
+  const photoW=cardW*0.22,photoH=cardH*0.55;const photoX=cardX+cardW*0.73,photoY=cardY+cardH*0.22;
+  ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.fill();
+  ctx.strokeStyle='rgba(240,192,64,.6)';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.stroke();
   const infoX=cardX+cardW*0.28;const lineH=cardH*0.14;
   ctx.textAlign='left';ctx.textBaseline='middle';
-  [{l:'LICENSE #',v:licNumber,col:'#a0c8e0'},
-   {l:'ISSUED',v:new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}),col:'#a0c8e0'},
-   {l:'EXPIRES',v:'DEC 31 2026',col:'#40e080'},
-   {l:'TYPE',v:'ALL WATERS',col:'#f0c040'},
-  ].forEach((item,i)=>{
+  [{l:'LICENSE #',v:licNumber,col:'#a0c8e0'},{l:'ISSUED',v:new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}),col:'#a0c8e0'},{l:'EXPIRES',v:'DEC 31 2026',col:'#40e080'},{l:'TYPE',v:'ALL WATERS',col:'#f0c040'}].forEach((item,i)=>{
     const iy=cardY+cardH*0.28+i*lineH;
-    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font=`${Math.round(cardH*0.065)}px monospace`;
-    ctx.fillText(item.l,infoX,iy);
-    ctx.fillStyle=item.col;ctx.font=`bold ${Math.round(cardH*0.08)}px monospace`;
-    ctx.fillText(item.v,infoX+cardW*0.155,iy);
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font=`${Math.round(cardH*0.065)}px monospace`;ctx.fillText(item.l,infoX,iy);
+    ctx.fillStyle=item.col;ctx.font=`bold ${Math.round(cardH*0.08)}px monospace`;ctx.fillText(item.v,infoX+cardW*0.155,iy);
   });
 }
 
 function retakeLicense(){
-  licCaptured=null;
-  licStream=null;
-  licCameraReady=false;
+  licCaptured=null;licStream=null;licCameraReady=false;
   document.getElementById('licCaptureCanvas').style.display='none';
   document.getElementById('licVid').style.display='none';
   document.getElementById('licCardOverlay').style.display='block';
-  document.getElementById('licShutter').style.display='flex';
-  document.getElementById('licShutter').textContent='📷';
-  document.getElementById('licShutter').disabled=false;
+  document.getElementById('licCameraBtn').style.display='flex';
+  document.getElementById('licCameraBtn').textContent='📷';
+  document.getElementById('licCameraBtn').disabled=false;
   document.getElementById('licSnapBtn').style.display='none';
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
@@ -1424,38 +1038,22 @@ function retakeLicense(){
 }
 
 function skipLicense(){
-  clearLicAutoSkip();
-  closeLicenseCamera();
-  returnFromLicense();
+  clearLicAutoSkip();closeLicenseCamera();returnFromLicense();
 }
-
 function proceedFromLicense(){
-  clearLicAutoSkip();
-  closeLicenseCamera();
-  returnFromLicense();
+  clearLicAutoSkip();closeLicenseCamera();returnFromLicense();
 }
-
 function returnFromLicense(){
-  // If game was running, go back to it and restart timer
   const gameActive=document.getElementById('S1').classList.contains('active');
-  if(gameActive||G.st>0){
-    showScr('S1');
-    if(G.st>0&&G.ph!=='idle')startTimer();
-  } else {
-    startGame();
-  }
+  if(gameActive||G.st>0){showScr('S1');if(G.st>0&&G.ph!=='idle')startTimer();}
+  else{startGame();}
 }
-
 function closeLicenseCamera(){
   if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
-  if(licStream){
-    try{licStream.getTracks().forEach(t=>t.stop());}catch(e){}
-    licStream=null;
-  }
+  if(licStream){try{licStream.getTracks().forEach(t=>t.stop());}catch(e){}licStream=null;}
   const vid=document.getElementById('licVid');
   try{vid.pause();vid.srcObject=null;}catch(e){}
 }
-
 /* ═══════════════════════════════════════════
    BACKGROUND STATE
 ═══════════════════════════════════════════ */
@@ -1463,18 +1061,51 @@ let STARS=[];
 let shootingStar={active:false,x:0,y:0,vx:0,vy:0,life:0,maxLife:0,nextAt:0};
 let moonFrenzy={active:false,endAt:0,moonDark:false,flashT:0};
 
-// Background themes — cycle per level
 const BG_THEMES=['night','lighthouse','volcano','sunny','stormy'];
 let currentBgTheme='night';
 
-// Dolphin state
 let dolphin={active:false,nextAt:0,x:0,y:0,phase:0,arcProgress:0,inWater:false,splashT:-1,splashX:0,splashY:0};
 
-// Surfer state
 const SURFERS=['🏄','🏄‍♂️','🏄‍♀️'];
 let surferEmoji='🏄';
 let surferMidCycle=false;
-let surferBob=0;
+
+// Randomized surfer path params — regenerated each cycle
+let surferPath={
+  startX:0,      // starting X (right side area)
+  startY:0,      // starting Y (at waterline)
+  // Phase 1: straight down
+  p1DownFrac:0,  // how far down screen (fraction of screenH) in phase 1
+  p1LeftDrift:0, // slight left drift fraction of W
+  // Phase 2: carve toward pier (left+down)
+  p2LeftSwing:0, // how far left (fraction of W)
+  p2DownFrac:0,  // how far down (fraction of screenH)
+  // Phase 3: turn right and exit screen bottom
+  p3RightSwing:0,// how far right (fraction of W)
+  p3DownFrac:0,  // how far down (fraction of screenH) — extended 20% farther
+  // Timing
+  p1End:0.20,    // fraction of cycle where phase 1 ends
+  p2End:0.40,    // fraction where phase 2 ends
+};
+
+function newSurferPath(W, screenH){
+  // Base values with ±10% randomization on start, ±20% on distances
+  const r10=()=>0.9+Math.random()*0.20;  // 0.9–1.10 (±10%)
+  const r20=()=>0.8+Math.random()*0.40;  // 0.8–1.20 (±20%)
+  surferPath.startX = W * (0.70 + Math.random()*0.12) * r10(); // ~W*0.70–0.90
+  surferPath.startX = Math.min(surferPath.startX, W*0.92);
+  surferPath.startY = 0; // relative to waterY, set at draw time
+  surferPath.p1DownFrac  = 0.20 * r20();
+  surferPath.p1LeftDrift = 0.02 * r20();
+  surferPath.p2LeftSwing = 0.28 * r20();
+  surferPath.p2DownFrac  = 0.18 * r20();
+  // Phase 3 goes 20% farther down than base (1.2 multiplier baked in, then ±20% on top)
+  surferPath.p3RightSwing= 0.38 * r20();
+  surferPath.p3DownFrac  = 0.65 * 1.20 * r20(); // 20% farther so they exit naturally
+  // Slightly vary the phase timing too (±5%)
+  surferPath.p1End = 0.20 * (0.95+Math.random()*0.10);
+  surferPath.p2End = surferPath.p1End + (0.20*(0.95+Math.random()*0.10));
+}
 
 const EVENTS={
   gull:{active:false,birds:[],nextAt:0},
@@ -1555,13 +1186,11 @@ let DPR=Math.min(window.devicePixelRatio||1,2);
 function resizeCV(){
   DPR=Math.min(window.devicePixelRatio||1,2);
   const w=window.innerWidth,h=Math.round(window.innerHeight*0.40);
-  CV.width=w*DPR;CV.height=h*DPR;
-  CV.style.width=w+'px';CV.style.height=h+'px';
+  CV.width=w*DPR;CV.height=h*DPR;CV.style.width=w+'px';CV.style.height=h+'px';
   CX.setTransform(DPR,0,0,DPR,0,0);
 }
 window.addEventListener('resize',()=>{
   resizeCV();
-  // Also resize title canvas if on title screen
   const tcv=document.getElementById('titleCV');
   if(tcv&&document.getElementById('S0').classList.contains('active')){
     tcv.width=window.innerWidth;tcv.height=window.innerHeight;
@@ -1626,7 +1255,7 @@ function scoreFlash(txt,col){
 function isBossLevel(lv){return lv>0&&lv%5===0;}
 
 /* ═══════════════════════════════════════════
-   OPTIONS / TRAINING (unchanged)
+   OPTIONS / TRAINING
 ═══════════════════════════════════════════ */
 function openOptions(){updateCastModeUI();document.getElementById('optOverlay').classList.add('show');}
 function closeOptions(){document.getElementById('optOverlay').classList.remove('show');}
@@ -1697,11 +1326,9 @@ function initGyro(){
   requestGyroIfNeeded(()=>{
     let tiltSmooth=0;
     window.addEventListener('deviceorientation',e=>{
-      if(e.beta===null)return;
-      const b=e.beta;
+      if(e.beta===null)return;const b=e.beta;
       if(tiltBaseline===null)tiltBaseline=b;
-      const raw=b-tiltBaseline;
-      const dead=8,range=45;
+      const raw=b-tiltBaseline;const dead=8,range=45;
       const clamped=raw<dead?0:cl((raw-dead)/range,0,1);
       tiltSmooth=tiltSmooth*0.92+clamped*0.08;
       G.tiltAngle=cl(raw,0,60);G.tiltPull=tiltSmooth;
@@ -1749,10 +1376,8 @@ castColSlider.addEventListener('touchmove',e=>{
 },{passive:false});
 castColSlider.addEventListener('touchend',e=>{
   if(!sliderCharging)return;e.preventDefault();
-  const endY=e.changedTouches[0].clientY;
-  const releasedAboveStart=endY<=sliderStartY+10;
-  const hadPull=sliderPeakPct>=5;sliderCharging=false;
-  document.getElementById('castPowerFill').style.height='0%';document.getElementById('castPct').textContent='—';document.getElementById('swipeBall').className='swipe-ball';
+  const endY=e.changedTouches[0].clientY;const releasedAboveStart=endY<=sliderStartY+10;const hadPull=sliderPeakPct>=5;
+  sliderCharging=false;document.getElementById('castPowerFill').style.height='0%';document.getElementById('castPct').textContent='—';document.getElementById('swipeBall').className='swipe-ball';
   if(hadPull&&releasedAboveStart&&G.ph==='aimed')executeCast(sliderPeakPct,G.castAimPos);
   else if(G.ph==='aimed')document.getElementById('aimPowerLbl').textContent='Pull DOWN ↓ then flick UP ↑';
 },{passive:false});
@@ -1781,11 +1406,9 @@ function launchAimer(){
   const zoneSize=cl(0.44-(G.lv-1)*0.05,0.10,0.44);
   const zoneL=rnd(0.04,0.96-zoneSize);
   G.aimerZoneL=zoneL;G.aimerZoneR=zoneL+zoneSize;
-  const zoneCenter=(zoneL+G.aimerZoneR)/2;
-  const sweetW=0.10;
+  const zoneCenter=(zoneL+G.aimerZoneR)/2;const sweetW=0.10;
   G.aimerSweetL=zoneCenter-sweetW/2;G.aimerSweetR=zoneCenter+sweetW/2;
-  G.aimerPos=0;G.aimerDir=1;G.aimerActive=true;
-  perfectCastActive=false;
+  G.aimerPos=0;G.aimerDir=1;G.aimerActive=true;perfectCastActive=false;
   document.getElementById('aimerZone').style.left=(zoneL*100)+'%';
   document.getElementById('aimerZone').style.width=((G.aimerZoneR-zoneL)*100)+'%';
   const sw=document.getElementById('aimerSweet');
@@ -1796,7 +1419,6 @@ function launchAimer(){
   document.getElementById('aimPowerLbl').textContent='—';
   document.getElementById('aimer-lbl-txt').textContent='🎯 TAP GREEN  ●RED=PERFECT!';
   showPan('castAimer');buddy('aim',false);vib([15]);
-  // Aimer speed: base 0.022, caps at level 5 → 0.055
   const aimSpeed=cl(0.022+(G.lv-1)*0.0083,0.022,0.055);
   function tick(){
     if(!G.aimerActive)return;
@@ -1812,18 +1434,15 @@ function launchAimer(){
 
 function onTapScreen(){
   if(G.ph==='aiming'){
-    const pos=G.aimerPos;
-    const inZone=pos>=G.aimerZoneL&&pos<=G.aimerZoneR;
+    const pos=G.aimerPos;const inZone=pos>=G.aimerZoneL&&pos<=G.aimerZoneR;
     if(inZone){
-      G.aimerActive=false;
-      if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
+      G.aimerActive=false;if(G.aimerRAF){cancelAnimationFrame(G.aimerRAF);G.aimerRAF=null;}
       G.castAimPos=pos;G.ph='aimed';
       const inSweet=pos>=G.aimerSweetL&&pos<=G.aimerSweetR;
       if(inSweet){
         perfectStreak++;perfectMult=Math.min(Math.pow(2,perfectStreak),16);perfectCastActive=true;
         const sw=document.getElementById('aimerSweet');sw.classList.add('pulse');
-        vib([30,15,30,15,60]);rumbleCatch();
-        scoreFlash('🎯 PERFECT! x'+perfectMult,'#ff4040');
+        vib([30,15,30,15,60]);rumbleCatch();scoreFlash('🎯 PERFECT! x'+perfectMult,'#ff4040');
         document.getElementById('aimer-lbl-txt').textContent='🔥 PERFECT CAST x'+perfectMult+'!';
         document.getElementById('streakBadge').style.display='none';
       } else {
@@ -1881,8 +1500,7 @@ function executeCast(power,aimPos){
         } else if(isPerfect){
           const tier=Math.random()<0.5?3:4;
           const pool=FISH.filter(f=>f.t===tier);
-          fish=Object.assign({},pick(pool));
-          fish.perfectMult=perfectMult;
+          fish=Object.assign({},pick(pool));fish.perfectMult=perfectMult;
         } else {fish=pickFish();}
         G.fish=fish;G.prog=0;
         G.ten=G.lv===1?8:G.lv<=2?18:G.lv<=4?30:38;
@@ -1891,8 +1509,7 @@ function executeCast(power,aimPos){
         if(isPerfect&&!isB){scoreFlash('🎯 RARE BITE! x'+perfectMult,'#ff4040');rumble([{f:60,d:.1,g:.5},{f:90,d:.15,g:.7}]);}
         buddy(isB?'bossStrike':'strike',true);
         vib(isB?[100,50,100,50,200,50,100]:[80,40,120]);
-        rumbleFishOn();
-        updFishPan();showPan('fishpan');
+        rumbleFishOn();updFishPan();showPan('fishpan');
         document.getElementById('tiltHint').style.display='block';
         startFight();
       },800+Math.random()*1200);
@@ -1923,20 +1540,19 @@ function startBossRound(){showScr('S1');G.st=90;updHUD();document.getElementById
    FISH SELECTION
 ═══════════════════════════════════════════ */
 function pickFish(){
-  const rod=RODS[G.ri],lure=LURES[G.lui];
-  const tb=rod.tier+lure.tBias;
+  const rod=RODS[G.ri],lure=LURES[G.lui];const tb=rod.tier+lure.tBias;
   let w=[72,20,6,1.5,0.5];
   for(let i=0;i<tb&&i<4;i++){w[0]=Math.max(8,w[0]-10);w[i+1]=(w[i+1]||0)+8;if(i+2<5)w[i+2]=(w[i+2]||0)+2;}
-  const lf=G.lk/100;
-  w[0]=Math.max(5,w[0]-lf*18);w[3]=Math.min(22,w[3]+lf*7);w[4]=Math.min(18,w[4]+lf*11);
-  const tot=w.reduce((a,b)=>a+b,0);
-  let r=Math.random()*tot,tier=5;
+  const lf=G.lk/100;w[0]=Math.max(5,w[0]-lf*18);w[3]=Math.min(22,w[3]+lf*7);w[4]=Math.min(18,w[4]+lf*11);
+  const tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot,tier=5;
   for(let i=0;i<5;i++){r-=w[i];if(r<=0){tier=i+1;break;}}
   return Object.assign({},pick(FISH.filter(f=>f.t===tier)));
 }
 
 /* ═══════════════════════════════════════════
-   DRAWING (game canvas)
+   DRAW (game canvas)
+   Surfer: randomized path, flips to face right
+   in phase 3, exits naturally below screen
 ═══════════════════════════════════════════ */
 function draw(){
   const W=CV.width/DPR,H=CV.height/DPR;
@@ -1944,37 +1560,30 @@ function draw(){
   const WY=H*0.52,T=Date.now()/1000;
   const theme=currentBgTheme;
 
-  // ── SKY GRADIENT by theme ──
+  // SKY
   const sk=CX.createLinearGradient(0,0,0,WY);
-  if(theme==='sunny'){
-    sk.addColorStop(0,'#1a6fc4');sk.addColorStop(.5,'#3a9ae8');sk.addColorStop(1,'#6abcf0');
-  } else if(theme==='stormy'){
-    sk.addColorStop(0,'#0a0a12');sk.addColorStop(.4,'#1a1a2e');sk.addColorStop(1,'#2a2a40');
-  } else if(theme==='volcano'){
-    sk.addColorStop(0,'#100408');sk.addColorStop(.4,'#2a0c10');sk.addColorStop(1,'#3a1820');
-  } else {
-    sk.addColorStop(0,'#020810');sk.addColorStop(.5,'#0d2240');sk.addColorStop(1,'#1a4060');
-  }
+  if(theme==='sunny'){sk.addColorStop(0,'#1a6fc4');sk.addColorStop(.5,'#3a9ae8');sk.addColorStop(1,'#6abcf0');}
+  else if(theme==='stormy'){sk.addColorStop(0,'#0a0a12');sk.addColorStop(.4,'#1a1a2e');sk.addColorStop(1,'#2a2a40');}
+  else if(theme==='volcano'){sk.addColorStop(0,'#100408');sk.addColorStop(.4,'#2a0c10');sk.addColorStop(1,'#3a1820');}
+  else{sk.addColorStop(0,'#020810');sk.addColorStop(.5,'#0d2240');sk.addColorStop(1,'#1a4060');}
   CX.fillStyle=sk;CX.fillRect(0,0,W,WY);
 
-  // ── STORMY: rain + dark clouds + lightning ──
+  // STORMY effects
   if(theme==='stormy'){
     CX.strokeStyle='rgba(160,180,220,0.14)';CX.lineWidth=1;
     for(let i=0;i<30;i++){const rx=(i*137.5+T*40)%W;const ry=(i*97.3+T*120)%WY;CX.beginPath();CX.moveTo(rx,ry);CX.lineTo(rx-4,ry+14);CX.stroke();}
     [[W*0.15,WY*0.2,70],[W*0.45,WY*0.1,90],[W*0.75,WY*0.25,60],[W*0.6,WY*0.38,80]].forEach(([cx2,cy,r])=>{
-      const g=CX.createRadialGradient(cx2,cy,r*0.2,cx2,cy,r);
-      g.addColorStop(0,'rgba(50,50,70,0.92)');g.addColorStop(1,'rgba(20,20,35,0)');
+      const g=CX.createRadialGradient(cx2,cy,r*0.2,cx2,cy,r);g.addColorStop(0,'rgba(50,50,70,0.92)');g.addColorStop(1,'rgba(20,20,35,0)');
       CX.fillStyle=g;CX.beginPath();CX.ellipse(cx2,cy,r,r*0.5,0,0,6.28);CX.fill();
     });
     if(Math.sin(T*0.7)*Math.sin(T*3.1)>0.85){
-      const lx=W*0.3+Math.sin(T*5)*W*0.3;
-      CX.strokeStyle='rgba(200,220,255,0.9)';CX.lineWidth=2;
+      const lx=W*0.3+Math.sin(T*5)*W*0.3;CX.strokeStyle='rgba(200,220,255,0.9)';CX.lineWidth=2;
       CX.beginPath();CX.moveTo(lx,0);CX.lineTo(lx-8,WY*0.3);CX.lineTo(lx+5,WY*0.3);CX.lineTo(lx-3,WY*0.65);CX.stroke();
       CX.fillStyle='rgba(200,220,255,0.08)';CX.fillRect(0,0,W,WY);
     }
   }
 
-  // ── SUNNY: sun + clouds ──
+  // SUNNY effects
   if(theme==='sunny'){
     const SX=W*0.82,SY=H*0.09;
     CX.fillStyle='#ffe840';CX.shadowColor='#ffe840';CX.shadowBlur=30;
@@ -1982,14 +1591,13 @@ function draw(){
     CX.strokeStyle='rgba(255,232,64,0.45)';CX.lineWidth=2;
     for(let i=0;i<8;i++){const a=i/8*6.28+T*0.3;CX.beginPath();CX.moveTo(SX+Math.cos(a)*22,SY+Math.sin(a)*22);CX.lineTo(SX+Math.cos(a)*32,SY+Math.sin(a)*32);CX.stroke();}
     [[W*0.2,WY*0.2,50],[W*0.55,WY*0.15,65],[W*0.75,WY*0.3,40]].forEach(([cx2,cy,r])=>{
-      CX.fillStyle='rgba(255,255,255,0.82)';
-      CX.beginPath();CX.ellipse(cx2,cy,r,r*0.45,0,0,6.28);CX.fill();
+      CX.fillStyle='rgba(255,255,255,0.82)';CX.beginPath();CX.ellipse(cx2,cy,r,r*0.45,0,0,6.28);CX.fill();
       CX.beginPath();CX.ellipse(cx2-r*0.3,cy+4,r*0.6,r*0.35,0,0,6.28);CX.fill();
       CX.beginPath();CX.ellipse(cx2+r*0.35,cy+3,r*0.55,r*0.3,0,0,6.28);CX.fill();
     });
   }
 
-  // ── STARS (night + lighthouse) ──
+  // STARS
   if(theme==='night'||theme==='lighthouse'){
     const now2=Date.now();
     for(const s of STARS){CX.globalAlpha=0.25+0.45*Math.abs(Math.sin(T*s.speed+s.phase));CX.fillStyle='#fff';CX.beginPath();CX.arc(s.x,s.y,s.r,0,6.28);CX.fill();}
@@ -2022,14 +1630,12 @@ function draw(){
     }
   }
 
-  // ── MOON (night/lighthouse/volcano) ──
+  // MOON
   const MX=W*.82,MY=H*.09;
   if(theme==='night'||theme==='lighthouse'||theme==='volcano'){
-    const frenzyActive=moonFrenzy.active;
-    const moonFlicker=frenzyActive?0.3+Math.sin(T*18)*0.25:1;
+    const frenzyActive=moonFrenzy.active;const moonFlicker=frenzyActive?0.3+Math.sin(T*18)*0.25:1;
     CX.fillStyle=frenzyActive?`rgba(40,40,50,${moonFlicker})`:(G.isBossLevel?'#ff80ff':'#ffe890');
-    CX.shadowColor=frenzyActive?'#8888aa':(G.isBossLevel?'#ff40ff':'#ffe890');
-    CX.shadowBlur=frenzyActive?4:22;
+    CX.shadowColor=frenzyActive?'#8888aa':(G.isBossLevel?'#ff40ff':'#ffe890');CX.shadowBlur=frenzyActive?4:22;
     CX.beginPath();CX.arc(MX,MY,17,0,6.28);CX.fill();
     if(frenzyActive){
       CX.strokeStyle='rgba(200,200,255,0.4)';CX.lineWidth=1;
@@ -2042,52 +1648,36 @@ function draw(){
     CX.shadowBlur=0;
   }
 
-  // ── VOLCANO: silhouette + lava glow + smoke ──
+  // VOLCANO
   if(theme==='volcano'){
-    const VX=W*0.72,VY=WY;
-    CX.fillStyle='#1a0808';
-    CX.beginPath();CX.moveTo(VX-60,VY);CX.lineTo(VX,VY-55);CX.lineTo(VX+60,VY);CX.closePath();CX.fill();
-    const glowPulse=0.6+Math.sin(T*1.8)*0.3;
+    const VX=W*0.72,VY=WY;const glowPulse=0.6+Math.sin(T*1.8)*0.3;
+    CX.fillStyle='#1a0808';CX.beginPath();CX.moveTo(VX-60,VY);CX.lineTo(VX,VY-55);CX.lineTo(VX+60,VY);CX.closePath();CX.fill();
     CX.shadowColor='#ff4400';CX.shadowBlur=28*glowPulse;
-    CX.fillStyle=`rgba(255,80,0,${0.45*glowPulse})`;
-    CX.beginPath();CX.ellipse(VX,VY-54,12,5,0,0,6.28);CX.fill();CX.shadowBlur=0;
+    CX.fillStyle=`rgba(255,80,0,${0.45*glowPulse})`;CX.beginPath();CX.ellipse(VX,VY-54,12,5,0,0,6.28);CX.fill();CX.shadowBlur=0;
     const lavGrad=CX.createLinearGradient(VX-80,WY-10,VX+80,WY-10);
     lavGrad.addColorStop(0,'rgba(255,60,0,0)');lavGrad.addColorStop(0.5,`rgba(255,80,10,${0.22*glowPulse})`);lavGrad.addColorStop(1,'rgba(255,60,0,0)');
     CX.fillStyle=lavGrad;CX.fillRect(VX-80,WY-18,160,18);
-    for(let i=0;i<3;i++){
-      const age=(T*0.4+i*0.33)%1;const sy=VY-54-age*50;const sw=8+age*20;const sa=0.4*(1-age);
-      CX.fillStyle=`rgba(80,60,60,${sa})`;CX.beginPath();CX.ellipse(VX+(i-1)*6,sy,sw,sw*0.6,0,0,6.28);CX.fill();
-    }
+    for(let i=0;i<3;i++){const age=(T*0.4+i*0.33)%1;const sy=VY-54-age*50;const sw=8+age*20;const sa=0.4*(1-age);CX.fillStyle=`rgba(80,60,60,${sa})`;CX.beginPath();CX.ellipse(VX+(i-1)*6,sy,sw,sw*0.6,0,0,6.28);CX.fill();}
   }
 
-  // ── LIGHTHOUSE ──
+  // LIGHTHOUSE
   if(theme==='lighthouse'){
     const LX=W*0.76,LY=WY;
-    CX.fillStyle='#2a3a2a';
-    CX.beginPath();CX.moveTo(LX-40,LY);CX.quadraticCurveTo(LX,LY-28,LX+40,LY);CX.closePath();CX.fill();
-    const tH=46,tW=10;
-    CX.fillStyle='#eeeeff';CX.fillRect(LX-tW/2,LY-28-tH,tW,tH);
-    CX.fillStyle='#cc2020';
-    [0.2,0.5,0.8].forEach(p=>CX.fillRect(LX-tW/2,LY-28-tH+p*tH,tW,tH*0.12));
+    CX.fillStyle='#2a3a2a';CX.beginPath();CX.moveTo(LX-40,LY);CX.quadraticCurveTo(LX,LY-28,LX+40,LY);CX.closePath();CX.fill();
+    const tH=46,tW=10;CX.fillStyle='#eeeeff';CX.fillRect(LX-tW/2,LY-28-tH,tW,tH);
+    CX.fillStyle='#cc2020';[0.2,0.5,0.8].forEach(p=>CX.fillRect(LX-tW/2,LY-28-tH+p*tH,tW,tH*0.12));
     CX.fillStyle='#333';CX.fillRect(LX-7,LY-28-tH-8,14,8);
-    CX.shadowColor='rgba(255,240,100,0.8)';CX.shadowBlur=10;
-    CX.fillStyle='rgba(255,240,100,0.9)';CX.beginPath();CX.arc(LX,LY-28-tH-4,5,0,6.28);CX.fill();CX.shadowBlur=0;
-    const beamAngle=(T*0.8)%(Math.PI*2);
-    CX.save();CX.translate(LX,LY-28-tH-4);CX.rotate(beamAngle);
-    const beam=CX.createLinearGradient(0,0,100,0);
-    beam.addColorStop(0,'rgba(255,240,100,0.32)');beam.addColorStop(1,'rgba(255,240,100,0)');
-    CX.fillStyle=beam;CX.beginPath();CX.moveTo(0,0);CX.lineTo(100,-18);CX.lineTo(100,18);CX.closePath();CX.fill();
-    CX.restore();
+    CX.shadowColor='rgba(255,240,100,0.8)';CX.shadowBlur=10;CX.fillStyle='rgba(255,240,100,0.9)';CX.beginPath();CX.arc(LX,LY-28-tH-4,5,0,6.28);CX.fill();CX.shadowBlur=0;
+    const beamAngle=(T*0.8)%(Math.PI*2);CX.save();CX.translate(LX,LY-28-tH-4);CX.rotate(beamAngle);
+    const beam=CX.createLinearGradient(0,0,100,0);beam.addColorStop(0,'rgba(255,240,100,0.32)');beam.addColorStop(1,'rgba(255,240,100,0)');
+    CX.fillStyle=beam;CX.beginPath();CX.moveTo(0,0);CX.lineTo(100,-18);CX.lineTo(100,18);CX.closePath();CX.fill();CX.restore();
     CX.fillStyle='#555566';CX.fillRect(LX-8,LY-30,16,6);
   }
 
-  // ── WATER ──
+  // WATER
   let waterColor1=G.isBossLevel?'#1a0d2a':'#0d2d4a';
-  if(theme==='sunny') waterColor1='#1a6090';
-  if(theme==='stormy') waterColor1='#0a1520';
-  if(theme==='volcano') waterColor1='#150a0a';
-  const wg=CX.createLinearGradient(0,WY,0,H);
-  wg.addColorStop(0,waterColor1);wg.addColorStop(.4,'#081828');wg.addColorStop(1,'#030810');
+  if(theme==='sunny')waterColor1='#1a6090';if(theme==='stormy')waterColor1='#0a1520';if(theme==='volcano')waterColor1='#150a0a';
+  const wg=CX.createLinearGradient(0,WY,0,H);wg.addColorStop(0,waterColor1);wg.addColorStop(.4,'#081828');wg.addColorStop(1,'#030810');
   CX.fillStyle=wg;CX.fillRect(0,WY,W,H-WY);
   if(theme==='stormy'){
     CX.strokeStyle='rgba(120,180,240,0.14)';CX.lineWidth=2;
@@ -2097,130 +1687,121 @@ function draw(){
     for(let i=0;i<5;i++){const wy=WY+12+i*16+Math.sin(T+i*1.3)*2;CX.beginPath();CX.moveTo(0,wy);CX.lineTo(W,wy);CX.stroke();}
   }
 
-  // Pier
-  CX.fillStyle='#3d2814';CX.fillRect(0,WY-4,W*.3,9);
-  CX.strokeStyle='#2a1a0a';CX.lineWidth=1;
+  // PIER
+  CX.fillStyle='#3d2814';CX.fillRect(0,WY-4,W*.3,9);CX.strokeStyle='#2a1a0a';CX.lineWidth=1;
   for(let x=8;x<W*.3;x+=11){CX.beginPath();CX.moveTo(x,WY-4);CX.lineTo(x,WY+5);CX.stroke();}
   CX.fillStyle='#2a1608';[W*.06,W*.13,W*.20,W*.28].forEach(px=>CX.fillRect(px-3,WY+5,6,H-WY-5));
   CX.strokeStyle='rgba(255,200,100,.15)';CX.lineWidth=2;CX.beginPath();CX.moveTo(0,WY-4);CX.lineTo(W*.3,WY-4);CX.stroke();
   CX.strokeStyle='#5a3a1a';CX.lineWidth=2;CX.beginPath();CX.moveTo(W*.01,WY-12);CX.lineTo(W*.28,WY-12);CX.stroke();
   [W*.04,W*.09,W*.14,W*.19,W*.24].forEach(rx=>{CX.beginPath();CX.moveTo(rx,WY-12);CX.lineTo(rx,WY-4);CX.stroke();});
 
-  // ── SURFER — 3-phase surf path, resets with new random emoji each cycle ──
-  // Phase 0-0.2: surf straight down from waterline (y=0 in surf coords)
-  // Phase 0.2-0.4: carve diagonally toward pier (left + down)
-  // Phase 0.4-1.0: switch direction, carve down-right off bottom of screen
-  const sfCycle=12; // seconds per full run
-  const sfP=(T%sfCycle)/sfCycle; // 0→1
+  /* ─────────────────────────────────────────
+     SURFER — randomized path each cycle
+     Phase 1: straight down with slight left
+     Phase 2: carve toward pier (left+down), lean left
+     Phase 3: turn RIGHT, face right, surf off bottom
+     Emoji flips to face right in phase 3
+  ───────────────────────────────────────── */
+  const sfCycle=12;
+  const sfP=(T%sfCycle)/sfCycle;
+  const screenH=H-WY;
 
-  // Pick new surfer emoji each cycle
+  // Regenerate path params at start of each new cycle
   if(sfP < 0.02 && !surferMidCycle){
     surferMidCycle=true;
     surferEmoji=SURFERS[Math.floor(Math.random()*SURFERS.length)];
+    newSurferPath(W, screenH);
   }
   if(sfP > 0.05) surferMidCycle=false;
 
-  // Starting position — right side of screen, at waterline
-  const sfStartX=W*0.76;
-  const sfStartY=WY;
-  const screenH=H-WY; // height of water area
+  const p1E=surferPath.p1End;
+  const p2E=surferPath.p2End;
 
-  let sfX, sfY, sfLean;
-  if(sfP < 0.2){
-    // Phase 1: straight down 20% of screen height, slight left drift
-    const t=sfP/0.2;
-    sfX=sfStartX - W*0.02*t;
-    sfY=sfStartY + screenH*0.20*t;
-    sfLean=0.04*Math.sin(T*1.8); // small wobble upright
-  } else if(sfP < 0.4){
-    // Phase 2: carve toward pier (left + down), leaning into turn
-    const t=(sfP-0.2)/0.2;
-    const eased=t*t; // ease in
-    sfX=(sfStartX - W*0.02) - W*0.28*eased; // sweep left toward pier
-    sfY=(sfStartY + screenH*0.20) + screenH*0.18*t;
-    sfLean=-0.22*eased; // lean left into carve
+  let sfX, sfY, sfLean, sfFaceRight;
+
+  if(sfP < p1E){
+    // Phase 1: glide straight down, slight left drift
+    const t=sfP/p1E;
+    sfX = surferPath.startX - W*surferPath.p1LeftDrift*t;
+    sfY = WY + screenH*surferPath.p1DownFrac*t;
+    sfLean = 0.04*Math.sin(T*1.8);
+    sfFaceRight = false;
+  } else if(sfP < p2E){
+    // Phase 2: carve hard toward pier (left + down), lean left into turn
+    const t=(sfP-p1E)/(p2E-p1E);
+    const eased=t*t;
+    const p1EndX = surferPath.startX - W*surferPath.p1LeftDrift;
+    const p1EndY = WY + screenH*surferPath.p1DownFrac;
+    sfX = p1EndX - W*surferPath.p2LeftSwing*eased;
+    sfY = p1EndY + screenH*surferPath.p2DownFrac*t;
+    sfLean = -0.22*eased;
+    sfFaceRight = false;
   } else {
-    // Phase 3: switch, carve right and down off screen
-    const t=(sfP-0.4)/0.6;
-    const eased=1-Math.pow(1-t,2); // ease out
-    const phase2EndX=sfStartX - W*0.02 - W*0.28;
-    const phase2EndY=sfStartY + screenH*0.20 + screenH*0.18;
-    sfX=phase2EndX + W*0.38*eased; // sweep right
-    sfY=phase2EndY + (screenH*0.65)*eased; // down off screen
-    sfLean=0.20*eased; // lean right into carve
+    // Phase 3: switch direction, carve RIGHT and down off screen
+    // Emoji faces RIGHT (mirror flip), lean right into carve
+    const t=(sfP-p2E)/(1.0-p2E);
+    const eased=1-Math.pow(1-t,2);
+    const p1EndX = surferPath.startX - W*surferPath.p1LeftDrift;
+    const p1EndY = WY + screenH*surferPath.p1DownFrac;
+    const p2EndX = p1EndX - W*surferPath.p2LeftSwing;
+    const p2EndY = p1EndY + screenH*surferPath.p2DownFrac;
+    sfX = p2EndX + W*surferPath.p3RightSwing*eased;
+    sfY = p2EndY + screenH*surferPath.p3DownFrac*eased;
+    sfLean = 0.22*eased;
+    sfFaceRight = true; // flip emoji to face right
   }
 
   const sfBob=Math.sin(T*1.8)*1.8;
-  if(sfY < H+30){
+
+  // Only draw if surfer is still on screen (plus buffer so they fully exit)
+  if(sfY < H + 40){
     CX.font=`${Math.round(W*0.055)}px serif`;
     CX.textAlign='center';CX.textBaseline='middle';
     CX.save();
     CX.translate(sfX, sfY+sfBob);
     CX.rotate(sfLean);
-    CX.fillText(surferEmoji,0,0);
+    if(sfFaceRight){
+      // Mirror horizontally so emoji faces right direction of travel
+      CX.scale(-1, 1);
+    }
+    CX.fillText(surferEmoji, 0, 0);
     CX.restore();
   }
 
-  // ── DOLPHIN — arcs out of water, nose faces direction of travel ──
+  /* ─────────────────────────────────────────
+     DOLPHIN — arcs out of water
+  ───────────────────────────────────────── */
   const dnow=Date.now();
   if(!dolphin.active&&dnow>=dolphin.nextAt){
-    dolphin.active=true;
-    dolphin.arcProgress=0;
-    dolphin.x=W*0.65+Math.random()*W*0.15;
-    dolphin.dir=Math.random()<0.5?1:-1;
-    dolphin.splashT=-1;
+    dolphin.active=true;dolphin.arcProgress=0;
+    dolphin.x=W*0.65+Math.random()*W*0.15;dolphin.dir=Math.random()<0.5?1:-1;dolphin.splashT=-1;
   }
   if(dolphin.active){
-    const arcDur=2.2;
-    dolphin.arcProgress+=1/60/arcDur;
-    if(dolphin.arcProgress>=1){
-      dolphin.active=false;
-      dolphin.nextAt=Date.now()+15000+Math.random()*20000;
-    } else {
-      const p=dolphin.arcProgress;
-      const arcHeight=WY*0.28;
-      const dy=WY-arcHeight*Math.sin(p*Math.PI);
-      const dx=dolphin.x+dolphin.dir*(p-0.5)*W*0.12;
-      if(p>0.88&&dolphin.splashT<0){
-        dolphin.splashT=dnow;dolphin.splashX=dx;dolphin.splashY=WY;
-      }
+    const arcDur=2.2;dolphin.arcProgress+=1/60/arcDur;
+    if(dolphin.arcProgress>=1){dolphin.active=false;dolphin.nextAt=Date.now()+15000+Math.random()*20000;}
+    else{
+      const p=dolphin.arcProgress;const arcHeight=WY*0.28;
+      const dy=WY-arcHeight*Math.sin(p*Math.PI);const dx=dolphin.x+dolphin.dir*(p-0.5)*W*0.12;
+      if(p>0.88&&dolphin.splashT<0){dolphin.splashT=dnow;dolphin.splashX=dx;dolphin.splashY=WY;}
       if(dy<WY){
         const angle=Math.atan2(-(arcHeight*Math.PI*Math.cos(p*Math.PI)),dolphin.dir*W*0.12);
-        CX.save();
-        CX.translate(dx,dy);
-        CX.rotate(angle);
-        CX.scale(dolphin.dir,1);
-        CX.font=`${Math.round(W*0.055)}px serif`;
-        CX.textAlign='center';CX.textBaseline='middle';
-        CX.fillText('\u{1F42C}',0,0);
-        CX.restore();
+        CX.save();CX.translate(dx,dy);CX.rotate(angle);CX.scale(dolphin.dir,1);
+        CX.font=`${Math.round(W*0.055)}px serif`;CX.textAlign='center';CX.textBaseline='middle';CX.fillText('\u{1F42C}',0,0);CX.restore();
       }
       if(dolphin.splashT>0){
         const sAge=(dnow-dolphin.splashT)/1000;
         if(sAge<1.2){
-          for(let ring=1;ring<=3;ring++){
-            const rr=sAge*50+ring*8;const alpha=Math.max(0,0.5-sAge*0.42)/ring;
-            CX.strokeStyle=`rgba(100,200,255,${alpha})`;CX.lineWidth=1.5;
-            CX.beginPath();CX.ellipse(dolphin.splashX,WY,rr,rr*0.32,0,0,6.28);CX.stroke();
-          }
-          for(let d=0;d<5;d++){
-            const da=(d/5)*Math.PI;const dr=sAge*(28+d*6);
-            const dropX=dolphin.splashX+Math.cos(da+Math.PI)*dr*0.6;
-            const dropY=WY-Math.abs(Math.sin(da))*dr*0.7+sAge*15;
-            CX.globalAlpha=Math.max(0,0.7-sAge*0.6);
-            CX.fillStyle='rgba(150,220,255,0.8)';
-            CX.beginPath();CX.arc(dropX,dropY,1.5,0,6.28);CX.fill();
-          }
+          for(let ring=1;ring<=3;ring++){const rr=sAge*50+ring*8;const alpha=Math.max(0,0.5-sAge*0.42)/ring;CX.strokeStyle=`rgba(100,200,255,${alpha})`;CX.lineWidth=1.5;CX.beginPath();CX.ellipse(dolphin.splashX,WY,rr,rr*0.32,0,0,6.28);CX.stroke();}
+          for(let d=0;d<5;d++){const da=(d/5)*Math.PI;const dr=sAge*(28+d*6);const dropX=dolphin.splashX+Math.cos(da+Math.PI)*dr*0.6;const dropY=WY-Math.abs(Math.sin(da))*dr*0.7+sAge*15;CX.globalAlpha=Math.max(0,0.7-sAge*0.6);CX.fillStyle='rgba(150,220,255,0.8)';CX.beginPath();CX.arc(dropX,dropY,1.5,0,6.28);CX.fill();}
           CX.globalAlpha=1;
         }
       }
     }
   }
 
-  // Fisherman
+  // FISHERMAN
   const PX=W*.14,PY=WY-6,bob=Math.sin(T*.9)*1.2;
-  CX.fillStyle='#3a2208';CX.fillRect(PX-8,PY+14+bob,16,8);
-  CX.strokeStyle='#5a3a10';CX.lineWidth=1;CX.strokeRect(PX-8,PY+14+bob,16,8);
+  CX.fillStyle='#3a2208';CX.fillRect(PX-8,PY+14+bob,16,8);CX.strokeStyle='#5a3a10';CX.lineWidth=1;CX.strokeRect(PX-8,PY+14+bob,16,8);
   CX.strokeStyle='#1a0e04';CX.lineWidth=4;CX.lineCap='round';
   CX.beginPath();CX.moveTo(PX-4,PY+14+bob);CX.lineTo(PX-6,PY+24+bob);CX.stroke();
   CX.beginPath();CX.moveTo(PX+4,PY+14+bob);CX.lineTo(PX+6,PY+24+bob);CX.stroke();
@@ -2232,62 +1813,44 @@ function draw(){
   CX.beginPath();CX.moveTo(PX+6,PY+4+bob);CX.lineTo(PX+14+armSway,PY-2+bob);CX.stroke();
   CX.fillStyle='#c8956a';CX.beginPath();CX.arc(PX,PY-3+bob,7,0,6.28);CX.fill();
   CX.fillStyle='#4a3010';CX.beginPath();CX.ellipse(PX,PY-9+bob,9,3,0,0,6.28);CX.fill();
-  CX.fillRect(PX-5,PY-18+bob,10,10);
-  CX.fillStyle='#6a4818';CX.beginPath();CX.ellipse(PX,PY-18+bob,5,2,0,0,6.28);CX.fill();
+  CX.fillRect(PX-5,PY-18+bob,10,10);CX.fillStyle='#6a4818';CX.beginPath();CX.ellipse(PX,PY-18+bob,5,2,0,0,6.28);CX.fill();
   CX.fillStyle='#e08040';CX.fillRect(PX-5,PY-12+bob,10,2);
-  CX.fillStyle='rgba(0,0,0,.65)';
-  CX.beginPath();CX.arc(PX-2,PY-3+bob,1,0,6.28);CX.fill();
-  CX.beginPath();CX.arc(PX+2,PY-3+bob,1,0,6.28);CX.fill();
+  CX.fillStyle='rgba(0,0,0,.65)';CX.beginPath();CX.arc(PX-2,PY-3+bob,1,0,6.28);CX.fill();CX.beginPath();CX.arc(PX+2,PY-3+bob,1,0,6.28);CX.fill();
 
-  // Rod
-  const tilt=G.tiltPull;
-  const rodBX=PX+14+armSway,rodBY=PY-2+bob;
+  // ROD
+  const tilt=G.tiltPull;const rodBX=PX+14+armSway,rodBY=PY-2+bob;
   const rodTX=rodBX+22+tilt*6,rodTY=rodBY-30-tilt*16;
-  CX.strokeStyle='#8B6914';CX.lineWidth=3;CX.lineCap='round';
-  CX.beginPath();CX.moveTo(rodBX,rodBY);CX.lineTo(rodTX,rodTY);CX.stroke();
+  CX.strokeStyle='#8B6914';CX.lineWidth=3;CX.lineCap='round';CX.beginPath();CX.moveTo(rodBX,rodBY);CX.lineTo(rodTX,rodTY);CX.stroke();
   if(tilt>0.2){CX.strokeStyle=`rgba(240,192,64,${tilt*.55})`;CX.lineWidth=5;CX.beginPath();CX.moveTo(rodBX,rodBY);CX.lineTo(rodTX,rodTY);CX.stroke();}
 
-  // Line & Bobber
+  // LINE & BOBBER
   const ph=G.ph;
   if(ph!=='idle'&&ph!=='casting'&&ph!=='aiming'){
-    const BX=G.bx,BY=G.by;
-    const midX=(rodTX+BX)/2;
-    const sag=Math.max(2,(100-G.ten)*.13);
-    const midY=Math.min(WY-1,(rodTY+BY)/2+sag);
+    const BX=G.bx,BY=G.by;const midX=(rodTX+BX)/2;
+    const sag=Math.max(2,(100-G.ten)*.13);const midY=Math.min(WY-1,(rodTY+BY)/2+sag);
     const isBossFish=G.fish&&G.fish.isBoss;
     CX.strokeStyle=isBossFish?'rgba(255,80,255,.9)':ph==='reeling'?'rgba(255,220,40,.9)':'rgba(180,210,255,.75)';
     CX.lineWidth=1.5;CX.setLineDash(ph==='reeling'?[4,3]:[]);
-    CX.beginPath();CX.moveTo(rodTX,rodTY);CX.quadraticCurveTo(midX,midY,BX,BY-5);CX.stroke();
-    CX.setLineDash([]);
+    CX.beginPath();CX.moveTo(rodTX,rodTY);CX.quadraticCurveTo(midX,midY,BX,BY-5);CX.stroke();CX.setLineDash([]);
     const bo=G.nib?Math.sin(T*13)*6:Math.sin(T*.85)*1.8;
-    CX.strokeStyle='#777';CX.lineWidth=1.5;
-    CX.beginPath();CX.moveTo(BX,BY-8+bo);CX.lineTo(BX,BY+1+bo);CX.stroke();
+    CX.strokeStyle='#777';CX.lineWidth=1.5;CX.beginPath();CX.moveTo(BX,BY-8+bo);CX.lineTo(BX,BY+1+bo);CX.stroke();
     CX.fillStyle=isBossFish?'#ff40ff':'#e84040';
     if(isBossFish){CX.shadowBlur=12;CX.shadowColor='var(--boss)';}
     CX.beginPath();CX.arc(BX,BY-4+bo,isBossFish?9:6,Math.PI,0);CX.fill();
-    CX.fillStyle='#f2f2f2';CX.beginPath();CX.arc(BX,BY-4+bo,isBossFish?9:6,0,Math.PI);CX.fill();
-    CX.shadowBlur=0;
+    CX.fillStyle='#f2f2f2';CX.beginPath();CX.arc(BX,BY-4+bo,isBossFish?9:6,0,Math.PI);CX.fill();CX.shadowBlur=0;
     CX.strokeStyle='rgba(0,0,0,.4)';CX.lineWidth=1;CX.beginPath();CX.arc(BX,BY-4+bo,isBossFish?9:6,0,6.28);CX.stroke();
     CX.fillStyle='rgba(255,255,255,.5)';CX.beginPath();CX.arc(BX-2,BY-7+bo,2,0,6.28);CX.fill();
   }
 
-  // Ripples
+  // RIPPLES
   const now=Date.now();
   G.rip=G.rip.filter(r=>now-r.b<2800);
   for(const r of G.rip){
     const age=(now-r.b)/1000;
-    for(let ring=1;ring<=3;ring++){
-      const alpha=Math.max(0,.45-age*.18)/ring;const rr=(age*42+ring*14)*r.s;
-      CX.strokeStyle=`rgba(80,180,255,${alpha})`;CX.lineWidth=1.5;
-      CX.beginPath();CX.ellipse(r.x,r.y,rr,rr*.38,0,0,6.28);CX.stroke();
-    }
+    for(let ring=1;ring<=3;ring++){const alpha=Math.max(0,.45-age*.18)/ring;const rr=(age*42+ring*14)*r.s;CX.strokeStyle=`rgba(80,180,255,${alpha})`;CX.lineWidth=1.5;CX.beginPath();CX.ellipse(r.x,r.y,rr,rr*.38,0,0,6.28);CX.stroke();}
   }
   if(G.canim){
-    for(let i=0;i<12;i++){
-      const a=(i/12)*6.28,d=24+Math.random()*20;
-      CX.globalAlpha=.5+Math.random()*.4;CX.fillStyle='rgba(80,180,255,.7)';
-      CX.beginPath();CX.arc(G.bx+Math.cos(a)*d,G.by+Math.sin(a)*d*.4,2.5,0,6.28);CX.fill();
-    }
+    for(let i=0;i<12;i++){const a=(i/12)*6.28,d=24+Math.random()*20;CX.globalAlpha=.5+Math.random()*.4;CX.fillStyle='rgba(80,180,255,.7)';CX.beginPath();CX.arc(G.bx+Math.cos(a)*d,G.by+Math.sin(a)*d*.4,2.5,0,6.28);CX.fill();}
     CX.globalAlpha=1;
   }
 
@@ -2304,10 +1867,8 @@ function draw(){
     CX.save();CX.beginPath();CX.rect(0,0,W,WY-2);CX.clip();
     let allGone=true;
     for(const b of EVENTS.gull.birds){
-      b.x+=b.spd/60;b.flapT+=b.flapSpd/60;
-      if(b.x>-40)allGone=false;
-      const wingY=Math.sin(b.flapT)*5;
-      CX.strokeStyle='#c8d8e8';CX.lineWidth=1.5;CX.lineCap='round';
+      b.x+=b.spd/60;b.flapT+=b.flapSpd/60;if(b.x>-40)allGone=false;
+      const wingY=Math.sin(b.flapT)*5;CX.strokeStyle='#c8d8e8';CX.lineWidth=1.5;CX.lineCap='round';
       CX.beginPath();CX.moveTo(b.x-8,b.y+wingY);CX.quadraticCurveTo(b.x,b.y-3,b.x+8,b.y+wingY);CX.stroke();
       CX.beginPath();CX.moveTo(b.x,b.y);CX.lineTo(b.x+5,b.y+2);CX.stroke();
     }
@@ -2324,10 +1885,8 @@ function draw(){
     const p=EVENTS.pelican;const age=(nowE-p.stateT)/1000;
     CX.save();CX.beginPath();CX.rect(pierEndX,0,W-pierEndX,H);CX.clip();
     if(p.state==='fly'){
-      p.x-=70/60;
-      const wingFlap=Math.sin(nowE/180)*6;
-      CX.fillStyle='#b0c0d0';CX.strokeStyle='#7a8a9a';CX.lineWidth=1;
-      CX.beginPath();CX.ellipse(p.x,p.y,14,6,0,0,6.28);CX.fill();CX.stroke();
+      p.x-=70/60;const wingFlap=Math.sin(nowE/180)*6;
+      CX.fillStyle='#b0c0d0';CX.strokeStyle='#7a8a9a';CX.lineWidth=1;CX.beginPath();CX.ellipse(p.x,p.y,14,6,0,0,6.28);CX.fill();CX.stroke();
       CX.beginPath();CX.moveTo(p.x-14,p.y+wingFlap);CX.quadraticCurveTo(p.x,p.y-8,p.x+14,p.y+wingFlap);CX.stroke();
       CX.fillStyle='#e8c880';CX.beginPath();CX.moveTo(p.x-14,p.y);CX.lineTo(p.x-26,p.y+3);CX.lineTo(p.x-14,p.y+4);CX.fill();
       if(p.x<=p.diveX){p.state='dive';p.stateT=nowE;}
@@ -2342,7 +1901,7 @@ function draw(){
     CX.restore();
   }
 
-  // SURFER
+  // SURFER (EVENTS — separate from main surfer, random wipeout)
   if(!EVENTS.surfer.active&&nowE>=EVENTS.surfer.nextAt){
     EVENTS.surfer.active=true;EVENTS.surfer.x=W+40;EVENTS.surfer.spd=rnd(50,80);EVENTS.surfer.alive=true;
   }
@@ -2350,7 +1909,7 @@ function draw(){
     const sf=EVENTS.surfer;
     if(sf.alive){
       sf.x-=sf.spd/60;
-      const bob=Math.sin(T*3)*1.5;const brdY=WY+3+bob;const feetY=brdY-2;const waistY=feetY-8;const shoulderY=waistY-7;const headY=shoulderY-6;
+      const bob2=Math.sin(T*3)*1.5;const brdY=WY+3+bob2;const feetY=brdY-2;const waistY=feetY-8;const shoulderY=waistY-7;const headY=shoulderY-6;
       CX.save();CX.beginPath();CX.rect(pierEndX,WY-32,W-pierEndX,H-WY+32);CX.clip();
       CX.strokeStyle='rgba(180,230,255,0.4)';CX.lineWidth=2;CX.lineCap='round';
       CX.beginPath();CX.moveTo(sf.x+20,brdY);CX.quadraticCurveTo(sf.x+34,brdY-8,sf.x+44,brdY);CX.stroke();
@@ -2378,7 +1937,7 @@ function draw(){
     if(sf.alive&&sf.x<-60){EVENTS.surfer.active=false;EVENTS.surfer.nextAt=nowE+rnd(15000,35000);}
   }
 
-  // SHARK — fixed: triangle head leads, wake behind tail
+  // SHARK
   if(!EVENTS.shark.active&&nowE>=EVENTS.shark.nextAt){
     EVENTS.shark.active=true;EVENTS.shark.x=W+60;EVENTS.shark.y=WY+10;
     EVENTS.shark.spd=rnd(40,70);EVENTS.shark.dir=-1;
@@ -2396,43 +1955,24 @@ function draw(){
         scoreFlash('🦈 SHARK!','#ff4040');vib&&vib([200,50,150]);rumbleEscape&&rumbleEscape();
         setTimeout(()=>{EVENTS.shark.active=false;EVENTS.shark.nextAt=nowE+rnd(30000,60000);},1500);
       }
-    } else {
-      sh.x+=sh.spd*sh.dir/60;
-      if(sh.x<-30||sh.x>W+30)sh.dir*=-1;
-    }
+    } else {sh.x+=sh.spd*sh.dir/60;if(sh.x<-30||sh.x>W+30)sh.dir*=-1;}
     CX.save();CX.beginPath();CX.rect(pierEndX,WY-18,W-pierEndX,H-WY+18);CX.clip();
-    // dir: -1 = moving left, +1 = moving right
-    // Triangle head points in direction of travel (sh.dir)
-    // Fin tip points opposite to direction (trailing)
-    const finTipX = sh.x - sh.dir * 14; // fin tip trails behind
-    const finBaseL = sh.x + sh.dir * 6;  // leading edge of fin base
-    const finBaseT = sh.y + 2;
-    CX.fillStyle='#2a4a6a';
-    CX.beginPath();
-    CX.moveTo(sh.x + sh.dir * 8, sh.y - 16); // top of fin — over the head side
-    CX.lineTo(finTipX, finBaseT);             // trailing base corner
-    CX.lineTo(finBaseL, finBaseT);            // leading base corner
-    CX.closePath();CX.fill();
+    const finTipX=sh.x-sh.dir*14;const finBaseL=sh.x+sh.dir*6;const finBaseT=sh.y+2;
+    CX.fillStyle='#2a4a6a';CX.beginPath();CX.moveTo(sh.x+sh.dir*8,sh.y-16);CX.lineTo(finTipX,finBaseT);CX.lineTo(finBaseL,finBaseT);CX.closePath();CX.fill();
     CX.strokeStyle='rgba(0,0,0,.3)';CX.lineWidth=1;CX.stroke();
-    // Wake trails behind the shark (opposite to direction)
-    CX.strokeStyle='rgba(180,220,255,.25)';CX.lineWidth=1.5;
-    CX.beginPath();
-    CX.moveTo(sh.x - sh.dir * 6, sh.y + 2);
-    CX.quadraticCurveTo(sh.x - sh.dir * 20, sh.y + 5, sh.x - sh.dir * 32, sh.y + 2);
-    CX.stroke();
+    CX.strokeStyle='rgba(180,220,255,.25)';CX.lineWidth=1.5;CX.beginPath();CX.moveTo(sh.x-sh.dir*6,sh.y+2);CX.quadraticCurveTo(sh.x-sh.dir*20,sh.y+5,sh.x-sh.dir*32,sh.y+2);CX.stroke();
     CX.restore();
     if(!sh.hunting&&nowE-sh.startT>sh.life){EVENTS.shark.active=false;EVENTS.shark.nextAt=nowE+rnd(25000,55000);}
   }
 
-  // DOLPHIN
+  // DOLPHIN EVENTS
   if(!EVENTS.dolphin.active&&nowE>=EVENTS.dolphin.nextAt){
     EVENTS.dolphin.active=true;EVENTS.dolphin.x=W+40;EVENTS.dolphin.jumpT=nowE;EVENTS.dolphin.jumpCount=0;
   }
   if(EVENTS.dolphin.active){
     const d=EVENTS.dolphin;d.x-=55/60;
     const waterDepth=H-WY;const baseY=WY+waterDepth*0.28;
-    const jumpAge=(nowE-d.jumpT)/1000;
-    const arc=Math.max(0,Math.sin(jumpAge*Math.PI/1.0)*waterDepth*0.24);
+    const jumpAge=(nowE-d.jumpT)/1000;const arc=Math.max(0,Math.sin(jumpAge*Math.PI/1.0)*waterDepth*0.24);
     const dy=baseY-arc;const facingAngle=arc>5?(jumpAge<0.5?-0.28:0.28):0;
     CX.save();CX.beginPath();CX.rect(pierEndX,WY,W-pierEndX,H-WY);CX.clip();
     CX.save();CX.translate(d.x,dy);CX.rotate(facingAngle);
@@ -2465,8 +2005,7 @@ function draw(){
     else{u.y-=6;u.x+=2;u.beamAlpha=Math.max(0,u.beamAlpha-0.04);}
     CX.save();CX.beginPath();CX.rect(W*0.35,0,W*0.65,WY);CX.clip();
     if(u.beamAlpha>0){
-      const bw=28+Math.sin(T*3)*4;
-      const grad=CX.createLinearGradient(u.x,u.y+12,u.x,WY);
+      const bw=28+Math.sin(T*3)*4;const grad=CX.createLinearGradient(u.x,u.y+12,u.x,WY);
       grad.addColorStop(0,`rgba(180,255,180,${u.beamAlpha})`);grad.addColorStop(1,'rgba(180,255,180,0)');
       CX.fillStyle=grad;CX.beginPath();CX.moveTo(u.x-8,u.y+12);CX.lineTo(u.x-bw,WY);CX.lineTo(u.x+bw,WY);CX.lineTo(u.x+8,u.y+12);CX.closePath();CX.fill();
     }
@@ -2481,14 +2020,12 @@ function draw(){
 
   G.aid=requestAnimationFrame(draw);
 }
-
 /* ═══════════════════════════════════════════
    FIGHT
 ═══════════════════════════════════════════ */
 function updFishPan(){
   const f=G.fish;if(!f)return;
-  const isBoss=f.isBoss;
-  const ti=isBoss?{col:f.col||'var(--boss)'}:FTIERS[f.t];
+  const isBoss=f.isBoss;const ti=isBoss?{col:f.col||'var(--boss)'}:FTIERS[f.t];
   const fn=document.getElementById('fishN');fn.textContent=f.e+' '+f.name;fn.style.color=ti.col;
   const tb=document.getElementById('fishTB');
   if(isBoss){tb.textContent='👹 PHASE 1';tb.style.background='rgba(255,40,255,.15)';tb.style.color='var(--boss)';tb.style.border='1px solid rgba(255,40,255,.4)';}
@@ -2500,25 +2037,16 @@ function startFight(){
   document.getElementById('RW').classList.add('active');
   const isBoss=G.fish&&G.fish.isBoss;
   const cmds=isBoss?['reel','reel','tooFast','letOut']:['reel','reel','reel','tooFast','letOut'];
-  G.cmdInt=6000+Math.random()*4000;G.cmdTimer=0;
-  G.bossPhase=1;G.bossPhaseAnnounced=0;
+  G.cmdInt=6000+Math.random()*4000;G.cmdTimer=0;G.bossPhase=1;G.bossPhaseAnnounced=0;
   function issueCmd(){G.cmd=pick(cmds);buddy(G.cmd,true);G.cmdInt=5500+Math.random()*4000;G.cmdTimer=0;}
   issueCmd();
   let last=Date.now();clearInterval(G.fInt);
   const lineBreakThresh=G.lv<=2?101:LINES[G.li].brk;
-
-  // Each gear piece independently reduces fight difficulty
-  // Cane Pole (rod tier 0) = 5x fight difficulty vs Legend Rod (rod tier 4)
-  // Same for reel, line, lure tiers
-  const rodMult    = 1.0 - (RODS[G.ri].tier   / 4) * 0.6;   // 1.0 → 0.4
-  const reelMult   = 1.0 - (G.rli              / 4) * 0.3;   // 1.0 → 0.7
-  const lineMult   = 1.0 - (G.li               / 4) * 0.2;   // 1.0 → 0.8
-  const lureMult   = 1.0 - (LURES[G.lui].tBias / 3) * 0.15;  // 1.0 → 0.85
-  // Combined gear score: all 4 multiply together
-  // Worst gear: 1.0×1.0×1.0×1.0 = 1.0 (base difficulty)
-  // Best gear:  0.4×0.7×0.8×0.85 ≈ 0.190 → about 5× easier than cane pole only
-  const gearMult = rodMult * reelMult * lineMult * lureMult;
-
+  const rodMult   =1.0-(RODS[G.ri].tier  /4)*0.6;
+  const reelMult  =1.0-(G.rli            /4)*0.3;
+  const lineMult  =1.0-(G.li             /4)*0.2;
+  const lureMult  =1.0-(LURES[G.lui].tBias/3)*0.15;
+  const gearMult=rodMult*reelMult*lineMult*lureMult;
   const diffScale=[0.08,0.30,0.65,1.05,1.45,1.80,2.10,2.40,2.70,3.10];
   const baseDiff=isBoss?2.5:diffScale[Math.min(G.lv-1,diffScale.length-1)];
   const diff=baseDiff*gearMult;
@@ -2527,7 +2055,6 @@ function startFight(){
     if(G.ph!=='reeling'){clearInterval(G.fInt);G.fInt=null;return;}
     const now=Date.now(),dt=(now-last)/1000;last=now;
     G.cmdTimer+=dt*1000;if(G.cmdTimer>=G.cmdInt)issueCmd();
-
     let currentDiff=diff;
     if(isBoss){
       if(G.prog>=66&&G.bossPhase<3){
@@ -2539,7 +2066,6 @@ function startFight(){
       }
       currentDiff=diff*(G.bossPhase===3?3.0:G.bossPhase===2?1.8:1.0);
     }
-
     const fish=G.fish,reel=REELS[G.rli];
     const rd=G.rdelta,tp=G.tiltPull,Ts=now/1000;
     let ff=0;
@@ -2601,16 +2127,12 @@ function landFish(fish){
   buddy(isBoss?'bossCaught':'caught',false);
   vib(isBoss?[100,50,100,50,200,50,200,50,200]:[60,30,60,30,180]);
   isBoss?rumbleBoss():rumbleCatch();
-  const rod=RODS[G.ri];const mult=1+rod.catchB/100;
-  const pm=fish.perfectMult||1;
-  const em=Math.round(fish.v*mult*pm);
-  const ep=Math.round((isBoss?500:FTIERS[fish.t]?.pts||100)*mult*pm);
+  const rod=RODS[G.ri];const mult=1+rod.catchB/100;const pm=fish.perfectMult||1;
+  const em=Math.round(fish.v*mult*pm);const ep=Math.round((isBoss?500:FTIERS[fish.t]?.pts||100)*mult*pm);
   if(pm>1){scoreFlash('🎯 x'+pm+' PERFECT BONUS!','#ff4040');rumble([{f:50,d:.08,g:.4},{f:80,d:.12,g:.6},{f:60,d:.2,g:.5}]);}
   G.mn+=em;G.sc+=ep;G.tf++;G.sf++;G.ss+=ep;
-  G.st=Math.min(G.st+5,isBoss?120:90);
-  updHUD();scoreFlash('+5s ⏱','var(--acc2)');
-  G.clog.unshift({fish,money:em,points:ep,isBoss});
-  if(G.clog.length>14)G.clog.pop();
+  G.st=Math.min(G.st+5,isBoss?120:90);updHUD();scoreFlash('+5s ⏱','var(--acc2)');
+  G.clog.unshift({fish,money:em,points:ep,isBoss});if(G.clog.length>14)G.clog.pop();
   G.ledger.unshift({type:'earn',amount:em,desc:fish.name});
   const cf=document.getElementById('catchfl');
   cf.className=isBoss?'catchfl boss-catch':'catchfl';
@@ -2659,15 +2181,13 @@ function wEnd(e){
 }
 
 /* ═══════════════════════════════════════════
-   TIMER — only freeze if REELING (fish actively on line)
+   TIMER
 ═══════════════════════════════════════════ */
 function startTimer(){
   clearInterval(G.tInt);
   G.tInt=setInterval(()=>{
     if(G.st<=10&&G.ph==='reeling'){
-      // Freeze only during active reel fight
-      document.getElementById('hTim').style.color='var(--org)';
-      return;
+      document.getElementById('hTim').style.color='var(--org)';return;
     }
     G.st--;updHUD();
     if(G.st<=0){clearInterval(G.tInt);G.tInt=null;endSess();}
@@ -2760,12 +2280,9 @@ function renderStats(el){
 
 function goFish(){
   G.lv++;G.st=60;G.sf=0;G.ss=0;G.ph='idle';G.fish=null;G.nib=false;G.canim=false;G.cmd=null;
-  // Rotate background theme and random surfer each level
   currentBgTheme=BG_THEMES[(G.lv-1)%BG_THEMES.length];
   surferEmoji=SURFERS[Math.floor(Math.random()*SURFERS.length)];
-  // Reset dolphin for new level
-  dolphin.active=false;
-  dolphin.nextAt=Date.now()+5000+Math.random()*10000;
+  dolphin.active=false;dolphin.nextAt=Date.now()+5000+Math.random()*10000;
   G.prog=0;G.ten=25;G.stam=100;G.wheelDown=false;
   perfectStreak=0;perfectMult=1;perfectCastActive=false;
   if(G.fInt){clearInterval(G.fInt);G.fInt=null;}if(G.tInt){clearInterval(G.tInt);G.tInt=null;}
@@ -2837,17 +2354,17 @@ function endMoonFrenzy(){
 }
 
 /* ═══════════════════════════════════════════
-   BOSS PHOTO (existing, unchanged except camera draw fix)
+   BOSS PHOTO SCREEN
+   Camera triggered directly from button gesture
 ═══════════════════════════════════════════ */
 let bpStream=null,bpCaptured=null,bpFishData=null;
+let bpCameraLive=false;
 
-async function openBossPhoto(fish,moneyEarned,pointsEarned){
+function openBossPhoto(fish,moneyEarned,pointsEarned){
   bpFishData={fish,moneyEarned,pointsEarned};
-  bpCaptured=null;
-
-  // Populate HTML overlays
+  bpCaptured=null;bpCameraLive=false;
   document.getElementById('bpName').textContent=fish.e+' '+fish.name;
-  document.getElementById('bpSub').textContent='LEGENDARY CATCH · DEEP HOOK';
+  document.getElementById('bpSub').textContent='Tap 📸 to take a photo!';
   document.getElementById('bpWeight').textContent=fish.w||'???';
   document.getElementById('bpMoney').textContent='+$'+moneyEarned;
   document.getElementById('bpPoints').textContent='+'+pointsEarned+' pts';
@@ -2856,154 +2373,137 @@ async function openBossPhoto(fish,moneyEarned,pointsEarned){
   document.getElementById('bpFishName').textContent=fish.name;
   document.getElementById('bpSave').style.display='none';
   document.getElementById('bpShutter').style.display='flex';
+  document.getElementById('bpShutter').textContent='📸';
   document.getElementById('bpCanvas').style.display='none';
-
-  // Show overlays — video stays hidden until camera granted via shutter tap
-  const vid=document.getElementById('bpVid');
-  vid.style.display='none';
+  document.getElementById('bpVid').style.display='none';
   document.getElementById('bpFishEmoji').style.display='block';
   document.getElementById('bpStats').style.display='block';
   document.getElementById('bpStatsBar').style.display='flex';
-
   showScr('bossPhoto');
   if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
   startBpAutoSkip();
-  // Camera will be requested when user taps 📸 (must be a direct user gesture on iOS)
 }
 
-async function takeBossPhoto(){
-  if(bpStream){ doBossCapture(); return; }
-  try {
-    bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-    const vid=document.getElementById('bpVid');
-    vid.srcObject=bpStream;
-    vid.style.display='block';
-    clearBpAutoSkip();
-    document.getElementById('bpSub').textContent='Looking good! Tap 📸 to snap!';
-  } catch(err) {
-    document.getElementById('bpSub').textContent='Camera error: '+(err.name||err.message||String(err));
+// Called directly from shutter button tap — this IS the user gesture
+function bpShutterTap(){
+  if(bpCameraLive){
+    // Camera already running — do capture
+    doBossCapture();
+    return;
   }
+  // First tap — request camera (must be synchronous from gesture)
+  const sub=document.getElementById('bpSub');
+  sub.textContent='Requesting camera...';
+  clearBpAutoSkip();
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    sub.textContent='No camera available — screenshot to save!';
+    doBossCaptureNoCamera();
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}}})
+    .then(function(stream){
+      bpStream=stream;bpCameraLive=true;
+      const vid=document.getElementById('bpVid');
+      vid.srcObject=stream;vid.style.display='block';
+      sub.textContent='Looking good! Tap 📸 again to snap!';
+      document.getElementById('bpShutter').textContent='📸';
+    })
+    .catch(function(err){
+      const msg=err.name==='NotAllowedError'?'Camera denied — tap SKIP or screenshot':
+                err.name==='NotFoundError'?'No camera found — tap SKIP':
+                'Camera error — tap SKIP';
+      sub.textContent=msg;
+      // Offer to capture without camera after brief delay
+      setTimeout(()=>doBossCaptureNoCamera(),1200);
+    });
 }
 
 function doBossCapture(){
   const vid=document.getElementById('bpVid');
   const flash=document.getElementById('bpFlash');
-  flash.style.opacity='0.9';
-  setTimeout(()=>flash.style.opacity='0',200);
-
+  flash.style.opacity='0.9';setTimeout(()=>flash.style.opacity='0',200);
+  vib([30,15,50]);
   const W=window.innerWidth,H=window.innerHeight;
   const dpr=Math.min(window.devicePixelRatio||1,2);
   const cvs=document.getElementById('bpCanvas');
-  cvs.width=W*dpr;cvs.height=H*dpr;
-  cvs.style.width=W+'px';cvs.style.height=H+'px';
-  const ctx=cvs.getContext('2d');
-  ctx.scale(dpr,dpr);
-
-  if(bpStream && vid.readyState>=2){
-    ctx.drawImage(vid,0,0,W,H);
-  } else {
-    const bg=ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
+  cvs.width=W*dpr;cvs.height=H*dpr;cvs.style.width=W+'px';cvs.style.height=H+'px';
+  const ctx=cvs.getContext('2d');ctx.scale(dpr,dpr);
+  if(bpStream&&vid.readyState>=2){ctx.drawImage(vid,0,0,W,H);}
+  else{
+    const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
     ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
   }
+  drawBossPhotoOverlay(ctx,W,H);
+  bpCaptured=cvs.toDataURL('image/jpeg',0.90);
+  finaliseBpCapture(cvs);
+}
 
+function doBossCaptureNoCamera(){
+  const W=window.innerWidth,H=window.innerHeight;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const cvs=document.getElementById('bpCanvas');
+  cvs.width=W*dpr;cvs.height=H*dpr;cvs.style.width=W+'px';cvs.style.height=H+'px';
+  const ctx=cvs.getContext('2d');ctx.scale(dpr,dpr);
+  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  drawBossPhotoOverlay(ctx,W,H);
+  bpCaptured=cvs.toDataURL('image/jpeg',0.90);
+  finaliseBpCapture(cvs);
+}
+
+function drawBossPhotoOverlay(ctx,W,H){
+  if(!bpFishData)return;
+  const fish=bpFishData.fish;const fishCol=fish.col||'#ff40ff';
   drawFishermanHat(ctx,W,H);
-
-  const fish=bpFishData.fish;
-  const fishCol=fish.col||'#ff40ff';
   ctx.shadowBlur=40;ctx.shadowColor=fishCol;
   ctx.font=`${Math.round(Math.min(W,H)*0.2)}px serif`;
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(fish.e,W/2,H*0.42);
-  ctx.shadowBlur=0;
-
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(fish.e,W/2,H*0.42);ctx.shadowBlur=0;
   ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,W,68);
-  ctx.font='bold 22px Oswald,Arial';ctx.fillStyle=fishCol;
-  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.font='bold 22px Oswald,Arial';ctx.fillStyle=fishCol;ctx.textAlign='left';ctx.textBaseline='top';
   ctx.fillText(fish.e+' '+fish.name,16,12);
-  ctx.font='11px monospace';ctx.fillStyle='rgba(200,232,255,0.85)';
-  ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,40);
-
+  ctx.font='11px monospace';ctx.fillStyle='rgba(200,232,255,0.85)';ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,40);
   ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,H-80,W,80);
   [{lbl:'WEIGHT',val:fish.w||'???',col:fishCol},
    {lbl:'EARNED',val:'+$'+bpFishData.moneyEarned,col:'#40e080'},
    {lbl:'POINTS',val:'+'+bpFishData.pointsEarned+' pts',col:'#f0c040'},
   ].forEach((s,i)=>{
     const sx=W/6+(i*W/3);
-    ctx.font='9px monospace';ctx.fillStyle='rgba(255,200,255,0.6)';ctx.textAlign='center';
-    ctx.fillText(s.lbl,sx,H-60);
-    ctx.font='bold 20px Oswald,Arial';ctx.fillStyle=s.col;
-    ctx.fillText(s.val,sx,H-36);
+    ctx.font='9px monospace';ctx.fillStyle='rgba(255,200,255,0.6)';ctx.textAlign='center';ctx.fillText(s.lbl,sx,H-60);
+    ctx.font='bold 20px Oswald,Arial';ctx.fillStyle=s.col;ctx.fillText(s.val,sx,H-36);
   });
-  ctx.font='10px monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';
-  ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
-
-  // Single capture — no duplicates
-  bpCaptured=cvs.toDataURL('image/jpeg',0.90);
-
-  // Stop stream once cleanly
-  if(bpStream){bpStream.getTracks().forEach(t=>t.stop());bpStream=null;}
-  vid.pause();vid.style.display='none';
-  document.getElementById('bpFishEmoji').style.display='none';
-  document.getElementById('bpStats').style.display='none';
-  document.getElementById('bpStatsBar').style.display='none';
-  cvs.style.display='block';
-  document.getElementById('bpShutter').style.display='none';
-  document.getElementById('bpSave').style.display='block';
+  ctx.font='10px monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
 }
 
-function captureBossWithoutCamera(){
-  const W=window.innerWidth,H=window.innerHeight;
-  const dpr=Math.min(window.devicePixelRatio||1,2);
-  const cvs=document.getElementById('bpCanvas');
-  cvs.width=W*dpr;cvs.height=H*dpr;
-  cvs.style.width=W+'px';cvs.style.height=H+'px';
-  const ctx=cvs.getContext('2d');
-  ctx.scale(dpr,dpr);
-  const bg=ctx.createLinearGradient(0,0,0,H);
-  bg.addColorStop(0,'#020810');bg.addColorStop(0.6,'#0a2035');bg.addColorStop(1,'#051020');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  drawFishermanHat(ctx,W,H);
-  if(bpFishData){
-    const fish=bpFishData.fish;const fishCol=fish.col||'#ff40ff';
-    ctx.shadowBlur=40;ctx.shadowColor=fishCol;
-    ctx.font=`${Math.round(Math.min(W,H)*0.2)}px serif`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(fish.e,W/2,H*0.42);ctx.shadowBlur=0;
-    ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,W,68);
-    ctx.font='bold 22px Oswald,Arial';ctx.fillStyle=fishCol;
-    ctx.textAlign='left';ctx.textBaseline='top';
-    ctx.fillText(fish.e+' '+fish.name,16,12);
-    ctx.font='11px monospace';ctx.fillStyle='rgba(200,232,255,0.85)';
-    ctx.fillText('LEGENDARY CATCH · DEEP HOOK',16,40);
-  }
-  bpCaptured=cvs.toDataURL('image/jpeg',0.90);
+function finaliseBpCapture(cvs){
+  if(bpStream){bpStream.getTracks().forEach(t=>t.stop());bpStream=null;}
+  bpCameraLive=false;
+  const vid=document.getElementById('bpVid');
+  try{vid.pause();vid.srcObject=null;}catch(e){}
+  vid.style.display='none';
   document.getElementById('bpFishEmoji').style.display='none';
   document.getElementById('bpStats').style.display='none';
   document.getElementById('bpStatsBar').style.display='none';
   cvs.style.display='block';
   document.getElementById('bpShutter').style.display='none';
   document.getElementById('bpSave').style.display='block';
+  document.getElementById('bpSub').textContent='Screenshot or tap SAVE 📥';
 }
 
 function saveBossPhoto(){
   clearBpAutoSkip();
   if(!bpCaptured)return;
-  const a=document.createElement('a');
-  a.href=bpCaptured;
-  a.download='DeepHook_Boss_'+Date.now()+'.jpg';
-  a.click();
+  const a=document.createElement('a');a.href=bpCaptured;a.download='DeepHook_Boss_'+Date.now()+'.jpg';a.click();
   vib([40,20,80]);
   setTimeout(()=>closeBossPhoto(),400);
 }
 
 function skipBossPhoto(){
-  clearBpAutoSkip();
-  closeBossPhoto();
+  clearBpAutoSkip();closeBossPhoto();
 }
 
 function closeBossPhoto(){
   if(bpStream){try{bpStream.getTracks().forEach(t=>t.stop());}catch(e){}bpStream=null;}
+  bpCameraLive=false;
   const vid=document.getElementById('bpVid');
   try{vid.pause();vid.srcObject=null;}catch(e){}
   bpFishData=null;bpCaptured=null;
@@ -3014,18 +2514,17 @@ function closeBossPhoto(){
    START GAME
 ═══════════════════════════════════════════ */
 function startGame(){
-  // Stop title animation
   if(titleRAF){cancelAnimationFrame(titleRAF);titleRAF=null;}
   initG();updHUD();showPan('castAimer');
   tiltBaseline=null;seedStars();scheduleEvents();
   document.getElementById('gmini').textContent=RODS[G.ri].name;
   document.getElementById('bossBanner').classList.remove('show');
   updateCastModeUI();initGyro();
-  // Init theme + surfer for level 1
   currentBgTheme=BG_THEMES[0];
   surferEmoji=SURFERS[Math.floor(Math.random()*SURFERS.length)];
-  dolphin.active=false;
-  dolphin.nextAt=Date.now()+8000+Math.random()*10000;
+  // Generate first surfer path
+  newSurferPath(window.innerWidth, window.innerHeight*0.40*0.48);
+  dolphin.active=false;dolphin.nextAt=Date.now()+8000+Math.random()*10000;
   showScr('S1');
   if(G.aid){cancelAnimationFrame(G.aid);G.aid=null;}
   draw();startTimer();setTimeout(()=>launchAimer(),200);
@@ -3033,14 +2532,18 @@ function startGame(){
 
 /* ═══════════════════════════════════════════
    EVENT WIRING
+   KEY FIX: camera buttons use addEventListener
+   with touchend so getUserMedia is called
+   synchronously from the user gesture on iOS.
+   No onclick= attributes for camera buttons.
 ═══════════════════════════════════════════ */
 function wireTap(id,fn){
   const el=document.getElementById(id);if(!el)return;
   el.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();fn();},{passive:false});
-  el.addEventListener('click',fn);
+  el.addEventListener('click',e=>{e.stopPropagation();fn();});
 }
 
-// Title: CAST OFF → show choice modal
+// Title / navigation
 wireTap('startBtn',()=>{
   document.getElementById('castOffModal').classList.add('show');
 });
@@ -3059,6 +2562,60 @@ wireTap('gearBtn',openOptions);
 wireTap('licBtn',openLicenseScreen);
 wireTap('goFishBtn',goFish);
 
+// ── LICENSE CAMERA BUTTONS ──
+// licCameraBtn: requests getUserMedia directly from gesture
+const licCameraBtn=document.getElementById('licCameraBtn');
+licCameraBtn.addEventListener('touchend',function(e){
+  e.preventDefault();e.stopPropagation();
+  licStartCameraFromGesture();
+},{passive:false});
+licCameraBtn.addEventListener('click',function(e){
+  e.stopPropagation();
+  licStartCameraFromGesture();
+});
+
+// licSnapBtn: takes the photo
+const licSnapBtn=document.getElementById('licSnapBtn');
+licSnapBtn.addEventListener('touchend',function(e){
+  e.preventDefault();e.stopPropagation();
+  doLicenseCapture();
+},{passive:false});
+licSnapBtn.addEventListener('click',function(e){
+  e.stopPropagation();
+  doLicenseCapture();
+});
+
+// licSkipBtn
+wireTap('licSkipBtn',skipLicense);
+
+// licRetakeBtn
+wireTap('licRetakeBtn',retakeLicense);
+
+// licProceedBtn
+wireTap('licProceedBtn',proceedFromLicense);
+
+// licSaveBtn
+wireTap('licSaveBtn',saveLicensePhoto);
+
+// ── BOSS PHOTO BUTTONS ──
+// bpShutter: requests camera OR captures — directly from gesture
+const bpShutterBtn=document.getElementById('bpShutter');
+bpShutterBtn.addEventListener('touchend',function(e){
+  e.preventDefault();e.stopPropagation();
+  bpShutterTap();
+},{passive:false});
+bpShutterBtn.addEventListener('click',function(e){
+  e.stopPropagation();
+  bpShutterTap();
+});
+
+// bpSave
+wireTap('bpSave',saveBossPhoto);
+
+// bpSkipBtn
+wireTap('bpSkipBtn',skipBossPhoto);
+
+// Fishing screen tap (aimer)
 document.getElementById('S1').addEventListener('touchend',e=>{
   if(G.ph!=='aiming')return;
   if(e.target.closest('#gearBtn')||e.target.closest('#licBtn')||e.target.closest('#RW')||e.target.closest('.castcol')||e.target.closest('.swing-cast-col'))return;
@@ -3070,12 +2627,14 @@ document.getElementById('S1').addEventListener('click',e=>{
   onTapScreen();
 });
 
+// Shop tabs
 document.querySelectorAll('.stab').forEach(el=>{
   const tab=el.dataset.tab;
   el.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();shopTab(tab);},{passive:false});
   el.addEventListener('click',()=>shopTab(tab));
 });
 
+// Prevent pull-to-refresh / scroll outside scroll areas
 document.addEventListener('touchmove',e=>{
   if(e.target.closest('.sscroll')||e.target.closest('.obox')||e.target.closest('#trainScr'))return;
   if(e.target.closest('.castcol')||e.target.closest('#RW'))return;
@@ -3087,7 +2646,6 @@ document.addEventListener('touchend',()=>{const ac=getAC();if(ac&&ac.state==='su
 // Start title animation on load
 window.addEventListener('load',()=>{
   setTimeout(()=>{
-    // Size title canvas
     const tcv=document.getElementById('titleCV');
     tcv.width=window.innerWidth;tcv.height=window.innerHeight;
     tcv.style.width=window.innerWidth+'px';tcv.style.height=window.innerHeight+'px';
