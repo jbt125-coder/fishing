@@ -1260,17 +1260,21 @@ function drawFishermanHat(ctx, W, H){
   ctx.restore();
 }
 
-// ── CAMERA — Shark Boy pattern exactly ──
-// licStartCamera: one button, one job — just get the camera stream
-// doLicenseCapture: separate button, one job — just take the photo
+// ── CAMERA — getUserMedia with error handling to prevent strict mode crash ──
 async function licStartCamera(){
-  licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-  document.getElementById('licVid').srcObject = licStream;
-  document.getElementById('licVid').style.display = 'block';
-  document.getElementById('licShutter').style.display = 'none';
-  document.getElementById('licSnapBtn').style.display = 'flex';
-  document.getElementById('licHint').textContent = 'Looking good! Tap 📸 to snap!';
-  clearLicAutoSkip();
+  try {
+    licStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    document.getElementById('licVid').srcObject = licStream;
+    document.getElementById('licVid').style.display = 'block';
+    document.getElementById('licShutter').style.display = 'none';
+    document.getElementById('licSnapBtn').style.display = 'flex';
+    document.getElementById('licHint').textContent = 'Looking good! Tap 📸 to snap!';
+    clearLicAutoSkip();
+  } catch(err) {
+    // Show exact error so we can diagnose — this is what was silently crashing
+    document.getElementById('licHint').textContent = 'Camera error: ' + (err.name || err.message || String(err));
+    document.getElementById('licShutter').textContent = '📷';
+  }
 }
 
 function doLicenseCapture(){
@@ -2868,15 +2872,17 @@ async function openBossPhoto(fish,moneyEarned,pointsEarned){
 }
 
 async function takeBossPhoto(){
-  // Second tap — capture now
   if(bpStream){ doBossCapture(); return; }
-  // Shark Boy pattern: getUserMedia is the FIRST line, no if/try before it
-  bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-  const vid=document.getElementById('bpVid');
-  vid.srcObject=bpStream;
-  vid.style.display='block';
-  clearBpAutoSkip();
-  document.getElementById('bpSub').textContent='Looking good! Tap 📸 to snap!';
+  try {
+    bpStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    const vid=document.getElementById('bpVid');
+    vid.srcObject=bpStream;
+    vid.style.display='block';
+    clearBpAutoSkip();
+    document.getElementById('bpSub').textContent='Looking good! Tap 📸 to snap!';
+  } catch(err) {
+    document.getElementById('bpSub').textContent='Camera error: '+(err.name||err.message||String(err));
+  }
 }
 
 function doBossCapture(){
