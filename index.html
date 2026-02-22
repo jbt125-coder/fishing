@@ -1027,6 +1027,8 @@ function startTitleAnimation(){
 /* ═══════════════════════════════════════════
    FISHING LICENSE CAMERA
 ═══════════════════════════════════════════ */
+let licStream=null;
+let licCaptured=null;
 let licAutoSkipTimer=null;
 let bpAutoSkipTimer=null;
 
@@ -1326,14 +1328,14 @@ function drawLicenseCardOnCanvas(ctx,W,H){
 
 function retakeLicense(){
   licCaptured=null;
+  licStream=null;
   document.getElementById('licCaptureCanvas').style.display='none';
-  document.getElementById('licVid').style.display='block';
+  document.getElementById('licVid').style.display='none';
   document.getElementById('licCardOverlay').style.display='block';
   document.getElementById('licShutter').style.display='flex';
   document.getElementById('licRetakeBtn').style.display='none';
   document.getElementById('licProceedBtn').style.display='none';
-  document.getElementById('licHint').textContent='Hold still — smile for your license photo!';
-  startLicCamera();
+  document.getElementById('licHint').textContent='Tap 📸 to take your license photo!';
   startLicPulse();
 }
 
@@ -2019,73 +2021,66 @@ function draw(){
   CX.strokeStyle='#5a3a1a';CX.lineWidth=2;CX.beginPath();CX.moveTo(W*.01,WY-12);CX.lineTo(W*.28,WY-12);CX.stroke();
   [W*.04,W*.09,W*.14,W*.19,W*.24].forEach(rx=>{CX.beginPath();CX.moveTo(rx,WY-12);CX.lineTo(rx,WY-4);CX.stroke();});
 
-  // ── SURFER — right side of screen, bobbing on water ──
-  const SFX=W*0.78,SFY=WY;
+  // ── SURFER — right side, drifts down with wiggle then resets ──
+  const SFX=W*0.78;
+  const sfDriftCycle=8;
+  const sfDriftPhase=(T%sfDriftCycle)/sfDriftCycle;
+  const sfDriftY=sfDriftPhase*H*0.08;
   const sfBob=Math.sin(T*1.1)*2.5+Math.cos(T*0.7)*1.2;
-  // Board
+  const SFY=WY+sfDriftY;
   CX.fillStyle='rgba(255,120,20,0.9)';
   CX.beginPath();CX.ellipse(SFX,SFY+2+sfBob,18,4,Math.sin(T*0.3)*0.08,0,6.28);CX.fill();
   CX.strokeStyle='rgba(255,180,60,0.6)';CX.lineWidth=1;CX.stroke();
-  // Surfer emoji
   CX.font=`${Math.round(W*0.045)}px serif`;
   CX.textAlign='center';CX.textBaseline='bottom';
-  // Slight wiggle
-  CX.save();CX.translate(SFX,SFY+sfBob);CX.rotate(Math.sin(T*0.9)*0.06);
+  CX.save();CX.translate(SFX,SFY+sfBob);CX.rotate(Math.sin(T*0.9)*0.07);
   CX.fillText(surferEmoji,0,2);
   CX.restore();
-  // Wake ripple behind surfer
   CX.strokeStyle='rgba(100,180,255,0.12)';CX.lineWidth=1.5;
   for(let r=1;r<=2;r++){CX.beginPath();CX.ellipse(SFX+r*14,SFY+3+sfBob,r*12,r*3,0,0,6.28);CX.stroke();}
 
-  // ── DOLPHIN — arcs out of water and back in, right side ──
+  // ── DOLPHIN — arcs out of water, nose faces direction of travel ──
   const dnow=Date.now();
   if(!dolphin.active&&dnow>=dolphin.nextAt){
     dolphin.active=true;
     dolphin.arcProgress=0;
-    dolphin.x=W*0.65+Math.random()*W*0.2;  // right side, never near pier
+    dolphin.x=W*0.65+Math.random()*W*0.15;
+    dolphin.dir=Math.random()<0.5?1:-1;
     dolphin.splashT=-1;
   }
   if(dolphin.active){
-    const arcDur=2.2; // seconds for full arc
+    const arcDur=2.2;
     dolphin.arcProgress+=1/60/arcDur;
     if(dolphin.arcProgress>=1){
       dolphin.active=false;
       dolphin.nextAt=Date.now()+15000+Math.random()*20000;
     } else {
       const p=dolphin.arcProgress;
-      // Arc: rises out of water at p=0, peaks at p=0.5, re-enters at p=1
       const arcHeight=WY*0.28;
-      const dy=WY-arcHeight*Math.sin(p*Math.PI); // below waterline at 0 and 1, above at 0.5
-      const dx=dolphin.x+(p-0.5)*W*0.12; // slight horizontal drift
-
-      // Splash on entry (when re-entering water)
+      const dy=WY-arcHeight*Math.sin(p*Math.PI);
+      const dx=dolphin.x+dolphin.dir*(p-0.5)*W*0.12;
       if(p>0.88&&dolphin.splashT<0){
-        dolphin.splashT=dnow;
-        dolphin.splashX=dx;
-        dolphin.splashY=WY;
+        dolphin.splashT=dnow;dolphin.splashX=dx;dolphin.splashY=WY;
       }
-
-      // Only draw dolphin when above waterline
       if(dy<WY){
-        const angle=Math.atan2(-(arcHeight*Math.PI*Math.cos(p*Math.PI)),W*0.12);
-        CX.save();CX.translate(dx,dy);CX.rotate(angle);
+        const angle=Math.atan2(-(arcHeight*Math.PI*Math.cos(p*Math.PI)),dolphin.dir*W*0.12);
+        CX.save();
+        CX.translate(dx,dy);
+        CX.rotate(angle);
+        CX.scale(dolphin.dir,1);
         CX.font=`${Math.round(W*0.055)}px serif`;
         CX.textAlign='center';CX.textBaseline='middle';
-        CX.fillText('🐬',0,0);
+        CX.fillText('\u{1F42C}',0,0);
         CX.restore();
       }
-
-      // Entry splash — at the point where dolphin goes back into water
       if(dolphin.splashT>0){
         const sAge=(dnow-dolphin.splashT)/1000;
         if(sAge<1.2){
           for(let ring=1;ring<=3;ring++){
-            const rr=sAge*50+ring*8;
-            const alpha=Math.max(0,0.5-sAge*0.42)/ring;
+            const rr=sAge*50+ring*8;const alpha=Math.max(0,0.5-sAge*0.42)/ring;
             CX.strokeStyle=`rgba(100,200,255,${alpha})`;CX.lineWidth=1.5;
             CX.beginPath();CX.ellipse(dolphin.splashX,WY,rr,rr*0.32,0,0,6.28);CX.stroke();
           }
-          // Water droplets spraying up at splash point
           for(let d=0;d<5;d++){
             const da=(d/5)*Math.PI;const dr=sAge*(28+d*6);
             const dropX=dolphin.splashX+Math.cos(da+Math.PI)*dr*0.6;
@@ -2832,22 +2827,10 @@ function doBossCapture(){
   ctx.font='10px monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';
   ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
 
+  // Single capture — no duplicates
   bpCaptured=cvs.toDataURL('image/jpeg',0.90);
 
-  // Stop stream — Shark Boy pattern
-  if(bpStream){bpStream.getTracks().forEach(t=>t.stop());bpStream=null;}
-  vid.pause();vid.style.display='none';
-  document.getElementById('bpFishEmoji').style.display='none';
-  document.getElementById('bpStats').style.display='none';
-  document.getElementById('bpStatsBar').style.display='none';
-  cvs.style.display='block';
-  document.getElementById('bpShutter').style.display='none';
-  document.getElementById('bpSave').style.display='block';
-  ctx.font='10px monospace';ctx.fillStyle='rgba(255,200,255,0.4)';ctx.textAlign='center';
-  ctx.fillText('DEEP HOOK FISHING',W/2,H-10);
-
-  bpCaptured=cvs.toDataURL('image/jpeg',0.90);
-
+  // Stop stream once cleanly
   if(bpStream){bpStream.getTracks().forEach(t=>t.stop());bpStream=null;}
   vid.pause();vid.style.display='none';
   document.getElementById('bpFishEmoji').style.display='none';
