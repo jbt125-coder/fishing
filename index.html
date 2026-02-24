@@ -802,16 +802,12 @@ function startTitleAnimation(){
 }
 
 /* ═══════════════════════════════════════════
-   FISHING LICENSE CAMERA — iOS Safari Fix
-   Key: getUserMedia MUST be called synchronously
-   from a direct user gesture handler (touchend/click).
-   No async wrappers between the gesture and the call.
+   FISHING LICENSE CAMERA — Fish & Grip pattern
 ═══════════════════════════════════════════ */
 let licStream=null;
 let licCaptured=null;
 let licCameraReady=false;
 let licAutoSkipTimer=null;
-let bpAutoSkipTimer=null;
 
 function startLicAutoSkip(){
   clearTimeout(licAutoSkipTimer);
@@ -828,23 +824,6 @@ function clearLicAutoSkip(){
   clearInterval(licAutoSkipTimer);licAutoSkipTimer=null;
   const hint=document.getElementById('licHint');
   if(hint)hint.textContent='Hold still — smile for your license photo!';
-}
-
-function startBpAutoSkip(){
-  clearTimeout(bpAutoSkipTimer);
-  let secs=30;
-  const sub=document.getElementById('bpSub');
-  bpAutoSkipTimer=setInterval(()=>{
-    secs--;
-    if(secs>0){if(sub)sub.textContent=`LEGENDARY CATCH · auto-skip in ${secs}s`;}
-    else{clearInterval(bpAutoSkipTimer);bpAutoSkipTimer=null;skipBossPhoto();}
-  },1000);
-}
-
-function clearBpAutoSkip(){
-  clearInterval(bpAutoSkipTimer);bpAutoSkipTimer=null;
-  const sub=document.getElementById('bpSub');
-  if(sub)sub.textContent='LEGENDARY CATCH · DEEP HOOK';
 }
 
 let licNumber='DH-'+Math.floor(100000+Math.random()*900000);
@@ -883,78 +862,40 @@ function startLicPulse(){
   pulse();
 }
 
-function drawFishermanHat(ctx,W,H){
-  const cx=W/2;const hatTop=H*0.10;const crownW=W*0.42;const crownH=crownW*0.38;
-  const brimW=crownW*1.55;const brimH=crownH*0.28;const brimDroop=crownH*0.18;
-  const KHAKI='#c8a96e',KHAKI_DARK='#a8894e',KHAKI_LT='#dfc080',KHAKI_SHADE='#987848',NAVY='#1a2a5a',RED='#cc2222';
-  ctx.save();ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=16;ctx.shadowOffsetY=8;
-  const brimY=hatTop+crownH;
-  const brimGrad=ctx.createLinearGradient(cx,brimY-brimH,cx,brimY+brimDroop+brimH);
-  brimGrad.addColorStop(0,KHAKI_DARK);brimGrad.addColorStop(0.4,KHAKI);brimGrad.addColorStop(1,KHAKI_SHADE);
-  ctx.fillStyle=brimGrad;
-  ctx.beginPath();ctx.ellipse(cx,brimY,crownW*0.52,brimH*0.6,0,Math.PI,0);
-  ctx.quadraticCurveTo(cx+brimW*0.52,brimY+brimDroop*0.5,cx+brimW*0.5,brimY+brimDroop);
-  ctx.ellipse(cx,brimY+brimDroop,brimW*0.5,brimH,0,0,Math.PI);
-  ctx.quadraticCurveTo(cx-brimW*0.52,brimY+brimDroop*0.5,cx-crownW*0.52,brimY);
-  ctx.closePath();ctx.fill();
-  ctx.fillStyle='rgba(0,0,0,0.18)';ctx.beginPath();ctx.ellipse(cx,brimY+brimDroop,brimW*0.5,brimH*0.5,0,0,Math.PI);ctx.fill();
-  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
-  const crownGrad=ctx.createLinearGradient(cx-crownW/2,hatTop,cx+crownW*0.3,hatTop+crownH);
-  crownGrad.addColorStop(0,KHAKI_LT);crownGrad.addColorStop(0.35,KHAKI);crownGrad.addColorStop(0.75,KHAKI_DARK);crownGrad.addColorStop(1,KHAKI_SHADE);
-  ctx.fillStyle=crownGrad;
-  ctx.beginPath();ctx.moveTo(cx-crownW*0.44,hatTop+crownH);
-  ctx.bezierCurveTo(cx-crownW*0.5,hatTop+crownH*0.55,cx-crownW*0.46,hatTop+crownH*0.08,cx-crownW*0.1,hatTop+crownH*0.01);
-  ctx.bezierCurveTo(cx+crownW*0.02,hatTop-crownH*0.04,cx+crownW*0.38,hatTop+crownH*0.04,cx+crownW*0.46,hatTop+crownH*0.12);
-  ctx.bezierCurveTo(cx+crownW*0.5,hatTop+crownH*0.55,cx+crownW*0.44,hatTop+crownH,cx+crownW*0.44,hatTop+crownH);
-  ctx.ellipse(cx,hatTop+crownH,crownW*0.44,brimH*0.55,0,0,Math.PI);ctx.closePath();ctx.fill();
-  ctx.fillStyle='rgba(0,0,0,0.12)';ctx.beginPath();ctx.moveTo(cx+crownW*0.15,hatTop+crownH*0.05);
-  ctx.bezierCurveTo(cx+crownW*0.38,hatTop+crownH*0.1,cx+crownW*0.5,hatTop+crownH*0.55,cx+crownW*0.44,hatTop+crownH);
-  ctx.ellipse(cx+crownW*0.2,hatTop+crownH,crownW*0.24,brimH*0.4,0,0,Math.PI);ctx.closePath();ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.13)';ctx.beginPath();ctx.ellipse(cx-crownW*0.08,hatTop+crownH*0.22,crownW*0.2,crownH*0.1,-0.25,0,Math.PI*2);ctx.fill();
-  const bandY=hatTop+crownH*0.73;const bandH=crownH*0.18;const bandW=crownW*0.86;
-  ctx.fillStyle=NAVY;ctx.fillRect(cx-bandW/2,bandY,bandW,bandH);
-  ctx.fillStyle=RED;ctx.fillRect(cx-bandW/2,bandY+bandH*0.28,bandW,bandH*0.44);
-  ctx.strokeStyle='rgba(20,30,80,0.3)';ctx.lineWidth=0.8;
-  for(let x=cx-bandW/2+4;x<cx+bandW/2;x+=5){ctx.beginPath();ctx.moveTo(x,bandY+bandH*0.28);ctx.lineTo(x,bandY+bandH*0.72);ctx.stroke();}
-  const buckX=cx+bandW*0.38;ctx.fillStyle=NAVY;ctx.fillRect(buckX,bandY,bandW*0.08,bandH);
-  ctx.fillStyle=RED;ctx.fillRect(buckX,bandY+bandH*0.28,bandW*0.08,bandH*0.44);
-  ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1;ctx.strokeRect(buckX,bandY,bandW*0.08,bandH);
-  const eyeX=cx+crownW*0.32;const eyeY=hatTop+crownH*0.52;
-  ctx.fillStyle=KHAKI_SHADE;ctx.beginPath();ctx.arc(eyeX,eyeY,3.5,0,6.28);ctx.fill();
-  ctx.strokeStyle='rgba(80,60,30,0.7)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(eyeX,eyeY,3.5,0,6.28);ctx.stroke();
-  ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.arc(eyeX,eyeY,2,0,6.28);ctx.fill();
-  ctx.globalAlpha=1;ctx.restore();
-}
-
-// ── LICENSE CAMERA — called directly from button event handler ──
-// getUserMedia must be triggered synchronously from touch/click gesture on iOS
-function licStartCameraFromGesture(){
-  // Immediately request camera — this IS the user gesture
+/* ── startLicCamera: async/await — called directly from touchend/click ── */
+async function startLicCamera(){
   const hint=document.getElementById('licHint');
-  hint.textContent='Requesting camera access...';
+  const camBtn=document.getElementById('licCameraBtn');
+  hint.textContent='Requesting camera...';
+  camBtn.disabled=true;
   clearLicAutoSkip();
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    hint.textContent='Camera not available on this device/browser.';
+    hint.textContent='Camera not available on this device or browser.';
+    camBtn.disabled=false;
     return;
   }
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}}})
-    .then(function(stream){
-      licStream=stream;
-      licCameraReady=true;
-      const vid=document.getElementById('licVid');
-      vid.srcObject=stream;
-      vid.style.display='block';
-      document.getElementById('licCameraBtn').style.display='none';
-      document.getElementById('licSnapBtn').style.display='flex';
-      hint.textContent='Looking good! Tap 📸 to snap your photo!';
-    })
-    .catch(function(err){
-      const msg=err.name==='NotAllowedError'?'Camera permission denied. Tap SKIP to continue.':
-                err.name==='NotFoundError'?'No camera found. Tap SKIP to continue.':
-                'Camera error: '+(err.name||err.message)+'. Tap SKIP.';
-      hint.textContent=msg;
-      document.getElementById('licCameraBtn').textContent='📷 Retry';
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},
+      audio:false
     });
+    licStream=stream;
+    licCameraReady=true;
+    const vid=document.getElementById('licVid');
+    vid.srcObject=stream;
+    vid.style.display='block';
+    await vid.play();
+    camBtn.style.display='none';
+    document.getElementById('licSnapBtn').style.display='flex';
+    hint.textContent='Looking good! Tap 📸 to snap your license photo!';
+  }catch(err){
+    const msg=err.name==='NotAllowedError'?'Camera permission denied. Tap SKIP to continue.':
+              err.name==='NotFoundError'?'No camera found. Tap SKIP to continue.':
+              'Camera error: '+(err.name||err.message)+'. Tap SKIP.';
+    hint.textContent=msg;
+    camBtn.textContent='📷 Retry';
+    camBtn.disabled=false;
+  }
 }
 
 function doLicenseCapture(){
@@ -968,15 +909,24 @@ function doLicenseCapture(){
   const cvs=document.getElementById('licCaptureCanvas');
   cvs.width=W*dpr;cvs.height=H*dpr;cvs.style.width=W+'px';cvs.style.height=H+'px';
   const ctx=cvs.getContext('2d');ctx.scale(dpr,dpr);
-  if(licStream&&vid.readyState>=2){ctx.drawImage(vid,0,0,W,H);}
-  else{const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);}
+  if(licStream&&vid.readyState>=2){
+    ctx.save();
+    ctx.translate(W,0);ctx.scale(-1,1);
+    ctx.drawImage(vid,0,0,W,H);
+    ctx.restore();
+  } else {
+    const bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'#0a1a2a');bg.addColorStop(1,'#020810');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  }
   drawFishermanHat(ctx,W,H);
   drawLicenseCardOnCanvas(ctx,W,H);
   licCaptured=cvs.toDataURL('image/jpeg',0.92);
   if(licStream){licStream.getTracks().forEach(t=>t.stop());licStream=null;}
   licCameraReady=false;
   if(licPulseRAF){cancelAnimationFrame(licPulseRAF);licPulseRAF=null;}
-  vid.pause();vid.style.display='none';
+  const vidEl=document.getElementById('licVid');
+  vidEl.pause();vidEl.style.display='none';
   document.getElementById('licCardOverlay').style.display='none';
   cvs.style.display='block';
   document.getElementById('licCameraBtn').style.display='none';
@@ -991,33 +941,6 @@ function doLicenseCapture(){
 function saveLicensePhoto(){
   if(!licCaptured)return;
   const a=document.createElement('a');a.href=licCaptured;a.download='deep-hook-fishing-license.jpg';a.click();
-}
-
-function drawLicenseCardOnCanvas(ctx,W,H){
-  const cardW=Math.min(W*0.88,340);const cardH=cardW*0.62;
-  const cardX=(W-cardW)/2;const cardY=H*0.18;
-  ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=20;
-  const cardGrad=ctx.createLinearGradient(cardX,cardY,cardX+cardW,cardY+cardH);
-  cardGrad.addColorStop(0,'#1a3a1a');cardGrad.addColorStop(0.5,'#0f2a14');cardGrad.addColorStop(1,'#162b12');
-  ctx.fillStyle=cardGrad;ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.fill();ctx.shadowBlur=0;
-  ctx.strokeStyle='#40c040';ctx.lineWidth=2.5;ctx.beginPath();ctx.roundRect(cardX,cardY,cardW,cardH,10);ctx.stroke();
-  ctx.strokeStyle='rgba(64,192,64,.3)';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(cardX+5,cardY+5,cardW-10,cardH-10,7);ctx.stroke();
-  const sealX=cardX+cardW*0.12,sealY=cardY+cardH*0.38;
-  ctx.fillStyle='rgba(64,192,64,.15)';ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.fill();
-  ctx.strokeStyle='rgba(64,192,64,.4)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(sealX,sealY,cardH*0.3,0,6.28);ctx.stroke();
-  ctx.font=`${Math.round(cardH*0.28)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='white';ctx.fillText('🎣',sealX,sealY);
-  ctx.fillStyle='#f0c040';ctx.font=`bold ${Math.round(cardH*0.12)}px Oswald,Arial`;ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('DEEP HOOK',cardX+cardW/2,cardY+cardH*0.07);
-  ctx.fillStyle='rgba(240,192,64,.7)';ctx.font=`${Math.round(cardH*0.075)}px monospace`;ctx.fillText('OFFICIAL FISHING LICENSE',cardX+cardW/2,cardY+cardH*0.21);
-  const photoW=cardW*0.22,photoH=cardH*0.55;const photoX=cardX+cardW*0.73,photoY=cardY+cardH*0.22;
-  ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.fill();
-  ctx.strokeStyle='rgba(240,192,64,.6)';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(photoX,photoY,photoW,photoH,4);ctx.stroke();
-  const infoX=cardX+cardW*0.28;const lineH=cardH*0.14;
-  ctx.textAlign='left';ctx.textBaseline='middle';
-  [{l:'LICENSE #',v:licNumber,col:'#a0c8e0'},{l:'ISSUED',v:new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}),col:'#a0c8e0'},{l:'EXPIRES',v:'DEC 31 2026',col:'#40e080'},{l:'TYPE',v:'ALL WATERS',col:'#f0c040'}].forEach((item,i)=>{
-    const iy=cardY+cardH*0.28+i*lineH;
-    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font=`${Math.round(cardH*0.065)}px monospace`;ctx.fillText(item.l,infoX,iy);
-    ctx.fillStyle=item.col;ctx.font=`bold ${Math.round(cardH*0.08)}px monospace`;ctx.fillText(item.v,infoX+cardW*0.155,iy);
-  });
 }
 
 function retakeLicense(){
@@ -2563,15 +2486,14 @@ wireTap('licBtn',openLicenseScreen);
 wireTap('goFishBtn',goFish);
 
 // ── LICENSE CAMERA BUTTONS ──
-// licCameraBtn: requests getUserMedia directly from gesture
 const licCameraBtn=document.getElementById('licCameraBtn');
 licCameraBtn.addEventListener('touchend',function(e){
   e.preventDefault();e.stopPropagation();
-  licStartCameraFromGesture();
+  startLicCamera();
 },{passive:false});
 licCameraBtn.addEventListener('click',function(e){
   e.stopPropagation();
-  licStartCameraFromGesture();
+  startLicCamera();
 });
 
 // licSnapBtn: takes the photo
